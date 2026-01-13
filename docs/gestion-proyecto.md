@@ -41,91 +41,91 @@
 ---
 
 ## Fase 1: Backend - CMS Sanity
-**Estado:** ⚪ Pendiente
+**Estado:** 🟡 En Progreso
 
 ### Configuración Base
-- [ ] Crear cuenta Sanity.io
-- [ ] Inicializar proyecto Sanity Studio
-- [ ] Configurar CLI de Sanity
-- [ ] Configurar CORS para dominios permitidos
-- [ ] Configurar proyecto en dataset "production"
+- [x] Crear cuenta Sanity.io
+- [x] Inicializar proyecto Sanity Studio
+- [x] Configurar CLI de Sanity
+- [x] Configurar CORS para dominios permitidos
+- [x] Configurar proyecto en dataset "production"
 
 ### Schemas del CMS
-- [ ] **Schema: Configuración Global**
-  - [ ] Logo del restaurante
-  - [ ] Links de redes sociales
-  - [ ] Horarios de apertura
-  - [ ] Footer logos (Sicted, etc.)
-  - [ ] Copyright y textos legales
-  - [ ] Información de contacto
+- [x] **Schema: Configuración Global**
+  - [x] Logo del restaurante
+  - [x] Links de redes sociales
+  - [x] Horarios de apertura
+  - [x] Footer logos (Sicted, etc.)
+  - [x] Copyright y textos legales
+  - [x] Información de contacto
 
-- [ ] **Schema: Alérgenos**
-  - [ ] Nombre del alérgeno
-  - [ ] Icono/código
-  - [ ] Descripción
+- [x] **Schema: Alérgenos**
+  - [x] Nombre del alérgeno
+  - [x] Icono/código
+  - [x] Descripción
 
-- [ ] **Schema: Categorías de Carta**
-  - [ ] Nombre de categoría
-  - [ ] Orden de aparición
-  - [ ] Estado activo/inactivo
-  - [ ] Descripción opcional
+- [x] **Schema: Categorías de Carta**
+  - [x] Nombre de categoría
+  - [x] Orden de aparición
+  - [x] Estado activo/inactivo
+  - [x] Descripción opcional
 
-- [ ] **Schema: Platos**
-  - [ ] Nombre del plato
-  - [ ] Descripción/ingredientes
-  - [ ] Precio
-  - [ ] Imagen optimizada
-  - [ ] Categoría (referencia)
-  - [ ] Alérgenos (array de referencias)
-  - [ ] Estado disponible/agotado
-  - [ ] Orden dentro de categoría
+- [x] **Schema: Platos**
+  - [x] Nombre del plato
+  - [x] Descripción/ingredientes
+  - [x] Precio
+  - [x] Imagen optimizada
+  - [x] Categoría (referencia)
+  - [x] Alérgenos (array de referencias)
+  - [x] Estado disponible/agotado
+  - [x] Orden dentro de categoría
 
-- [ ] **Schema: Menús**
-  - [ ] Nombre del menú
-  - [ ] Imagen promocional
-  - [ ] Fechas y días de validez
-  - [ ] Descripción/composición
-  - [ ] Precio
-  - [ ] Estado visible/oculto
-  - [ ] PDF descargable (opcional)
+- [x] **Schema: Menús**
+  - [x] Nombre del menú
+  - [x] Imagen promocional
+  - [x] Fechas y días de validez
+  - [x] Descripción/composición
+  - [x] Precio
+  - [x] Estado visible/oculto
+  - [x] PDF descargable (opcional)
 
-- [ ] **Schema: Espacios del Restaurante**
-  - [ ] Nombre del espacio (Salón, Bar, Terraza)
-  - [ ] Descripción
-  - [ ] Galería de imágenes (array)
-  - [ ] Orden de aparición
+- [x] **Schema: Espacios del Restaurante**
+  - [x] Nombre del espacio (Salón, Bar, Terraza)
+  - [x] Descripción
+  - [x] Galería de imágenes (array)
+  - [x] Orden de aparición
 
-- [ ] **Schema: Experiencias/Regalos**
-  - [ ] Título de la experiencia
-  - [ ] Descripción
-  - [ ] Precio
-  - [ ] Link de compra
-  - [ ] Color de fondo (hex)
-  - [ ] Imagen destacada
-  - [ ] Estado activo/inactivo
+- [x] **Schema: Experiencias/Regalos**
+  - [x] Título de la experiencia
+  - [x] Descripción
+  - [x] Precio
+  - [x] Link de compra
+  - [x] Color de fondo (hex)
+  - [x] Imagen destacada
+  - [x] Estado activo/inactivo
 
-- [ ] **Schema: Página Landing**
-  - [ ] Hero Title
-  - [ ] Hero Subtitle
-  - [ ] Hero Image
-  - [ ] Texto sobre fundación/historia
-  - [ ] Galería de bienvenida (array)
+- [x] **Schema: Página Landing**
+  - [x] Hero Title
+  - [x] Hero Subtitle
+  - [x] Hero Image
+  - [x] Texto sobre fundación/historia
+  - [x] Galería de bienvenida (array)
 
-- [ ] **Schema: Banners/Anuncios**
-  - [ ] Título
-  - [ ] Texto
-  - [ ] Imagen
-  - [ ] Link (opcional)
-  - [ ] Fecha inicio
-  - [ ] Fecha fin
-  - [ ] Posición en la web
+- [x] **Schema: Banners/Anuncios**
+  - [x] Título
+  - [x] Texto
+  - [x] Imagen
+  - [x] Link (opcional)
+  - [x] Fecha inicio
+  - [x] Fecha fin
+  - [x] Posición en la web
 
 ### Contenido Inicial
-- [ ] Cargar datos mock de prueba
-- [ ] Cargar imágenes de prueba optimizadas
-- [ ] Configurar todos los alérgenos
-- [ ] Crear categorías base de la carta
-- [ ] Crear al menos 3 platos por categoría (prueba)
+- [x] Cargar datos mock de prueba
+- [x] Cargar imágenes de prueba optimizadas (14 imágenes desde Unsplash)
+- [x] Configurar todos los alérgenos (14 alérgenos cargados)
+- [x] Crear categorías base de la carta (6 categorías)
+- [x] Crear al menos 3 platos por categoría (15 platos de prueba)
 
 ### Configuración Avanzada
 - [ ] Configurar CDN de Sanity para imágenes
@@ -513,7 +513,7 @@
 
 ### Por Fase
 - **Fase 0:** ✅ Completada (100%)
-- **Fase 1:** ⚪ Pendiente (0%)
+- **Fase 1:** 🟡 En Progreso (90% - Schemas, contenido e imágenes listos)
 - **Fase 2:** ⚪ Pendiente (0%)
 - **Fase 3:** ⚪ Pendiente (0%)
 - **Fase 4:** ⚪ Pendiente (0%)
@@ -523,16 +523,21 @@
 - **Fase 8:** ⚪ Pendiente (0%)
 - **Fase 9:** ⚪ Pendiente (0%)
 
-### Progreso Total: 10% (Fase 0 completada)
+### Progreso Total: 19% (Fase 0 completada, Fase 1 casi completa)
 
 ---
 
 ## 🎯 Próximos Pasos Inmediatos
 
-1. **Completar configuración inicial** (Fase 0 pendientes)
-2. **Crear cuenta y configurar Sanity.io** (Inicio Fase 1)
-3. **Inicializar proyecto Astro** (Inicio Fase 2)
-4. **Definir estructura de carpetas definitiva**
+1. ✅ ~~Completar configuración inicial (Fase 0)~~
+2. ✅ ~~Crear cuenta y configurar Sanity.io~~
+3. ✅ ~~Inicializar proyecto Sanity Studio~~
+4. ✅ ~~Crear todos los schemas del CMS~~
+5. ✅ ~~Cargar contenido inicial de prueba (14 alérgenos, 6 categorías, 14 platos)~~
+6. ✅ ~~Cargar imágenes de prueba desde Unsplash~~
+7. **Configurar CORS en Sanity**
+8. **Configurar webhooks (opcional)**
+9. **Inicializar proyecto Astro** (Inicio Fase 2)
 
 ---
 
