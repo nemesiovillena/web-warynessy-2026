@@ -1,0 +1,211 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import { sanityClient } from '../lib/sanity';
+
+const query = `{
+  "siteSettings": *[_type == "siteSettings"][0],
+  "homepage": *[_type == "homepage"][0]{
+    heroTitle,
+    heroSubtitle,
+    "heroImage": heroImage.asset->url,
+    welcomeText,
+    gallery[] {
+      "url": asset->url,
+      alt
+    }
+  },
+  "spaces": *[_type == "space"] | order(order asc) [0...3] {
+    name,
+    description,
+    "imageUrl": image.asset->url
+  },
+  "experiences": *[_type == "experience"] [0...1]
+}`;
+
+const { siteSettings, homepage, spaces, experiences } = await sanityClient.fetch(query);
+
+const pageTitle = siteSettings?.title || "Warynessy 2026";
+---
+
+<MainLayout title={pageTitle}>
+  {/* SECTION 1: HERO */}
+  <section class="relative h-screen w-full overflow-hidden group">
+    <div 
+      class="absolute inset-0 parallax-bg" 
+      style={`background-image: url('${homepage?.heroImage || 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80'}');`}
+    >
+    </div>
+    <div class="absolute inset-0 hero-content-gradient"></div>
+    
+    <div class="relative h-full flex flex-col justify-end items-start px-12 pb-20 max-w-7xl mx-auto w-full">
+      <div class="flex flex-col gap-6 max-w-2xl">
+        <h1 class="text-white font-display text-7xl md:text-8xl font-black leading-tight drop-shadow-2xl">
+          {homepage?.heroTitle ? (
+            <Fragment set:html={homepage.heroTitle.replace(' ', ' & <br/><span class="font-medium">').concat('</span>')} />
+          ) : (
+            <>Sabor & <br/><span class="font-medium">Vanguardia</span></>
+          )}
+        </h1>
+        <p class="text-white/80 text-xl font-light tracking-wide max-w-md border-l-2 border-primary pl-6">
+          {homepage?.heroSubtitle || "Una experiencia gastronómica única en el corazón de Alicante."}
+        </p>
+        <div class="mt-4 flex items-center gap-8">
+          <a href="/reservas" class="group/btn relative overflow-hidden flex items-center justify-center rounded-lg h-14 px-10 bg-accent-red text-white text-sm font-bold tracking-[0.2em] uppercase shadow-2xl transition-all hover:pr-14 active:scale-95">
+            <span class="relative z-10 text-white">Book a Table</span>
+            <span class="material-symbols-outlined absolute right-4 opacity-0 transition-all group-hover/btn:opacity-100 text-white">arrow_right_alt</span>
+          </a>
+          <div class="hidden md:flex flex-col text-white/50 text-[10px] tracking-[0.3em] uppercase font-bold">
+            <span>Authentic Mediterranean</span>
+            <span>Cuisine Excellence</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
+      <div class="w-px h-12 bg-gradient-to-b from-white to-transparent"></div>
+    </div>
+  </section>
+
+  {/* SECTION 2: BUSINESS HOURS */}
+  <section class="py-24 bg-background-light dark:bg-background-dark">
+    <div class="max-w-7xl mx-auto px-12">
+      <div class="flex flex-col md:flex-row items-center gap-16">
+        <div class="md:w-1/2">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="material-symbols-outlined text-primary text-3xl">schedule</span>
+            <h3 class="text-[#1c0d0f] dark:text-white text-2xl font-bold font-display uppercase tracking-widest">Business Hours</h3>
+          </div>
+          <p class="text-gray-500 dark:text-gray-400 mb-8 max-w-sm">Enjoy our culinary excellence during our dedicated service hours throughout the week.</p>
+        </div>
+        <div class="md:w-1/2 w-full">
+          <div class="bg-white dark:bg-zinc-900 rounded-2xl p-8 shadow-2xl border border-gray-100 dark:border-zinc-800">
+            {siteSettings?.openingHours?.map((schedule: any) => (
+              <div class="flex justify-between items-center py-6 border-b border-gray-100 dark:border-zinc-800 last:border-0">
+                <p class="text-primary dark:text-red-400 font-bold text-lg">{schedule.days}</p>
+                <p class="text-base font-medium text-right leading-relaxed">
+                  {schedule.closed ? "Cerrado" : <Fragment set:html={schedule.hours.replace(' / ', '<br/>')} />}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* SECTION 3: STORY */}
+  <section id="story" class="py-24 bg-beige-light dark:bg-[#2c2621]">
+    <div class="max-w-7xl mx-auto px-12 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+      <div class="flex flex-col gap-8 order-2 lg:order-1">
+        <h2 class="text-[#1c0d0f] dark:text-[#f5e6d3] font-serif text-5xl font-bold leading-tight">Our Story</h2>
+        <div class="w-20 h-1.5 bg-primary"></div>
+        <div class="text-[#5c4a4c] dark:text-[#d1c2b4] text-xl leading-relaxed font-light">
+          {Array.isArray(homepage?.welcomeText) 
+            ? homepage.welcomeText.map((block: any) => block.children?.map((child: any) => child.text).join('')).join('\n')
+            : (homepage?.welcomeText || "Ubicados en el corazón de Alicante, nuestra historia es una de pasión por el producto local y la excelencia gastronómica.")
+          }
+        </div>
+        <div class="flex gap-6 mt-4">
+          <div class="flex-1 rounded-xl border border-primary/20 bg-white/50 dark:bg-black/20 p-8 flex flex-col gap-4">
+            <span class="material-symbols-outlined text-primary text-4xl">history_edu</span>
+            <div>
+              <h2 class="text-[#1c0d0f] dark:text-white text-xl font-bold mb-2">Tradición Mediterránea</h2>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">Respetamos las raíces mientras innovamos en cada bocado para sorprender su paladar.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-6 order-1 lg:order-2">
+        {homepage?.gallery?.slice(0, 2).map((img, i) => (
+          <div 
+            class={`aspect-[3/4] rounded-2xl bg-cover bg-center shadow-2xl transition-transform hover:scale-105 duration-500 ${i === 1 ? 'mt-12' : ''}`}
+            style={`background-image: url('${img.url}')`}
+          ></div>
+        ))}
+        {!homepage?.gallery && (
+             <>
+               <div class="aspect-[3/4] rounded-2xl bg-cover bg-center shadow-2xl transition-transform hover:-translate-y-2 duration-500 bg-zinc-800"></div>
+               <div class="aspect-[3/4] rounded-2xl bg-cover bg-center shadow-2xl mt-12 transition-transform hover:translate-y-2 duration-500 bg-zinc-800"></div>
+             </>
+        )}
+      </div>
+    </div>
+  </section>
+
+  {/* SECTION 4: GIFT CARD */}
+  <section class="w-full bg-accent-red py-20 px-12 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+      <div class="text-center md:text-left">
+        <h2 class="text-white font-serif text-5xl font-bold mb-4">Regala Gastronomía</h2>
+        <p class="text-white/80 text-xl max-w-lg">
+          {experiences?.[0]?.description || "Sorprende a tus seres queridos con una experiencia sensorial inolvidable en nuestro restaurante."}
+        </p>
+      </div>
+      <a href="/experiencias" class="bg-white text-accent-red px-12 py-5 rounded-full font-bold uppercase tracking-[0.2em] shadow-2xl hover:bg-black hover:text-white transition-all transform active:scale-95">
+        Buy Gift Card
+      </a>
+    </div>
+    <div class="absolute top-0 right-0 opacity-10 scale-150 pointer-events-none">
+      <span class="material-symbols-outlined text-[300px] text-white">card_giftcard</span>
+    </div>
+  </section>
+
+  {/* SECTION 5: SPACES */}
+  <section id="espacios" class="py-24 bg-background-light dark:bg-background-dark">
+    <div class="max-w-7xl mx-auto px-12">
+      <div class="flex justify-between items-end mb-16">
+        <h3 class="text-5xl font-serif font-bold">Nuestros Espacios</h3>
+        <p class="text-gray-500 dark:text-gray-400 max-w-xs text-right">Atmósferas diseñadas para cada tipo de encuentro y celebración.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {spaces?.map((space, i) => (
+          <div class={`group relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl ${i === 1 ? 'mt-8 md:mt-0' : ''}`}>
+            <div 
+              class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" 
+              style={`background-image: url('${space.imageUrl || 'https://images.unsplash.com/photo-1517248135467-4c7ed9d86c7d?auto=format&fit=crop&q=80'}');`}
+            ></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-8">
+              <h4 class="text-white text-3xl font-display font-black mb-2">{space.name}</h4>
+              <p class="text-white/70 text-base opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                {space.description}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* SECTION 6: REVIEWS & FEED */}
+  <section class="py-24 bg-white dark:bg-zinc-950">
+    <div class="max-w-7xl mx-auto px-12">
+      <div class="flex flex-col lg:flex-row gap-20">
+        <div class="lg:w-1/3">
+          <h3 class="text-4xl font-serif font-bold mb-6">Reviews</h3>
+          <div class="flex items-center gap-4 mb-4">
+            <div class="flex text-yellow-500 gap-1">
+              <span class="material-symbols-outlined fill-[1]">star</span>
+              <span class="material-symbols-outlined fill-[1]">star</span>
+              <span class="material-symbols-outlined fill-[1]">star</span>
+              <span class="material-symbols-outlined fill-[1]">star</span>
+              <span class="material-symbols-outlined fill-[1]">star_half</span>
+            </div>
+            <span class="text-xl font-bold">4.8</span>
+          </div>
+          <p class="text-gray-500 mb-8 uppercase tracking-widest text-sm">Google Ratings based on 1.2k reviews</p>
+          <div class="h-px w-full bg-gray-100 dark:bg-zinc-800 mb-8"></div>
+          <h3 class="text-2xl font-bold mb-6">Instagram Feed</h3>
+          <p class="text-gray-500 mb-8 italic">Follow our journey @restaurante_warynessy</p>
+        </div>
+        <div class="lg:w-2/3 grid grid-cols-2 md:grid-cols-3 gap-2">
+           {/* Placeholders for feed images */}
+           {[1,2,3,4,5,6].map(() => (
+             <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 hover:opacity-80 transition-opacity cursor-pointer overflow-hidden">
+                <div class="w-full h-full bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80')"></div>
+             </div>
+           ))}
+        </div>
+      </div>
+    </div>
+  </section>
+</MainLayout>

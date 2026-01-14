@@ -140,13 +140,13 @@
 **Estado:** ⚪ Pendiente
 
 ### Configuración Base
-- [ ] Inicializar proyecto Astro
-- [ ] Configurar TypeScript estricto
-- [ ] Instalar Tailwind CSS
-- [ ] Configurar Tailwind con paleta personalizada
-- [ ] Instalar dependencias base (GSAP, Swiper, etc.)
-- [ ] Configurar cliente de Sanity en Astro
-- [ ] Configurar estructura de carpetas
+- [x] Inicializar proyecto Astro
+- [x] Configurar TypeScript estricto
+- [x] Instalar Tailwind CSS
+- [x] Configurar Tailwind con paleta personalizada
+- [x] Instalar dependencias base (GSAP, Swiper, etc.)
+- [x] Configurar cliente de Sanity en Astro
+- [x] Configurar estructura de carpetas
 
 ### Configuración Avanzada
 - [ ] Configurar `astro.config.mjs` completo
@@ -157,8 +157,8 @@
 - [ ] Crear archivo de tipos TypeScript para Sanity
 
 ### Layouts Base
-- [ ] Crear `BaseLayout.astro` (HTML base)
-- [ ] Crear `MainLayout.astro` (con Header/Footer)
+- [x] Crear `BaseLayout.astro` (HTML base)
+- [x] Crear `MainLayout.astro` (con Header/Footer)
 - [ ] Configurar meta tags dinámicos
 - [ ] Configurar Open Graph tags
 - [ ] Configurar structured data (JSON-LD)

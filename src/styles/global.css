@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #bd0a1c;
+  --color-accent-red: #C90015;
+  --color-beige-light: #F5E6D3;
+  --color-matte-black: #1F1F1F;
+  --color-background-light: #f8f5f6;
+  --color-background-dark: #221012;
+  --color-warynessy-black: #1F1F1F;
+  --color-warynessy-cream: #FDFDFD;
+  --color-warynessy-red: #C90015;
+  --color-warynessy-beige: #F5E6D3;
+
+  --font-display: "Plus Jakarta Sans", sans-serif;
+  --font-serif: "Inter", sans-serif;
+}
+
+@layer utilities {
+  .parallax-bg {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .hero-content-gradient {
+    background: linear-gradient(to top right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 30%, transparent 70%);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+body {
+  @apply font-display text-matte-black dark:text-white transition-colors duration-300;
+  min-height: max(884px, 100dvh);
+}

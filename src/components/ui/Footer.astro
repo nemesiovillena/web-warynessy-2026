@@ -1,0 +1,112 @@
+---
+import { sanityClient } from '../../lib/sanity';
+
+// Query to fetch global site settings
+const query = `*[_type == "siteSettings"][0]{
+  title,
+  description,
+  contact,
+  openingHours,
+  socialMedia,
+  footerLogos[] {
+    "url": logo.asset->url,
+    alt,
+    link
+  },
+  copyright
+}`;
+
+const settings = await sanityClient.fetch(query);
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-matte-black text-white/50 py-24 px-12">
+  <div class="max-w-7xl mx-auto flex flex-col gap-20">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-16 text-center md:text-left">
+      
+      {/* Brand & Contact */}
+      <div class="flex flex-col gap-6">
+        <h2 class="font-display text-4xl font-black text-white">
+          {settings?.title || "Gourmet"}
+        </h2>
+        <p class="text-base leading-relaxed">
+          {settings?.contact?.address && (
+            <>{settings.contact.address}, {settings.contact.postalCode} <br/> {settings.contact.city}, España <br/></>
+          )}
+          {settings?.contact?.phone && <>{settings.contact.phone}</>}
+        </p>
+      </div>
+
+      {/* Certifications (Central) */}
+      <div class="flex flex-col items-center gap-10">
+        <div class="flex flex-wrap justify-center gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-700">
+          {settings?.footerLogos ? (
+            settings.footerLogos.map((logo: any) => (
+              logo.url ? (
+                <div class="flex flex-col items-center gap-2">
+                  <img src={logo.url} alt={logo.alt || "Certificación"} class="h-12 w-auto object-contain" />
+                  <span class="text-[9px] font-bold tracking-widest uppercase">{logo.alt || "Sello"}</span>
+                </div>
+              ) : null
+            ))
+          ) : (
+            <>
+              <div class="flex flex-col items-center gap-2">
+                <span class="material-symbols-outlined text-5xl">wine_bar</span>
+                <span class="text-[9px] font-bold tracking-widest uppercase">ALICANTE WINE ROUTE</span>
+              </div>
+              <div class="flex flex-col items-center gap-2">
+                <span class="material-symbols-outlined text-5xl">verified</span>
+                <span class="text-[9px] font-bold tracking-widest uppercase">SICTED</span>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Social & Reservation (Right) */}
+      <div class="flex flex-col items-center md:items-end gap-8">
+        <div class="flex gap-6 text-white/80">
+          {settings?.socialMedia?.tripadvisor && (
+            <a href={settings.socialMedia.tripadvisor} target="_blank" rel="noopener noreferrer" class="hover:text-primary transition-colors">
+              <span class="material-symbols-outlined text-3xl">social_leaderboard</span>
+            </a>
+          )}
+          {settings?.socialMedia?.instagram && (
+            <a href={settings.socialMedia.instagram} target="_blank" rel="noopener noreferrer" class="hover:text-primary transition-colors">
+              <span class="material-symbols-outlined text-3xl">camera_alt</span>
+            </a>
+          )}
+          {settings?.contact?.email && (
+            <a href={`mailto:${settings.contact.email}`} class="hover:text-primary transition-colors">
+              <span class="material-symbols-outlined text-3xl">alternate_email</span>
+            </a>
+          )}
+        </div>
+        <p class="text-sm font-bold tracking-[0.3em] uppercase">Reserve your experience</p>
+      </div>
+    </div>
+
+    <div class="w-full h-px bg-white/5"></div>
+
+    <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+      <p class="text-xs tracking-widest uppercase">
+        {settings?.copyright || `© ${currentYear} Restaurante Warynessy Alicante`}
+      </p>
+      <div class="flex gap-8 text-[10px] tracking-widest uppercase">
+        <a class="hover:text-white transition-colors" href="/aviso-legal">Legal Notice</a>
+        <a class="hover:text-white transition-colors" href="/privacidad">Privacy Policy</a>
+        <a class="hover:text-white transition-colors" href="/cookies">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+{/* Floating Reservation Button */}
+<div class="fixed bottom-10 right-10 z-[60]">
+  <a href="/reservas" class="group bg-primary text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center transition-all hover:w-48 overflow-hidden active:scale-90">
+    <span class="material-symbols-outlined shrink-0 text-white">calendar_month</span>
+    <span class="ml-2 whitespace-nowrap opacity-0 w-0 transition-all group-hover:opacity-100 group-hover:w-auto uppercase font-bold text-xs tracking-widest text-white">Book Now</span>
+  </a>
+</div>
