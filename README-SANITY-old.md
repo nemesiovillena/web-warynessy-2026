@@ -2,8 +2,6 @@
 
 Sitio web oficial del Restaurante Warynessy, construido con tecnologías modernas para ofrecer una experiencia de usuario excepcional y facilitar la gestión de contenido.
 
-> **🔄 MIGRADO A PAYLOAD CMS** - Este proyecto ha sido migrado de Sanity.io a Payload CMS. Ver [MIGRACION-PAYLOAD.md](MIGRACION-PAYLOAD.md) para detalles completos.
-
 ## 🚀 Stack Tecnológico
 
 ### Frontend
@@ -14,13 +12,12 @@ Sitio web oficial del Restaurante Warynessy, construido con tecnologías moderna
 - **[Swiper.js](https://swiperjs.com/)** - Carruseles y sliders
 
 ### Backend / CMS
-- **[Payload CMS](https://payloadcms.com/)** - Headless CMS TypeScript-native
-- **PostgreSQL** - Base de datos relacional
+- **[Sanity.io](https://www.sanity.io/)** - Headless CMS
+- **Sanity Studio** - Dashboard de administración
 
 ### Infraestructura
 - **[Vercel](https://vercel.com/)** / **[Netlify](https://www.netlify.com/)** - Hosting y deployment
-- **[Vercel Postgres](https://vercel.com/storage/postgres)** / **[Supabase](https://supabase.com/)** - Base de datos
-- **[Bunny.net](https://bunny.net/)** - CDN para imágenes y videos (opcional)
+- **[Bunny.net](https://bunny.net/)** - CDN para imágenes y videos
 - **[GitHub](https://github.com/)** - Control de versiones
 
 ### Integraciones
@@ -37,19 +34,15 @@ warynessy26/
 │   ├── agents/               # Definiciones de agentes especializados
 │   ├── info/                 # Información técnica y arquitectura
 │   └── gestion-proyecto.md   # Gestión completa del proyecto
-├── src/                       # Código fuente
+├── src/                       # Código fuente (se creará con Astro)
 │   ├── components/           # Componentes reutilizables
 │   ├── layouts/              # Layouts de página
 │   ├── pages/                # Páginas del sitio
 │   ├── styles/               # Estilos globales
-│   ├── lib/                  # Utilidades y helpers
-│   └── payload/              # Configuración de Payload CMS
-│       ├── collections/      # Collections (tipos de documento)
-│       └── globals/          # Globals (singletons)
+│   └── lib/                  # Utilidades y helpers
 ├── public/                    # Archivos estáticos
-├── media/                     # Archivos subidos al CMS
-├── payload.config.ts          # Configuración de Payload
-├── MIGRACION-PAYLOAD.md       # Guía de migración a Payload
+├── sanity/                    # Configuración de Sanity CMS
+│   └── schemas/              # Schemas de contenido
 ├── .env.example              # Variables de entorno de ejemplo
 ├── .gitignore                # Archivos ignorados por Git
 ├── astro.config.mjs          # Configuración de Astro
@@ -64,7 +57,7 @@ warynessy26/
 ### Prerrequisitos
 - Node.js 18+
 - npm, yarn o pnpm
-- PostgreSQL (local o Vercel Postgres / Supabase)
+- Cuenta en Sanity.io
 - Cuenta en Vercel/Netlify (para deployment)
 
 ### 1. Clonar el Repositorio
@@ -78,11 +71,15 @@ cd web-warynessy-2026
 
 ```bash
 npm install
+# o
+yarn install
+# o
+pnpm install
 ```
 
 ### 3. Configurar Variables de Entorno
 
-Copia el archivo `.env.example` a `.env`:
+Copia el archivo `.env.example` a `.env` y configura las variables:
 
 ```bash
 cp .env.example .env
@@ -91,11 +88,10 @@ cp .env.example .env
 Edita `.env` con tus credenciales:
 
 ```env
-# Payload CMS
-DATABASE_URL=postgresql://user:password@localhost:5432/warynessy
-PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3000
-PUBLIC_PAYLOAD_API_URL=http://localhost:3000/api
-PAYLOAD_SECRET=tu-secret-generado
+# Sanity
+PUBLIC_SANITY_PROJECT_ID=tu-project-id
+PUBLIC_SANITY_DATASET=production
+SANITY_API_TOKEN=tu-api-token
 
 # Google APIs
 PUBLIC_GOOGLE_PLACES_API_KEY=tu-api-key
@@ -107,65 +103,19 @@ INSTAGRAM_ACCESS_TOKEN=tu-access-token
 # CoverManager
 PUBLIC_COVER_MANAGER_ID=tu-id
 
-# Bunny.net (opcional)
+# Bunny.net
 BUNNY_CDN_URL=tu-cdn-url
 BUNNY_API_KEY=tu-api-key
 ```
 
-#### Generar PAYLOAD_SECRET
-
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-```
-
-### 4. Configurar Base de Datos
-
-Tienes varias opciones para PostgreSQL:
-
-#### Opción A: Vercel Postgres (Recomendado)
-1. Ve a tu proyecto en Vercel
-2. Pestaña "Storage" > "Create Database" > "Postgres"
-3. Copia el `DATABASE_URL`
-4. Pégalo en tu `.env`
-
-#### Opción B: Supabase (Gratuito)
-1. Crea cuenta en [supabase.com](https://supabase.com)
-2. Crea un nuevo proyecto
-3. Settings > Database > Connection string
-4. Copia y pega en `.env`
-
-#### Opción C: PostgreSQL Local
-```bash
-# Instalar PostgreSQL
-brew install postgresql@14  # macOS
-# o
-sudo apt install postgresql  # Linux
-
-# Crear base de datos
-createdb warynessy
-
-# Configurar DATABASE_URL en .env
-DATABASE_URL=postgresql://localhost:5432/warynessy
-```
-
-### 5. Iniciar Payload CMS
-
-```bash
-# Ejecutar migraciones
-npm run payload migrate
-
-# Iniciar servidor de Payload
-npm run dev:payload
-```
-
-El admin panel estará disponible en `http://localhost:3000/admin`
-
-**Primera vez**: Al acceder a `/admin`, Payload te pedirá crear un usuario administrador.
-
-### 6. Ejecutar en Desarrollo
+### 4. Ejecutar en Desarrollo
 
 ```bash
 npm run dev
+# o
+yarn dev
+# o
+pnpm dev
 ```
 
 El sitio estará disponible en `http://localhost:4321`
@@ -173,14 +123,29 @@ El sitio estará disponible en `http://localhost:4321`
 ## 📝 Scripts Disponibles
 
 ```bash
-npm run dev              # Inicia el servidor de desarrollo de Astro
-npm run dev:payload      # Inicia el servidor de Payload CMS
-npm run build            # Construye el sitio y Payload para producción
-npm run build:payload    # Construye solo Payload
-npm run preview          # Preview del build de producción
-npm run generate:types   # Genera tipos TypeScript desde Payload
-npm run astro            # Ejecuta comandos de Astro CLI
-npm run payload          # Ejecuta comandos de Payload CLI
+npm run dev          # Inicia el servidor de desarrollo
+npm run build        # Construye el sitio para producción
+npm run preview      # Preview del build de producción
+npm run astro        # Ejecuta comandos de Astro CLI
+```
+
+## 🎨 Configuración de Sanity Studio
+
+### Inicializar Sanity
+
+```bash
+cd sanity
+npm install
+npm run dev
+```
+
+Sanity Studio estará disponible en `http://localhost:3333`
+
+### Deploy de Sanity Studio
+
+```bash
+cd sanity
+npm run deploy
 ```
 
 ## 🌐 Deployment
@@ -189,8 +154,7 @@ npm run payload          # Ejecuta comandos de Payload CLI
 
 1. Conecta tu repositorio en [vercel.com](https://vercel.com)
 2. Configura las variables de entorno en el dashboard
-3. Añade Vercel Postgres desde la pestaña Storage
-4. Deploy automático en cada push a `main`
+3. Deploy automático en cada push a `main`
 
 ### Netlify
 
@@ -198,7 +162,6 @@ npm run payload          # Ejecuta comandos de Payload CLI
 2. Configura las variables de entorno
 3. Build command: `npm run build`
 4. Publish directory: `dist`
-5. Configura PostgreSQL externo (Supabase recomendado)
 
 ## 📋 Gestión del Proyecto
 
@@ -215,9 +178,9 @@ Este documento contiene:
 
 ## 📚 Documentación Adicional
 
-- **[MIGRACION-PAYLOAD.md](MIGRACION-PAYLOAD.md)** - Guía completa de migración a Payload
 - **[Stack Tecnológico](docs/info/stack-tecnologico.md)** - Detalles del stack elegido
 - **[Arquitectura de Datos](docs/info/arquitectura-datos.md)** - Estructura de datos del CMS
+- **[Schemas](docs/info/schema.md)** - Definición de schemas de Sanity
 - **[Paleta de Colores](docs/info/paleta-colores.md)** - Colores del diseño
 - **[Puntos Críticos](docs/info/puntos-criticos.md)** - Consideraciones importantes
 - **[Mock Data](docs/info/mock-data.md)** - Datos de prueba
@@ -225,8 +188,7 @@ Este documento contiene:
 ## 🎯 Características Principales
 
 - ✅ **Rendimiento Ultra-Rápido**: Astro con arquitectura de islas
-- ✅ **CMS TypeScript-Native**: Payload CMS con control total
-- ✅ **Base de Datos Propia**: PostgreSQL sin vendor lock-in
+- ✅ **CMS Headless**: Gestión de contenido sin tocar código
 - ✅ **Carta Dinámica**: Actualización en tiempo real desde el CMS
 - ✅ **Gestión de Menús**: Sistema independiente de menús
 - ✅ **Reservas Online**: Integración con CoverManager
@@ -236,15 +198,14 @@ Este documento contiene:
 - ✅ **Imágenes Optimizadas**: WebP, lazy loading automático
 - ✅ **Alérgenos**: Sistema de gestión de alérgenos
 - ✅ **Multi-espacio**: Galería de diferentes espacios del restaurante
-- ✅ **Sin Costos Ocultos**: Open-source, sin pago por API calls
 
 ## 🔧 Mantenimiento
 
 ### Actualizar Contenido
 
-1. Accede a Payload Admin Panel (`http://localhost:3000/admin`)
+1. Accede a Sanity Studio
 2. Edita el contenido necesario
-3. Guarda los cambios
+3. Publica los cambios
 4. El sitio se reconstruirá automáticamente (webhook)
 
 ### Actualizar Dependencias
@@ -258,10 +219,8 @@ npm outdated  # Ver dependencias desactualizadas
 ### Backup del CMS
 
 ```bash
-# Backup de PostgreSQL
-pg_dump -U user warynessy > backup.sql
-
-# O usar herramientas de Vercel/Supabase para backups automáticos
+# Exportar datos de Sanity
+npx sanity dataset export production backup.tar.gz
 ```
 
 ## 🐛 Debugging
@@ -273,11 +232,8 @@ Vercel/Netlify proporcionan logs detallados de cada build en su dashboard.
 ### Errores Comunes
 
 1. **Error de Build**: Verifica que todas las variables de entorno estén configuradas
-2. **Imágenes no cargan**: Verifica que el directorio `media/` exista y tenga permisos
-3. **CMS no conecta**: Verifica `DATABASE_URL` y que PostgreSQL esté corriendo
-4. **Error en Payload**: Verifica que `PAYLOAD_SECRET` esté configurado
-
-Ver [MIGRACION-PAYLOAD.md](MIGRACION-PAYLOAD.md) para más troubleshooting.
+2. **Imágenes no cargan**: Verifica la configuración del CDN
+3. **CMS no conecta**: Verifica PROJECT_ID y DATASET en `.env`
 
 ## 📞 Soporte y Contacto
 
@@ -290,7 +246,6 @@ Ver [MIGRACION-PAYLOAD.md](MIGRACION-PAYLOAD.md) para más troubleshooting.
 
 ---
 
-**Última actualización:** 2026-01-14
+**Última actualización:** 2026-01-13
 **Versión:** 1.0.0
 **Estado:** 🟡 En Desarrollo
-**CMS:** Payload CMS (migrado desde Sanity.io)

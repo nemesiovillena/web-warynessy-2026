@@ -48,9 +48,15 @@ Thumbs.db
 .AppleDouble
 .LSOverride
 
-# Sanity
+# Payload CMS
+media/
+.payload/
+build/
+src/payload/payload-types.ts
+
+# Sanity (old - backup)
 .sanity/
-sanity/dist/
+sanity-old/
 
 # Lock files (mantener solo uno según el package manager usado)
 # Descomentar el que NO uses:
