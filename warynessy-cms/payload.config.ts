@@ -65,13 +65,13 @@ export default buildConfig({
   // Image optimization
   sharp,
 
+  // Secret key
+  secret: process.env.PAYLOAD_SECRET || '',
+
   // TypeScript configuration
   typescript: {
     outputFile: path.resolve(dirname, 'src/payload/payload-types.ts'),
   },
-
-  // Secret key
-  secret: process.env.PAYLOAD_SECRET || '',
 
   // Server URL
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',

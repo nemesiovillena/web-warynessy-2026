@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js
+/.next/
+/out/
+.vercel
+
+# Payload
+/media/
+src/payload/payload-types.ts
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build
+/build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
