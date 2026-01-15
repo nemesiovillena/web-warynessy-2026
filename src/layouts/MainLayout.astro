@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import Header from '../components/ui/Header.astro';
 import Footer from '../components/ui/Footer.astro';
+import ScrollAnimations from '../components/ui/ScrollAnimations.astro';
 
 interface Props {
 	title: string;
@@ -19,4 +20,5 @@ const { title, description } = Astro.props;
 	</main>
 
 	<Footer />
+	<ScrollAnimations />
 </BaseLayout>

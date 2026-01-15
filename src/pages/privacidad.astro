@@ -1,0 +1,21 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Container from '../components/ui/Container.astro';
+
+const pageTitle = "Política de Privacidad | Warynessy";
+---
+
+<MainLayout title={pageTitle}>
+  <Section class="py-32 bg-white dark:bg-zinc-900 min-h-screen">
+    <Container>
+      <h1 class="text-4xl font-serif font-bold mb-8 text-warynessy-black dark:text-white">Política de Privacidad</h1>
+      <div class="prose prose-lg dark:prose-invert max-w-none">
+        <p>En Restaurante Warynessy, la privacidad de nuestros usuarios es primordial...</p>
+        <h3>1. Responsable del tratamiento</h3>
+        <p>Restaurante Warynessy...</p>
+        {/* Placeholder text */}
+      </div>
+    </Container>
+  </Section>
+</MainLayout>

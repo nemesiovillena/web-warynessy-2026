@@ -1,0 +1,15 @@
+---
+interface Props {
+  class?: string;
+  fluid?: boolean;
+}
+
+const { class: className = '', fluid = false } = Astro.props;
+
+const baseClass = "mx-auto px-6 sm:px-8 lg:px-12";
+const maxWidth = fluid ? "w-full" : "max-w-7xl";
+---
+
+<div class:list={[baseClass, maxWidth, className]}>
+  <slot />
+</div>

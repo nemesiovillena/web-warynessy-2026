@@ -1,0 +1,23 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Container from '../components/ui/Container.astro';
+
+const pageTitle = "Aviso Legal | Warynessy";
+---
+
+<MainLayout title={pageTitle}>
+  <Section class="py-32 bg-white dark:bg-zinc-900 min-h-screen">
+    <Container>
+      <h1 class="text-4xl font-serif font-bold mb-8 text-warynessy-black dark:text-white">Aviso Legal</h1>
+      <div class="prose prose-lg dark:prose-invert max-w-none">
+        <p>En cumplimiento con el deber de información recogido en artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico...</p>
+        <h3>1. Datos Identificativos</h3>
+        <p>La empresa titular de esta web es Restaurante Warynessy...</p>
+        <h3>2. Usuarios</h3>
+        <p>El acceso y/o uso de este portal atribuye la condición de USUARIO...</p>
+        {/* Placeholder text */}
+      </div>
+    </Container>
+  </Section>
+</MainLayout>

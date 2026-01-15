@@ -1,0 +1,83 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Container from '../components/ui/Container.astro';
+import ResponsiveImage from '../components/ui/ResponsiveImage.astro';
+import Button from '../components/ui/Button.astro';
+import { getSiteSettings, getSpaces } from '../lib/payload-local';
+
+const siteSettings = await getSiteSettings();
+const spaces = await getSpaces();
+
+const pageTitle = `Espacios | ${siteSettings?.title || "Warynessy"}`;
+---
+
+<MainLayout title={pageTitle}>
+  
+  <section class="relative py-32 bg-background-light dark:bg-zinc-900 overflow-hidden">
+     <Container class="relative z-10 text-center animate-fade-up">
+        <span class="text-primary font-bold tracking-[0.3em] uppercase text-sm mb-4 block">Nuestros Ambientes</span>
+        <h1 class="text-5xl md:text-7xl font-display font-black text-warynessy-black dark:text-white mb-6">Espacios Únicos</h1>
+        <p class="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto font-light">
+           Cada rincón de Warynessy ha sido diseñado para crear la atmósfera perfecta para cada ocasión.
+        </p>
+     </Container>
+  </section>
+
+  <div class="bg-background-light dark:bg-zinc-900 min-h-screen pb-24">
+    <Container>
+      <div class="flex flex-col gap-32">
+        {spaces?.map((space: any, index: number) => (
+          <div class={`flex flex-col lg:flex-row gap-12 items-center ${index % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}>
+             <div class="w-full lg:w-1/2">
+               <ResponsiveImage 
+                 src={typeof space.imagenPrincipal === 'object' ? space.imagenPrincipal.url : ''} 
+                 alt={space.nombre}
+                 class="rounded-3xl shadow-2xl rotate-1 hover:rotate-0 transition-transform duration-500"
+                 aspectRatio="4/3"
+               />
+               <div class="grid grid-cols-2 gap-4 mt-4">
+                  {/* Gallery placeholder or actual gallery images if available */}
+                  {space.galeria?.slice(0, 2).map((img: any) => (
+                    <ResponsiveImage 
+                      src={img.imagen?.url}
+                      alt={space.nombre}
+                      class="rounded-xl shadow-lg opacity-80 hover:opacity-100 transition-opacity"
+                      aspectRatio="1/1"
+                    />
+                  ))}
+               </div>
+             </div>
+             <div class="w-full lg:w-1/2 flex flex-col gap-6">
+                <span class="text-primary font-bold tracking-widest uppercase opacity-50">0{index + 1}</span>
+                <h2 class="text-4xl md:text-5xl font-serif font-bold text-warynessy-black dark:text-white">{space.nombre}</h2>
+                <div class="w-20 h-1 bg-primary"></div>
+                <div class="prose prose-lg text-gray-600 dark:text-gray-300">
+                  <p>{space.descripcion}</p>
+                </div>
+                {space.capacidad && (
+                  <div class="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                    <span class="material-symbols-outlined">group</span>
+                    <span class="font-medium">Capacidad: {space.capacidad} personas</span>
+                  </div>
+                )}
+                {space.caracteristicas && (
+                   <div class="flex flex-wrap gap-2 mt-2">
+                     {space.caracteristicas.map((char: any) => (
+                       <span class="px-3 py-1 bg-white dark:bg-white/10 rounded-full text-xs font-bold uppercase tracking-wide text-gray-600 dark:text-gray-300">
+                         {char.texto || char} {/* Adjust depending on simplified string array or object array */}
+                       </span>
+                     ))}
+                   </div>
+                )}
+                <div class="mt-4">
+                  <Button href="/reservas" variant="primary">Reservar este espacio</Button>
+                </div>
+             </div>
+          </div>
+        ))}
+      </div>
+    </Container>
+  </div>
+
+</MainLayout>

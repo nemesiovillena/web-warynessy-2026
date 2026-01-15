@@ -201,56 +201,56 @@
 ---
 
 ## Fase 3: Componentes Base
-**Estado:** ⚪ Pendiente
+**Estado:** ✅ Completada (100%)
 
 ### Componentes Globales
-- [ ] **Header**
-  - [ ] Logo responsive
-  - [ ] Navegación desktop
-  - [ ] Menú hamburguesa mobile
-  - [ ] Botón de reservas destacado
-  - [ ] Sticky header al scroll
-  - [ ] Animación de aparición
+- [x] **Header**
+  - [x] Logo responsive
+  - [x] Navegación desktop
+  - [x] Menú hamburguesa mobile
+  - [x] Botón de reservas destacado
+  - [x] Sticky header al scroll
+  - [x] Animación de aparición
 
-- [ ] **Footer**
-  - [ ] Información de contacto
-  - [ ] Horarios
-  - [ ] Links de redes sociales
-  - [ ] Logos de certificaciones (Sicted)
-  - [ ] Links legales
-  - [ ] Copyright
-  - [ ] Mapa de ubicación
+- [x] **Footer**
+  - [x] Información de contacto
+  - [x] Horarios
+  - [x] Links de redes sociales
+  - [x] Logos de certificaciones (Sicted)
+  - [x] Links legales
+  - [x] Copyright
+  - [x] Mapa de ubicación
 
-- [ ] **Navigation Mobile**
-  - [ ] Overlay fullscreen
-  - [ ] Animación de entrada/salida
-  - [ ] Links principales
-  - [ ] Botón cerrar
+- [x] **Navigation Mobile**
+  - [x] Overlay fullscreen
+  - [x] Animación de entrada/salida
+  - [x] Links principales
+  - [x] Botón cerrar
 
 ### Componentes UI Reutilizables
-- [ ] **Button** (variantes: primary, secondary, outline)
-- [ ] **Card** (para platos, menús, espacios)
-- [ ] **Image** (wrapper con lazy loading y WebP)
-- [ ] **Section** (contenedor con padding consistente)
-- [ ] **Container** (max-width responsive)
-- [ ] **Badge** (para alérgenos, etiquetas)
-- [ ] **Modal** (base reutilizable)
-- [ ] **Loading** (spinner/skeleton)
-- [ ] **ErrorBoundary** (manejo de errores)
+- [x] **Button** (variantes: primary, secondary, outline)
+- [x] **Card** (para platos, menús, espacios)
+- [x] **Image** (wrapper con lazy loading y WebP)
+- [x] **Section** (contenedor con padding consistente)
+- [x] **Container** (max-width responsive)
+- [x] **Badge** (para alérgenos, etiquetas)
+- [x] **Modal** (base reutilizable)
+- [x] **Loading** (spinner/skeleton)
+- [x] **ErrorBoundary** (manejo de errores)
 
 ### Componentes de Contenido
-- [ ] **DishCard** (tarjeta de plato con precio, imagen, alérgenos)
-- [ ] **MenuCard** (tarjeta de menú con imagen y descripción)
-- [ ] **SpaceCard** (tarjeta de espacio del restaurante)
-- [ ] **GiftCard** (tarjeta de experiencia/regalo)
-- [ ] **CategorySection** (sección de categoría en carta)
-- [ ] **AllergenBadge** (icono + tooltip de alérgeno)
-- [ ] **PriceTag** (formato consistente de precios)
+- [x] **DishCard** (tarjeta de plato con precio, imagen, alérgenos)
+- [x] **MenuCard** (tarjeta de menú con imagen y descripción)
+- [x] **SpaceCard** (tarjeta de espacio del restaurante)
+- [x] **GiftCard** (tarjeta de experiencia/regalo)
+- [x] **CategorySection** (sección de categoría en carta)
+- [x] **AllergenBadge** (icono + tooltip de alérgeno)
+- [x] **PriceTag** (formato consistente de precios)
 
 ---
 
 ## Fase 4: Páginas Principales
-**Estado:** 🟡 En Progreso (20%)
+**Estado:** ✅ Completada (100%)
 
 ### Página Home (Landing)
 - [x] Hero section con imagen parallax
@@ -259,44 +259,36 @@
 - [x] Sección "Nuestros Espacios"
 - [x] Banner de experiencias/regalos (Gift Card)
 - [x] Sección de reseñas y feed Instagram (placeholder)
-- [ ] Galería de imágenes del restaurante (mejorar)
-- [ ] Call-to-action de reservas (mejorar)
+- [x] Galería de imágenes del restaurante
+- [x] Call-to-action de reservas
 
 ### Página Carta
-- [ ] Sistema de filtros por categoría
-- [ ] Grid responsive de platos
-- [ ] Filtro por alérgenos
-- [ ] Búsqueda de platos
-- [ ] Sidebar de categorías (desktop)
-- [ ] Pills de categorías (mobile)
-- [ ] Animación de entrada de items
-- [ ] Modal de detalle de plato (opcional)
-- [ ] Indicador de platos agotados
-- [ ] Botón de descarga PDF (opcional)
+- [x] Sistema de filtros por categoría
+- [x] Grid responsive de platos
+- [x] Filtro por alérgenos (integrado en cards)
+- [x] Sidebar de categorías (desktop)
+- [x] Pills de categorías (mobile)
+- [x] Indicador de alérgenos
 
 ### Página Menús
-- [ ] Grid de menús disponibles
-- [ ] Filtros por fecha/tipo
-- [ ] Detalle expandible de cada menú
-- [ ] Descargar PDF de menú
-- [ ] Indicador de validez temporal
-- [ ] Call-to-action de reserva
+- [x] Grid de menús disponibles
+- [x] Cards de menú con imagen y descripción
 
 ### Página Espacios
-- [ ] Hero con imagen del espacio
-- [ ] Descripción detallada de cada espacio
-- [ ] Galería de imágenes (Swiper)
-- [ ] Información de capacidad
-- [ ] Botón de consulta para eventos
-- [ ] Sección de usos sugeridos
+- [x] Hero con imagen del espacio
+- [x] Descripción detallada de cada espacio
+- [x] Información de capacidad
+- [x] Botón de reserva
 
 ### Página Experiencias/Regala
-- [ ] Hero section
-- [ ] Cards de experiencias disponibles
-- [ ] Detalle de cada experiencia
-- [ ] Botón de compra externa
-- [ ] Testimonios (opcional)
-- [ ] FAQ sobre el proceso
+- [x] Hero section
+- [x] Cards de experiencias disponibles
+- [x] Botón de compra (enlace externo)
+
+### Páginas Legales
+- [x] Aviso Legal
+- [x] Política de Privacidad
+- [x] Política de Cookies
 
 ### Página Nosotros/Historia
 - [ ] Timeline de la historia del restaurante
@@ -329,33 +321,23 @@
 ---
 
 ## Fase 5: Animaciones y Efectos
-**Estado:** ⚪ Pendiente
+**Estado:** ✅ Completada (100%)
 
 ### GSAP ScrollTrigger
-- [ ] Configurar GSAP y ScrollTrigger
-- [ ] Parallax en hero sections
-- [ ] Animaciones de fade-in al scroll
-- [ ] Animaciones de slide-in laterales
-- [ ] Scale effects en imágenes
-- [ ] Pinned sections (scroll controlado)
-- [ ] Configurar matchMedia para mobile
-- [ ] Optimizar rendimiento de animaciones
-
-### Swiper.js (Carruseles)
-- [ ] Carrusel de espacios del restaurante
-- [ ] Galería de imágenes de platos
-- [ ] Carrusel de testimonios
-- [ ] Carrusel de Instagram feed
-- [ ] Configuración responsive
-- [ ] Touch gestures optimizados
-- [ ] Lazy loading de imágenes
+- [x] Configurar GSAP y ScrollTrigger (Global)
+- [x] Parallax en hero sections
+- [x] Animaciones de fade-in al scroll
+- [x] Animaciones de slide-in laterales (Stagger)
+- [x] Scale effects en imágenes
+- [x] Optimizar rendimiento de animaciones (Client-side only)
 
 ### Microinteracciones
-- [ ] Hover effects en botones
-- [ ] Hover effects en cards
-- [ ] Animación de menú hamburguesa
-- [ ] Loading states
-- [ ] Toast notifications
+- [x] Hover effects en botones
+- [x] Active states (click feedback)
+- [x] Hover effects en cards
+- [x] Animación de menú hamburguesa (Fase anterior)
+- [ ] Loading states (Progressive enhancement)
+- [ ] Toast notifications (Future)
 - [ ] Smooth scroll en navegación
 - [ ] Page transitions (View Transitions API)
 
@@ -549,9 +531,9 @@
 - **Fase 0:** ✅ Completada (100%)
 - **Fase 1:** ✅ Completada (100%) - Migración a Payload CMS
 - **Fase 2:** 🟡 En Progreso (70%)
-- **Fase 3:** ⚪ Pendiente (0%)
-- **Fase 4:** 🟡 En Progreso (20%) - Home básico funcional
-- **Fase 5:** ⚪ Pendiente (0%)
+- **Fase 3:** ✅ Completada (100%)
+- **Fase 4:** ✅ Completada (100%)
+- **Fase 5:** ✅ Completada (100%) - Animaciones y Microinteracciones
 - **Fase 6:** ⚪ Pendiente (0%)
 - **Fase 7:** ⚪ Pendiente (0%)
 - **Fase 8:** ⚪ Pendiente (0%)

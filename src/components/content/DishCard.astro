@@ -1,0 +1,59 @@
+---
+import { type Plato } from '../../payload-types';
+import ResponsiveImage from '../ui/ResponsiveImage.astro';
+
+interface Props {
+  plato: Plato;
+}
+
+const { plato } = Astro.props;
+
+// Helper to get image URL
+const imageUrl = typeof plato.imagen === 'object' && plato.imagen?.url ? plato.imagen.url : '';
+---
+
+<div class="group relative flex flex-col gap-4">
+  <div class="aspect-square overflow-hidden rounded-2xl bg-white/5">
+    {imageUrl ? (
+      <ResponsiveImage 
+        src={imageUrl} 
+        alt={plato.nombre} 
+        class="h-full w-full"
+        aspectRatio="1/1"
+      />
+    ) : (
+      <div class="h-full w-full flex items-center justify-center text-white/20">
+        <span class="material-symbols-outlined text-4xl">restaurant_menu</span>
+      </div>
+    )}
+  </div>
+  
+  <div class="flex justify-between items-start">
+    <div>
+      <h3 class="font-serif text-xl font-medium text-white group-hover:text-primary transition-colors">
+        {plato.nombre}
+      </h3>
+      {plato.descripcion && (
+        <p class="text-sm text-white/60 mt-1 line-clamp-2">
+          {plato.descripcion}
+        </p>
+      )}
+    </div>
+    <span class="font-bold text-lg text-primary tabular-nums">
+      {plato.precio}€
+    </span>
+  </div>
+
+  {plato.alergenos && plato.alergenos.length > 0 && (
+    <div class="flex gap-2 flex-wrap">
+      {plato.alergenos.map((alergeno: any) => (
+        <span 
+          class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/10 text-[10px] text-white/70"
+          title={alergeno.nombre}
+        >
+          {alergeno.icono || alergeno.codigo}
+        </span>
+      ))}
+    </div>
+  )}
+</div>

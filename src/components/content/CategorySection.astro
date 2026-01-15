@@ -1,0 +1,36 @@
+---
+import { type Categoria, type Plato } from '../../payload-types';
+import DishCard from './DishCard.astro';
+
+interface Props {
+  category: Categoria;
+  dishes: Plato[];
+}
+
+const { category, dishes } = Astro.props;
+---
+
+<div id={category.slug} class="scroll-mt-32 mb-20 last:mb-0">
+  <div class="flex items-end justify-between mb-8 border-b border-white/10 pb-4">
+    <h2 class="text-3xl md:text-4xl font-serif font-bold text-primary">
+      {category.nombre}
+    </h2>
+    {category.descripcion && (
+        <p class="hidden md:block text-white/60 text-sm max-w-md text-right">
+            {category.descripcion}
+        </p>
+    )}
+  </div>
+
+  {dishes.length > 0 ? (
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12 animate-stagger-container">
+      {dishes.map((dish) => (
+        <div class="animate-stagger-item h-full">
+            <DishCard plato={dish} />
+        </div>
+      ))}
+    </div>
+  ) : (
+    <p class="text-white/40 italic">No hay platos disponibles en esta categoría.</p>
+  )}
+</div>

@@ -8,6 +8,7 @@ dist/
 .astro/
 .vercel/
 .netlify/
+.next/
 
 # Environment variables
 .env

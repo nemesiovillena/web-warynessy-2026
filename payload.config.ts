@@ -4,6 +4,15 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import sharp from 'sharp'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import dotenv from 'dotenv'
+
+const filename = fileURLToPath(import.meta.url)
+const dirname = path.dirname(filename)
+
+// Load .env file
+dotenv.config({
+  path: path.resolve(dirname, '.env'),
+})
 
 // Colecciones
 import { Alergenos } from './src/payload/collections/Alergenos'
@@ -19,9 +28,6 @@ import { Usuarios } from './src/payload/collections/Usuarios'
 // Globals
 import { PaginaInicio } from './src/payload/globals/PaginaInicio'
 import { ConfiguracionSitio } from './src/payload/globals/ConfiguracionSitio'
-
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
 
 export default buildConfig({
   // Configuración del panel de administración

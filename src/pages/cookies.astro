@@ -1,0 +1,21 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Container from '../components/ui/Container.astro';
+
+const pageTitle = "Política de Cookies | Warynessy";
+---
+
+<MainLayout title={pageTitle}>
+  <Section class="py-32 bg-white dark:bg-zinc-900 min-h-screen">
+    <Container>
+      <h1 class="text-4xl font-serif font-bold mb-8 text-warynessy-black dark:text-white">Política de Cookies</h1>
+      <div class="prose prose-lg dark:prose-invert max-w-none">
+        <p>Esta web utiliza cookies para mejorar la experiencia de usuario...</p>
+        <h3>1. ¿Qué son las cookies?</h3>
+        <p>Una cookie es un fichero que se descarga en su ordenador al acceder a determinadas páginas web...</p>
+        {/* Placeholder text */}
+      </div>
+    </Container>
+  </Section>
+</MainLayout>

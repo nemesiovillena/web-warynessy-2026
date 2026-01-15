@@ -1,0 +1,23 @@
+---
+interface Props {
+  id?: string;
+  class?: string;
+  background?: 'default' | 'primary' | 'dark' | 'light' | 'none';
+}
+
+const { id, class: className = '', background = 'default' } = Astro.props;
+
+const backgrounds = {
+  default: "bg-transparent",
+  primary: "bg-primary text-white",
+  dark: "bg-matte-black text-white",
+  light: "bg-paper-light text-warynessy-black",
+  none: ""
+};
+
+const padding = "py-24 sm:py-32";
+---
+
+<section id={id} class:list={[padding, backgrounds[background], className]}>
+  <slot />
+</section>

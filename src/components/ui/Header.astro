@@ -80,6 +80,9 @@ const navLinks = [
 
 <script>
   import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
 
   const nav = document.getElementById('main-nav');
   const menuToggle = document.getElementById('menu-toggle');
@@ -88,7 +91,18 @@ const navLinks = [
   const mobileLinks = document.querySelectorAll('.mobile-link');
   let isMenuOpen = false;
 
-  // No longer hiding nav initially
+  // Sticky Header Logic
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      nav?.classList.add('bg-matte-black/80', 'backdrop-blur-md', 'shadow-lg', 'border-b', 'border-white/5');
+      nav?.classList.remove('py-6');
+      nav?.classList.add('py-4');
+    } else {
+      nav?.classList.remove('bg-matte-black/80', 'backdrop-blur-md', 'shadow-lg', 'border-b', 'border-white/5');
+      nav?.classList.add('py-6');
+      nav?.classList.remove('py-4');
+    }
+  });
 
   // Mobile Menu Logic
   const toggleMenu = (open: boolean) => {
