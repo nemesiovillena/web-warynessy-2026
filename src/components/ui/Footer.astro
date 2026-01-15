@@ -1,22 +1,8 @@
 ---
-import { sanityClient } from '../../lib/sanity';
+import { getSiteSettings } from '../../lib/payload-local';
 
 // Query to fetch global site settings
-const query = `*[_type == "siteSettings"][0]{
-  title,
-  description,
-  contact,
-  openingHours,
-  socialMedia,
-  footerLogos[] {
-    "url": logo.asset->url,
-    alt,
-    link
-  },
-  copyright
-}`;
-
-const settings = await sanityClient.fetch(query);
+const settings = await getSiteSettings();
 
 const currentYear = new Date().getFullYear();
 ---
@@ -42,11 +28,11 @@ const currentYear = new Date().getFullYear();
       <div class="flex flex-col items-center gap-10">
         <div class="flex flex-wrap justify-center gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-700">
           {settings?.footerLogos ? (
-            settings.footerLogos.map((logo: any) => (
-              logo.url ? (
+            settings.footerLogos.map((item: any) => (
+              item.logo?.url ? (
                 <div class="flex flex-col items-center gap-2">
-                  <img src={logo.url} alt={logo.alt || "Certificación"} class="h-12 w-auto object-contain" />
-                  <span class="text-[9px] font-bold tracking-widest uppercase">{logo.alt || "Sello"}</span>
+                  <img src={item.logo.url} alt={item.alt || "Certificación"} class="h-12 w-auto object-contain" />
+                  <span class="text-[9px] font-bold tracking-widest uppercase">{item.alt || "Sello"}</span>
                 </div>
               ) : null
             ))

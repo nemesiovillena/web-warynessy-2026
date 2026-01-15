@@ -1,9 +1,8 @@
 ---
-import { sanityClient } from '../../lib/sanity';
+import { getSiteSettings } from '../../lib/payload-local';
 
 // Fetch site settings for logo and title
-const query = `*[_type == "siteSettings"][0]{title, logo}`;
-const siteSettings = await sanityClient.fetch(query);
+const siteSettings = await getSiteSettings();
 
 const title = siteSettings?.title || "Warynessy";
 

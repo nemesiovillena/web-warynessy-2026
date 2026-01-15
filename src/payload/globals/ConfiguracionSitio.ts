@@ -1,8 +1,8 @@
 import type { GlobalConfig } from 'payload'
 
-export const SiteSettings: GlobalConfig = {
-  slug: 'site-settings',
-  label: 'Configuración Global',
+export const ConfiguracionSitio: GlobalConfig = {
+  slug: 'configuracion-sitio',
+  label: 'Configuración del Sitio',
   access: {
     read: () => true, // Public read access
   },
@@ -20,7 +20,7 @@ export const SiteSettings: GlobalConfig = {
       name: 'logo',
       type: 'upload',
       label: 'Logo del Restaurante',
-      relationTo: 'media',
+      relationTo: 'archivos',
     },
     {
       name: 'description',
@@ -128,9 +128,7 @@ export const SiteSettings: GlobalConfig = {
         },
       ],
       admin: {
-        components: {
-          RowLabel: ({ data }) => data?.days || 'Horario',
-        },
+        description: 'Horarios de apertura del restaurante',
       },
     },
 
@@ -183,7 +181,7 @@ export const SiteSettings: GlobalConfig = {
           name: 'logo',
           type: 'upload',
           label: 'Logo',
-          relationTo: 'media',
+          relationTo: 'archivos',
           required: true,
         },
         {
@@ -199,9 +197,7 @@ export const SiteSettings: GlobalConfig = {
         },
       ],
       admin: {
-        components: {
-          RowLabel: ({ data }) => data?.alt || 'Logo',
-        },
+        description: 'Logos de certificaciones como Sicted, etc.',
       },
     },
 

@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-export const Spaces: CollectionConfig = {
-  slug: 'spaces',
+export const Espacios: CollectionConfig = {
+  slug: 'espacios',
   labels: {
     singular: 'Espacio',
     plural: 'Espacios',
@@ -62,7 +62,7 @@ export const Spaces: CollectionConfig = {
         {
           name: 'imagen',
           type: 'upload',
-          relationTo: 'media',
+          relationTo: 'archivos',
           required: true,
         },
       ],
@@ -91,9 +91,6 @@ export const Spaces: CollectionConfig = {
       ],
       admin: {
         description: 'Ej: "Aire acondicionado", "Vista panorámica", "WiFi", etc.',
-        components: {
-          RowLabel: ({ data }) => data?.caracteristica || 'Característica',
-        },
       },
     },
     {

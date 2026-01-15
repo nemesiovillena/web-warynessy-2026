@@ -50,7 +50,7 @@ export const Menus: CollectionConfig = {
       name: 'imagen',
       type: 'upload',
       label: 'Imagen Promocional del Menú',
-      relationTo: 'media',
+      relationTo: 'archivos',
     },
     {
       name: 'precio',
@@ -101,7 +101,7 @@ export const Menus: CollectionConfig = {
       name: 'pdf',
       type: 'upload',
       label: 'PDF del Menú',
-      relationTo: 'media',
+      relationTo: 'archivos',
       admin: {
         description: 'PDF descargable del menú (opcional)',
       },

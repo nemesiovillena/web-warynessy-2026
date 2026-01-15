@@ -1,7 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
-export const Homepage: GlobalConfig = {
-  slug: 'homepage',
+export const PaginaInicio: GlobalConfig = {
+  slug: 'pagina-inicio',
   label: 'Página de Inicio',
   access: {
     read: () => true, // Public read access
@@ -29,7 +29,7 @@ export const Homepage: GlobalConfig = {
       name: 'heroImage',
       type: 'upload',
       label: 'Imagen Hero',
-      relationTo: 'media',
+      relationTo: 'archivos',
       required: true,
     },
 
@@ -60,7 +60,7 @@ export const Homepage: GlobalConfig = {
         {
           name: 'imagen',
           type: 'upload',
-          relationTo: 'media',
+          relationTo: 'archivos',
           required: true,
         },
       ],
@@ -98,7 +98,7 @@ export const Homepage: GlobalConfig = {
       name: 'espaciosDestacados',
       type: 'relationship',
       label: 'Espacios Destacados en Home',
-      relationTo: 'spaces',
+      relationTo: 'espacios',
       hasMany: true,
       maxRows: 5,
       admin: {
@@ -111,7 +111,7 @@ export const Homepage: GlobalConfig = {
       name: 'experienciasDestacadas',
       type: 'relationship',
       label: 'Experiencias Destacadas en Home',
-      relationTo: 'experiences',
+      relationTo: 'experiencias',
       hasMany: true,
       maxRows: 3,
       admin: {

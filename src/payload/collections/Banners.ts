@@ -33,7 +33,7 @@ export const Banners: CollectionConfig = {
       name: 'imagen',
       type: 'upload',
       label: 'Imagen del Banner',
-      relationTo: 'media',
+      relationTo: 'archivos',
     },
     {
       name: 'link',

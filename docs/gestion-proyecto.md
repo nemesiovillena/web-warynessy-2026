@@ -1,14 +1,14 @@
 # Gestión del Proyecto - Web Warynessy 2026
 
 ## Estado del Proyecto
-**Última actualización:** 2026-01-13
-**Estado General:** 🟡 En Planificación
+**Última actualización:** 2026-01-15
+**Estado General:** 🟡 En Desarrollo
 
 ---
 
 ## 📋 Índice de Fases
 1. [Fase 0: Configuración Inicial](#fase-0-configuración-inicial)
-2. [Fase 1: Backend - CMS Sanity](#fase-1-backend---cms-sanity)
+2. [Fase 1: Backend - CMS Payload](#fase-1-backend---cms-payload)
 3. [Fase 2: Frontend - Estructura Astro](#fase-2-frontend---estructura-astro)
 4. [Fase 3: Componentes Base](#fase-3-componentes-base)
 5. [Fase 4: Páginas Principales](#fase-4-páginas-principales)
@@ -32,112 +32,147 @@
 - [x] Definir paleta de colores
 - [x] Crear documento de puntos críticos
 - [x] Crear documento de gestión del proyecto
-
-### 🔄 Tareas Pendientes
 - [x] Configurar .gitignore adecuado
 - [x] Crear archivo README.md del proyecto
 - [x] Configurar variables de entorno (.env.example)
 
 ---
 
-## Fase 1: Backend - CMS Sanity
-**Estado:** 🟡 En Progreso
+## Fase 1: Backend - CMS Payload
+**Estado:** ✅ Completada
+
+> **Nota:** Se migró de Sanity.io a Payload CMS para tener mayor control y usar base de datos local PostgreSQL.
 
 ### Configuración Base
-- [x] Crear cuenta Sanity.io
-- [x] Inicializar proyecto Sanity Studio
-- [x] Configurar CLI de Sanity
-- [x] Configurar CORS para dominios permitidos
-- [x] Configurar proyecto en dataset "production"
+- [x] Instalar PostgreSQL 14 (Homebrew)
+- [x] Crear base de datos 'warynessy'
+- [x] Configurar Payload CMS 3.x
+- [x] Configurar adaptador PostgreSQL
+- [x] Configurar variables de entorno (DATABASE_URL, PAYLOAD_SECRET)
+- [x] Crear payload.config.ts con todas las colecciones
 
-### Schemas del CMS
-- [x] **Schema: Configuración Global**
-  - [x] Logo del restaurante
-  - [x] Links de redes sociales
-  - [x] Horarios de apertura
-  - [x] Footer logos (Sicted, etc.)
-  - [x] Copyright y textos legales
-  - [x] Información de contacto
+### Colecciones del CMS (9 colecciones)
+- [x] **Users** - Usuarios del sistema
+  - [x] Email, password, nombre, apellido
+  - [x] Rol (admin/editor)
 
-- [x] **Schema: Alérgenos**
+- [x] **Media** - Archivos multimedia
+  - [x] Subida de imágenes
+  - [x] Alt text para accesibilidad
+
+- [x] **Allergens** - Alérgenos
   - [x] Nombre del alérgeno
-  - [x] Icono/código
-  - [x] Descripción
-
-- [x] **Schema: Categorías de Carta**
-  - [x] Nombre de categoría
+  - [x] Código identificador
+  - [x] Icono/emoji
   - [x] Orden de aparición
-  - [x] Estado activo/inactivo
-  - [x] Descripción opcional
 
-- [x] **Schema: Platos**
+- [x] **Categories** - Categorías de Carta
+  - [x] Nombre de categoría
+  - [x] Slug único
+  - [x] Descripción opcional
+  - [x] Imagen de categoría
+  - [x] Orden de aparición
+  - [x] Estado activa/inactiva
+
+- [x] **Dishes** - Platos
   - [x] Nombre del plato
   - [x] Descripción/ingredientes
   - [x] Precio
-  - [x] Imagen optimizada
-  - [x] Categoría (referencia)
-  - [x] Alérgenos (array de referencias)
-  - [x] Estado disponible/agotado
+  - [x] Imagen del plato
+  - [x] Categoría (relación)
+  - [x] Alérgenos (array de relaciones)
+  - [x] Estado activo/inactivo
+  - [x] Destacado (boolean)
   - [x] Orden dentro de categoría
 
-- [x] **Schema: Menús**
+- [x] **Menus** - Menús especiales
   - [x] Nombre del menú
-  - [x] Imagen promocional
-  - [x] Fechas y días de validez
-  - [x] Descripción/composición
-  - [x] Precio
-  - [x] Estado visible/oculto
-  - [x] PDF descargable (opcional)
-
-- [x] **Schema: Espacios del Restaurante**
-  - [x] Nombre del espacio (Salón, Bar, Terraza)
   - [x] Descripción
-  - [x] Galería de imágenes (array)
+  - [x] Imagen promocional
+  - [x] PDF descargable
+  - [x] Precio
+  - [x] Días disponibles
+  - [x] Fechas de validez
+  - [x] Estado activo/inactivo
   - [x] Orden de aparición
 
-- [x] **Schema: Experiencias/Regalos**
-  - [x] Título de la experiencia
+- [x] **Spaces** - Espacios del Restaurante
+  - [x] Nombre del espacio
   - [x] Descripción
+  - [x] Imagen principal
+  - [x] Galería de imágenes
+  - [x] Capacidad
+  - [x] Características
+  - [x] Estado activo/inactivo
+  - [x] Orden de aparición
+
+- [x] **Experiences** - Experiencias/Regalos
+  - [x] Nombre de la experiencia
+  - [x] Resumen corto
+  - [x] Descripción completa
   - [x] Precio
+  - [x] Imagen
+  - [x] Color de fondo
   - [x] Link de compra
-  - [x] Color de fondo (hex)
-  - [x] Imagen destacada
+  - [x] Estado activo/inactivo
+  - [x] Orden de aparición
+
+- [x] **Banners** - Banners promocionales
+  - [x] Título
+  - [x] Subtítulo
+  - [x] Imagen
+  - [x] Texto del botón
+  - [x] Link del botón
+  - [x] Posición (hero/floating/footer)
+  - [x] Prioridad
+  - [x] Fechas de validez
   - [x] Estado activo/inactivo
 
-- [x] **Schema: Página Landing**
-  - [x] Hero Title
-  - [x] Hero Subtitle
-  - [x] Hero Image
-  - [x] Texto sobre fundación/historia
-  - [x] Galería de bienvenida (array)
+### Globals del CMS (2 globals)
+- [x] **Homepage** - Configuración de página inicio
+  - [x] Hero title
+  - [x] Hero subtitle
+  - [x] Hero image
+  - [x] Texto de bienvenida (rich text)
+  - [x] Galería de inicio
+  - [x] Espacios destacados
+  - [x] Experiencias destacadas
 
-- [x] **Schema: Banners/Anuncios**
-  - [x] Título
-  - [x] Texto
-  - [x] Imagen
-  - [x] Link (opcional)
-  - [x] Fecha inicio
-  - [x] Fecha fin
-  - [x] Posición en la web
+- [x] **SiteSettings** - Configuración global
+  - [x] Título del sitio
+  - [x] Descripción
+  - [x] Logo
+  - [x] Información de contacto (teléfono, email, dirección)
+  - [x] Horarios de apertura
+  - [x] Redes sociales
+  - [x] Copyright
 
-### Contenido Inicial
-- [x] Cargar datos mock de prueba
-- [x] Cargar imágenes de prueba optimizadas (14 imágenes desde Unsplash)
-- [x] Configurar todos los alérgenos (14 alérgenos cargados)
-- [x] Crear categorías base de la carta (6 categorías)
-- [x] Crear al menos 3 platos por categoría (15 platos de prueba)
+### Scripts de Datos
+- [x] **seed.ts** - Script para poblar datos iniciales
+  - [x] Usuario administrador (admin@warynessy.com)
+  - [x] 14 alérgenos
+  - [x] 5 categorías base
+  - [x] 11 platos de ejemplo
+  - [x] Configuración del sitio
 
-### Configuración Avanzada
-- [ ] Configurar CDN de Sanity para imágenes
-- [ ] Configurar webhooks para rebuild automático
-- [ ] Configurar roles y permisos de usuarios
-- [ ] Personalizar Sanity Studio (logo, colores)
-- [ ] Crear documentación para el cliente del CMS
+- [x] **reset.ts** - Script para limpiar base de datos
+  - [x] Elimina todas las colecciones en orden correcto
+  - [x] Resetea globals a valores vacíos
+
+### Integración con Astro
+- [x] Crear cliente local Payload (`src/lib/payload-local.ts`)
+- [x] Funciones helper para obtener datos:
+  - [x] getDishes(), getDishesByCategory()
+  - [x] getCategories(), getAllergens()
+  - [x] getMenus(), getSpaces(), getExperiences()
+  - [x] getActiveBanners()
+  - [x] getHomepage(), getSiteSettings()
+  - [x] getCategoriesWithDishes(), getFeaturedDishes()
 
 ---
 
 ## Fase 2: Frontend - Estructura Astro
-**Estado:** ⚪ Pendiente
+**Estado:** ✅ Completada (100%)
 
 ### Configuración Base
 - [x] Inicializar proyecto Astro
@@ -145,23 +180,23 @@
 - [x] Instalar Tailwind CSS
 - [x] Configurar Tailwind con paleta personalizada
 - [x] Instalar dependencias base (GSAP, Swiper, etc.)
-- [x] Configurar cliente de Sanity en Astro
+- [x] Configurar cliente de Payload en Astro
 - [x] Configurar estructura de carpetas
 
 ### Configuración Avanzada
-- [ ] Configurar `astro.config.mjs` completo
-- [ ] Configurar View Transitions
-- [ ] Configurar Image optimization
-- [ ] Configurar sitemap
-- [ ] Configurar robots.txt
-- [ ] Crear archivo de tipos TypeScript para Sanity
+- [x] Configurar `astro.config.mjs` completo
+- [x] Configurar View Transitions
+- [x] Configurar Image optimization
+- [x] Configurar sitemap
+- [x] Configurar robots.txt
+- [x] Crear tipos TypeScript para Payload
 
 ### Layouts Base
 - [x] Crear `BaseLayout.astro` (HTML base)
 - [x] Crear `MainLayout.astro` (con Header/Footer)
-- [ ] Configurar meta tags dinámicos
-- [ ] Configurar Open Graph tags
-- [ ] Configurar structured data (JSON-LD)
+- [x] Configurar meta tags dinámicos
+- [x] Configurar Open Graph tags
+- [x] Configurar structured data (JSON-LD)
 
 ---
 
@@ -215,18 +250,17 @@
 ---
 
 ## Fase 4: Páginas Principales
-**Estado:** ⚪ Pendiente
+**Estado:** 🟡 En Progreso (20%)
 
 ### Página Home (Landing)
-- [ ] Hero section con imagen parallax
-- [ ] Texto de bienvenida/fundación
-- [ ] Sección "Nuestros Espacios" (scroll horizontal)
-- [ ] Banner de experiencias/regalos
-- [ ] Sección destacada de menús
-- [ ] Galería de imágenes del restaurante
-- [ ] Sección de reseñas Google
-- [ ] Call-to-action de reservas
-- [ ] Instagram feed (últimos posts)
+- [x] Hero section con imagen parallax
+- [x] Sección de horarios
+- [x] Texto de bienvenida/historia (Our Story)
+- [x] Sección "Nuestros Espacios"
+- [x] Banner de experiencias/regalos (Gift Card)
+- [x] Sección de reseñas y feed Instagram (placeholder)
+- [ ] Galería de imágenes del restaurante (mejorar)
+- [ ] Call-to-action de reservas (mejorar)
 
 ### Página Carta
 - [ ] Sistema de filtros por categoría
@@ -469,11 +503,11 @@
 - [ ] Configurar certificado SSL
 - [ ] Configurar redirects necesarios
 - [ ] Configurar headers personalizados
-- [ ] Crear backup de CMS
+- [ ] Crear backup de base de datos
 
-### Deploy Sanity Studio
-- [ ] Deploy de Sanity Studio
-- [ ] Configurar dominio para Studio (ej: studio.warynessy.com)
+### Deploy Payload CMS
+- [ ] Configurar PostgreSQL en producción (Vercel Postgres/Supabase)
+- [ ] Deploy de Payload admin (si se usa)
 - [ ] Configurar usuarios y permisos finales
 - [ ] Crear guía de uso para el cliente
 
@@ -502,7 +536,7 @@
 ### Monitoreo y Mantenimiento
 - [ ] Configurar uptime monitoring (UptimeRobot)
 - [ ] Configurar alertas de errores (Sentry)
-- [ ] Configurar backup automático de CMS
+- [ ] Configurar backup automático de BD
 - [ ] Documentar proceso de actualización
 - [ ] Crear manual de uso para cliente
 - [ ] Planificar revisiones mensuales
@@ -513,42 +547,59 @@
 
 ### Por Fase
 - **Fase 0:** ✅ Completada (100%)
-- **Fase 1:** 🟡 En Progreso (90% - Schemas, contenido e imágenes listos)
-- **Fase 2:** ⚪ Pendiente (0%)
+- **Fase 1:** ✅ Completada (100%) - Migración a Payload CMS
+- **Fase 2:** 🟡 En Progreso (70%)
 - **Fase 3:** ⚪ Pendiente (0%)
-- **Fase 4:** ⚪ Pendiente (0%)
+- **Fase 4:** 🟡 En Progreso (20%) - Home básico funcional
 - **Fase 5:** ⚪ Pendiente (0%)
 - **Fase 6:** ⚪ Pendiente (0%)
 - **Fase 7:** ⚪ Pendiente (0%)
 - **Fase 8:** ⚪ Pendiente (0%)
 - **Fase 9:** ⚪ Pendiente (0%)
 
-### Progreso Total: 19% (Fase 0 completada, Fase 1 casi completa)
+### Progreso Total: ~30%
 
 ---
 
 ## 🎯 Próximos Pasos Inmediatos
 
 1. ✅ ~~Completar configuración inicial (Fase 0)~~
-2. ✅ ~~Crear cuenta y configurar Sanity.io~~
-3. ✅ ~~Inicializar proyecto Sanity Studio~~
-4. ✅ ~~Crear todos los schemas del CMS~~
-5. ✅ ~~Cargar contenido inicial de prueba (14 alérgenos, 6 categorías, 14 platos)~~
-6. ✅ ~~Cargar imágenes de prueba desde Unsplash~~
-7. **Configurar CORS en Sanity**
-8. **Configurar webhooks (opcional)**
-9. **Inicializar proyecto Astro** (Inicio Fase 2)
+2. ✅ ~~Migrar de Sanity a Payload CMS~~
+3. ✅ ~~Configurar PostgreSQL local~~
+4. ✅ ~~Crear todas las colecciones y globals~~
+5. ✅ ~~Crear scripts de seed y reset~~
+6. ✅ ~~Integrar Payload con Astro (payload-local.ts)~~
+7. ✅ ~~Actualizar index.astro para usar Payload~~
+8. **Completar componentes base (Header, Footer)**
+9. **Crear página de Carta con datos de Payload**
+10. **Mejorar la página Home con datos reales**
 
 ---
 
 ## 📝 Notas y Decisiones
 
 ### Decisiones Técnicas
-- **CMS elegido:** Sanity.io (SaaS)
+- **CMS elegido:** Payload CMS 3.x (self-hosted)
+- **Base de datos:** PostgreSQL (local en desarrollo)
+- **Integración:** API Local de Payload (sin servidor HTTP separado)
 - **Hosting:** Vercel (preferido) o Netlify
-- **CDN imágenes:** Bunny.net + Sanity CDN
+- **CDN imágenes:** Bunny.net (pendiente)
 - **Reservas:** CoverManager (widget)
 - **Analytics:** Google Analytics 4
+
+### Cambios Importantes
+- **2026-01-15:** Migración de Sanity.io a Payload CMS
+  - Razón: Mayor control sobre los datos, uso de PostgreSQL local
+  - Se crearon 9 colecciones + 2 globals equivalentes a los schemas de Sanity
+  - Se usa la API local de Payload (`getPayload()`) directamente desde Astro
+
+### Archivos Clave Creados
+- `payload.config.ts` - Configuración principal de Payload
+- `src/payload/collections/*.ts` - 9 colecciones
+- `src/payload/globals/*.ts` - 2 globals
+- `src/lib/payload-local.ts` - Cliente local para Astro
+- `scripts/seed.ts` - Poblar datos iniciales
+- `scripts/reset.ts` - Limpiar base de datos
 
 ### Consideraciones Especiales
 - **Parallax móvil:** Desactivar o suavizar usando `matchMedia()`
@@ -557,29 +608,30 @@
 - **Alérgenos:** Gestión centralizada con iconos
 
 ### Riesgos Identificados
-- ⚠️ Performance de parallax en móviles bajos
-- ⚠️ Cuotas de APIs externas (Instagram, Google)
-- ⚠️ Complejidad de la carta con muchos platos
-- ⚠️ Mantenimiento del contenido por cliente
+- Performance de parallax en móviles bajos
+- Cuotas de APIs externas (Instagram, Google)
+- Complejidad de la carta con muchos platos
+- Mantenimiento del contenido por cliente
 
 ---
 
 ## 📞 Contactos y Recursos
 
 ### APIs y Servicios
-- Sanity.io: [sanity.io](https://www.sanity.io/)
+- Payload CMS: [payloadcms.com](https://payloadcms.com/)
 - Vercel: [vercel.com](https://vercel.com/)
 - Bunny.net: [bunny.net](https://bunny.net/)
 - CoverManager: [Integración pendiente]
 
 ### Documentación Técnica
 - Astro: [docs.astro.build](https://docs.astro.build/)
+- Payload CMS: [payloadcms.com/docs](https://payloadcms.com/docs/)
 - GSAP: [greensock.com/docs](https://greensock.com/docs/)
 - Tailwind: [tailwindcss.com/docs](https://tailwindcss.com/docs/)
 - Swiper: [swiperjs.com](https://swiperjs.com/)
 
 ---
 
-**Última revisión:** 2026-01-13
+**Última revisión:** 2026-01-15
 **Próxima revisión:** [Pendiente]
 **Responsable:** Equipo de Desarrollo

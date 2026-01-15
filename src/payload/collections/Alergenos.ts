@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-export const Allergens: CollectionConfig = {
-  slug: 'allergens',
+export const Alergenos: CollectionConfig = {
+  slug: 'alergenos',
   labels: {
     singular: 'Alérgeno',
     plural: 'Alérgenos',

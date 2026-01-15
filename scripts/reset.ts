@@ -10,15 +10,15 @@ const reset = async () => {
 
   // Orden de eliminación (respetando dependencias)
   const collections = [
-    'dishes',      // Primero los que tienen referencias
+    'platos',       // Primero los que tienen referencias
     'menus',
     'banners',
-    'experiences',
-    'spaces',
-    'categories',  // Luego las categorías
-    'allergens',   // Luego los alérgenos
-    'media',       // Archivos
-    'users',       // Usuarios al final
+    'experiencias',
+    'espacios',
+    'categorias',   // Luego las categorías
+    'alergenos',    // Luego los alérgenos
+    'archivos',     // Archivos
+    'usuarios',     // Usuarios al final
   ]
 
   for (const collection of collections) {
@@ -27,7 +27,7 @@ const reset = async () => {
 
       // Obtener todos los documentos
       const result = await payload.find({
-        collection,
+        collection: collection as any,
         limit: 1000,
       })
 
@@ -41,7 +41,7 @@ const reset = async () => {
       for (const doc of result.docs) {
         try {
           await payload.delete({
-            collection,
+            collection: collection as any,
             id: doc.id,
           })
           deleted++
@@ -61,7 +61,7 @@ const reset = async () => {
 
   try {
     await payload.updateGlobal({
-      slug: 'site-settings',
+      slug: 'configuracion-sitio',
       data: {
         title: '',
         description: '',
@@ -71,14 +71,14 @@ const reset = async () => {
         copyright: '',
       },
     })
-    console.log('   ✅ site-settings reseteado')
+    console.log('   ✅ configuracion-sitio reseteado')
   } catch (error) {
-    console.log('   ❌ Error reseteando site-settings')
+    console.log('   ❌ Error reseteando configuracion-sitio')
   }
 
   try {
     await payload.updateGlobal({
-      slug: 'homepage',
+      slug: 'pagina-inicio',
       data: {
         heroTitle: '',
         heroSubtitle: '',
@@ -88,9 +88,9 @@ const reset = async () => {
         experienciasDestacadas: [],
       },
     })
-    console.log('   ✅ homepage reseteado')
+    console.log('   ✅ pagina-inicio reseteado')
   } catch (error) {
-    console.log('   ❌ Error reseteando homepage')
+    console.log('   ❌ Error reseteando pagina-inicio')
   }
 
   console.log('\n' + '='.repeat(50))

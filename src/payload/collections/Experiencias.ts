@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-export const Experiences: CollectionConfig = {
-  slug: 'experiences',
+export const Experiencias: CollectionConfig = {
+  slug: 'experiencias',
   labels: {
     singular: 'Experiencia',
     plural: 'Experiencias',
@@ -71,7 +71,7 @@ export const Experiences: CollectionConfig = {
       name: 'imagen',
       type: 'upload',
       label: 'Imagen Destacada',
-      relationTo: 'media',
+      relationTo: 'archivos',
       required: true,
     },
     {
@@ -109,9 +109,6 @@ export const Experiences: CollectionConfig = {
       ],
       admin: {
         description: 'Lista de cosas que incluye la experiencia',
-        components: {
-          RowLabel: ({ data }) => data?.item || 'Item',
-        },
       },
     },
     {

@@ -11,13 +11,13 @@ const seed = async () => {
   console.log('👤 Creando usuario administrador...')
   try {
     const existingUser = await payload.find({
-      collection: 'users',
+      collection: 'usuarios',
       where: { email: { equals: 'admin@warynessy.com' } },
     })
 
     if (existingUser.docs.length === 0) {
       await payload.create({
-        collection: 'users',
+        collection: 'usuarios',
         data: {
           email: 'admin@warynessy.com',
           password: 'Admin123!',
@@ -56,13 +56,13 @@ const seed = async () => {
   for (const alergeno of alergenos) {
     try {
       const existing = await payload.find({
-        collection: 'allergens',
+        collection: 'alergenos',
         where: { codigo: { equals: alergeno.codigo } },
       })
 
       if (existing.docs.length === 0) {
         await payload.create({
-          collection: 'allergens',
+          collection: 'alergenos',
           data: alergeno,
         })
         console.log(`   ✅ ${alergeno.nombre}`)
@@ -89,13 +89,13 @@ const seed = async () => {
   for (const categoria of categorias) {
     try {
       const existing = await payload.find({
-        collection: 'categories',
+        collection: 'categorias',
         where: { slug: { equals: categoria.slug } },
       })
 
       if (existing.docs.length === 0) {
         const created = await payload.create({
-          collection: 'categories',
+          collection: 'categorias',
           data: categoria,
         })
         categoriasCreadas[categoria.slug] = created.id
@@ -114,7 +114,7 @@ const seed = async () => {
 
   // Obtener IDs de alérgenos
   const alergenosDB = await payload.find({
-    collection: 'allergens',
+    collection: 'alergenos',
     limit: 100,
   })
   const alergenosPorCodigo: Record<string, string> = {}
@@ -228,7 +228,7 @@ const seed = async () => {
   for (const plato of platos) {
     try {
       const existing = await payload.find({
-        collection: 'dishes',
+        collection: 'platos',
         where: { nombre: { equals: plato.nombre } },
       })
 
@@ -238,7 +238,7 @@ const seed = async () => {
         ).filter(Boolean) || []
 
         await payload.create({
-          collection: 'dishes',
+          collection: 'platos',
           data: {
             nombre: plato.nombre,
             descripcion: plato.descripcion,
@@ -260,10 +260,10 @@ const seed = async () => {
   }
 
   // 5. Crear configuración del sitio
-  console.log('\n⚙️  Configurando Site Settings...')
+  console.log('\n⚙️  Configurando Configuración del Sitio...')
   try {
     await payload.updateGlobal({
-      slug: 'site-settings',
+      slug: 'configuracion-sitio',
       data: {
         title: 'Restaurante Warynessy',
         description: 'Restaurante de alta cocina mediterránea en Villena, Alicante',
@@ -289,9 +289,9 @@ const seed = async () => {
         copyright: '© 2026 Restaurante Warynessy. Todos los derechos reservados.',
       },
     })
-    console.log('   ✅ Site Settings configurado')
+    console.log('   ✅ Configuración del Sitio configurado')
   } catch (error) {
-    console.log('   ❌ Error configurando Site Settings:', error)
+    console.log('   ❌ Error configurando Configuración del Sitio:', error)
   }
 
   // Resumen final
@@ -305,7 +305,7 @@ const seed = async () => {
   console.log('   • 11 platos de ejemplo creados')
   console.log('   • Configuración del sitio actualizada')
   console.log('\n💡 Próximo paso: Conecta tu frontend Astro a la API de Payload')
-  console.log('   Usa las funciones de src/lib/payload.ts para obtener datos\n')
+  console.log('   Usa las funciones de src/lib/payload-local.ts para obtener datos\n')
 
   process.exit(0)
 }

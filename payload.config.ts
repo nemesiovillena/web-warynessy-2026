@@ -5,84 +5,84 @@ import sharp from 'sharp'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-// Collections
-import { Allergens } from './src/payload/collections/Allergens'
-import { Categories } from './src/payload/collections/Categories'
-import { Dishes } from './src/payload/collections/Dishes'
+// Colecciones
+import { Alergenos } from './src/payload/collections/Alergenos'
+import { Categorias } from './src/payload/collections/Categorias'
+import { Platos } from './src/payload/collections/Platos'
 import { Menus } from './src/payload/collections/Menus'
-import { Spaces } from './src/payload/collections/Spaces'
-import { Experiences } from './src/payload/collections/Experiences'
+import { Espacios } from './src/payload/collections/Espacios'
+import { Experiencias } from './src/payload/collections/Experiencias'
 import { Banners } from './src/payload/collections/Banners'
-import { Media } from './src/payload/collections/Media'
-import { Users } from './src/payload/collections/Users'
+import { Archivos } from './src/payload/collections/Archivos'
+import { Usuarios } from './src/payload/collections/Usuarios'
 
 // Globals
-import { Homepage } from './src/payload/globals/Homepage'
-import { SiteSettings } from './src/payload/globals/SiteSettings'
+import { PaginaInicio } from './src/payload/globals/PaginaInicio'
+import { ConfiguracionSitio } from './src/payload/globals/ConfiguracionSitio'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
-  // Admin panel configuration
+  // Configuración del panel de administración
   admin: {
-    user: Users.slug,
+    user: Usuarios.slug,
     meta: {
       titleSuffix: '- Warynessy CMS',
       favicon: '/favicon.ico',
     },
   },
 
-  // Collections (document types)
+  // Colecciones (tipos de documentos)
   collections: [
-    Users,
-    Media,
-    Allergens,
-    Categories,
-    Dishes,
+    Usuarios,
+    Archivos,
+    Alergenos,
+    Categorias,
+    Platos,
     Menus,
-    Spaces,
-    Experiences,
+    Espacios,
+    Experiencias,
     Banners,
   ],
 
   // Globals (singletons)
   globals: [
-    Homepage,
-    SiteSettings,
+    PaginaInicio,
+    ConfiguracionSitio,
   ],
 
-  // Editor configuration
+  // Configuración del editor
   editor: lexicalEditor({}),
 
-  // Database configuration
+  // Configuración de base de datos
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
 
-  // Image optimization
+  // Optimización de imágenes
   sharp,
 
-  // TypeScript configuration
+  // Configuración de TypeScript
   typescript: {
     outputFile: path.resolve(dirname, 'src/payload/payload-types.ts'),
   },
 
-  // Secret key
+  // Clave secreta
   secret: process.env.PAYLOAD_SECRET || '',
 
-  // Server URL
+  // URL del servidor
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
 
-  // CORS configuration
+  // Configuración CORS
   cors: [
     process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
     process.env.PUBLIC_SITE_URL || 'http://localhost:4321',
   ].filter(Boolean),
 
-  // CSRF configuration
+  // Configuración CSRF
   csrf: [
     process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
     process.env.PUBLIC_SITE_URL || 'http://localhost:4321',
