@@ -1,28 +1,13 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
-import { sanityClient } from '../lib/sanity';
+import { getSiteSettings, getHomepage, getSpaces, getExperiences, getFeaturedDishes } from '../lib/payload-local';
 
-const query = `{
-  "siteSettings": *[_type == "siteSettings"][0],
-  "homepage": *[_type == "homepage"][0]{
-    heroTitle,
-    heroSubtitle,
-    "heroImage": heroImage.asset->url,
-    welcomeText,
-    gallery[] {
-      "url": asset->url,
-      alt
-    }
-  },
-  "spaces": *[_type == "space"] | order(order asc) [0...3] {
-    name,
-    description,
-    "imageUrl": image.asset->url
-  },
-  "experiences": *[_type == "experience"] [0...1]
-}`;
-
-const { siteSettings, homepage, spaces, experiences } = await sanityClient.fetch(query);
+// Fetch data from Payload CMS (Local API)
+const siteSettings = await getSiteSettings();
+const homepage = await getHomepage();
+const spaces = await getSpaces();
+const experiences = await getExperiences();
+const featuredDishes = await getFeaturedDishes();
 
 const pageTitle = siteSettings?.title || "Warynessy 2026";
 ---
@@ -116,16 +101,16 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
         </div>
       </div>
       <div class="grid grid-cols-2 gap-6 order-1 lg:order-2">
-        {homepage?.gallery?.slice(0, 2).map((img, i) => (
-          <div 
+        {homepage?.galeriaInicio?.slice(0, 2).map((img: any, i: number) => (
+          <div
             class={`aspect-[3/4] rounded-2xl bg-cover bg-center shadow-2xl transition-transform hover:scale-105 duration-500 ${i === 1 ? 'mt-12' : ''}`}
-            style={`background-image: url('${img.url}')`}
+            style={`background-image: url('${img.imagen?.url || ''}')`}
           ></div>
         ))}
-        {!homepage?.gallery && (
+        {(!homepage?.galeriaInicio || homepage.galeriaInicio.length === 0) && (
              <>
-               <div class="aspect-[3/4] rounded-2xl bg-cover bg-center shadow-2xl transition-transform hover:-translate-y-2 duration-500 bg-zinc-800"></div>
-               <div class="aspect-[3/4] rounded-2xl bg-cover bg-center shadow-2xl mt-12 transition-transform hover:translate-y-2 duration-500 bg-zinc-800"></div>
+               <div class="aspect-[3/4] rounded-2xl bg-cover bg-center shadow-2xl transition-transform hover:-translate-y-2 duration-500 bg-zinc-300 dark:bg-zinc-800"></div>
+               <div class="aspect-[3/4] rounded-2xl bg-cover bg-center shadow-2xl mt-12 transition-transform hover:translate-y-2 duration-500 bg-zinc-300 dark:bg-zinc-800"></div>
              </>
         )}
       </div>
@@ -138,7 +123,7 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
       <div class="text-center md:text-left">
         <h2 class="text-white font-serif text-5xl font-bold mb-4">Regala Gastronomía</h2>
         <p class="text-white/80 text-xl max-w-lg">
-          {experiences?.[0]?.description || "Sorprende a tus seres queridos con una experiencia sensorial inolvidable en nuestro restaurante."}
+          {experiences?.[0]?.resumen || "Sorprende a tus seres queridos con una experiencia sensorial inolvidable en nuestro restaurante."}
         </p>
       </div>
       <a href="/experiencias" class="bg-white text-accent-red px-12 py-5 rounded-full font-bold uppercase tracking-[0.2em] shadow-2xl hover:bg-black hover:text-white transition-all transform active:scale-95">
@@ -158,16 +143,16 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
         <p class="text-gray-500 dark:text-gray-400 max-w-xs text-right">Atmósferas diseñadas para cada tipo de encuentro y celebración.</p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {spaces?.map((space, i) => (
+        {spaces?.map((space: any, i: number) => (
           <div class={`group relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl ${i === 1 ? 'mt-8 md:mt-0' : ''}`}>
-            <div 
-              class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" 
-              style={`background-image: url('${space.imageUrl || 'https://images.unsplash.com/photo-1517248135467-4c7ed9d86c7d?auto=format&fit=crop&q=80'}');`}
+            <div
+              class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+              style={`background-image: url('${space.imagen?.url || 'https://images.unsplash.com/photo-1517248135467-4c7ed9d86c7d?auto=format&fit=crop&q=80'}');`}
             ></div>
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-8">
-              <h4 class="text-white text-3xl font-display font-black mb-2">{space.name}</h4>
+              <h4 class="text-white text-3xl font-display font-black mb-2">{space.nombre}</h4>
               <p class="text-white/70 text-base opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                {space.description}
+                {space.descripcion}
               </p>
             </div>
           </div>
