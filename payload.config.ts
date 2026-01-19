@@ -35,7 +35,6 @@ export default buildConfig({
     user: Usuarios.slug,
     meta: {
       titleSuffix: '- Warynessy CMS',
-      favicon: '/favicon.ico',
     },
   },
 

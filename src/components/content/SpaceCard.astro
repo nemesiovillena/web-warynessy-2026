@@ -4,14 +4,15 @@ import ResponsiveImage from '../ui/ResponsiveImage.astro';
 
 interface Props {
   space: Espacio;
+  class?: string;
 }
 
-const { space } = Astro.props;
+const { space, class: className = "h-[500px]" } = Astro.props;
 // Payload may return ID or object for relations depending on depth. Assuming depth is sufficient.
 const imageUrl = typeof space.imagenPrincipal === 'object' && space.imagenPrincipal?.url ? space.imagenPrincipal.url : '';
 ---
 
-<div class="relative group h-[500px] w-full overflow-hidden rounded-2xl cursor-pointer">
+<div class={`relative group w-full overflow-hidden rounded-2xl cursor-pointer ${className}`}>
   {imageUrl && (
     <ResponsiveImage 
       src={imageUrl} 

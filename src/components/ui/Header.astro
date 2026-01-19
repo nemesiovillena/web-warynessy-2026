@@ -7,27 +7,30 @@ const siteSettings = await getSiteSettings();
 const title = siteSettings?.title || "Warynessy";
 
 const navLinks = [
-  { name: "Menu", href: "/menu" },
-  { name: "Story", href: "/#story" },
-  { name: "Spaces", href: "/#espacios" },
+  { name: "Carta", href: "/carta" },
+  { name: "Menús", href: "/menus" },
+  { name: "Reservar mesa", href: "/reservas" },
+  { name: "Contacto", href: "/contacto" },
+  { name: "Regala gastronomía", href: "/experiencias" },
 ];
 ---
 
 <nav 
   id="main-nav" 
-  class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-8 py-6 transition-all duration-500 ease-in-out"
+  class="fixed top-0 left-0 w-full z-50 flex items-center justify-end px-8 py-6 transition-all duration-500 ease-in-out"
 >
-  {/* Left: Brand */}
-  <div class="pointer-events-auto">
-    <a href="/" class="group">
-      <h2 class="font-display text-2xl font-bold text-white drop-shadow-md">
-        {title}
-      </h2>
-    </a>
-  </div>
-
   {/* Center: Navigation Links & Actions */}
   <div class="flex items-center gap-8 pointer-events-auto bg-black/20 backdrop-blur-md px-6 py-3 rounded-full border border-white/10">
+    
+    {/* Logo inside menu */}
+    <a href="/" class="group block mr-4">
+      <img 
+        src="/images/logo-warynessy.svg" 
+        alt="Warynessy Logo" 
+        class="h-8 w-auto transition-opacity hover:opacity-80" 
+      />
+    </a>
+
     <div class="hidden md:flex items-center gap-8">
       {navLinks.map(link => (
         <a 
@@ -42,9 +45,7 @@ const navLinks = [
 
     {/* Icons/Actions */}
     <div class="flex items-center gap-4">
-      <button class="text-white flex items-center justify-center hover:text-primary transition-colors">
-        <span class="material-symbols-outlined">shopping_bag</span>
-      </button>
+
       <button id="menu-toggle" class="text-white flex items-center justify-center hover:text-primary transition-colors">
         <span class="material-symbols-outlined">menu</span>
       </button>
@@ -90,19 +91,6 @@ const navLinks = [
   const mobileMenu = document.getElementById('mobile-menu');
   const mobileLinks = document.querySelectorAll('.mobile-link');
   let isMenuOpen = false;
-
-  // Sticky Header Logic
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-      nav?.classList.add('bg-matte-black/80', 'backdrop-blur-md', 'shadow-lg', 'border-b', 'border-white/5');
-      nav?.classList.remove('py-6');
-      nav?.classList.add('py-4');
-    } else {
-      nav?.classList.remove('bg-matte-black/80', 'backdrop-blur-md', 'shadow-lg', 'border-b', 'border-white/5');
-      nav?.classList.add('py-6');
-      nav?.classList.remove('py-4');
-    }
-  });
 
   // Mobile Menu Logic
   const toggleMenu = (open: boolean) => {

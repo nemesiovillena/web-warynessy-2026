@@ -6,6 +6,7 @@ import Button from '../components/ui/Button.astro';
 import ResponsiveImage from '../components/ui/ResponsiveImage.astro';
 import SpaceCard from '../components/content/SpaceCard.astro';
 import { getSiteSettings, getHomepage, getSpaces, getExperiences, getFeaturedDishes } from '../lib/payload-local';
+import { getGoogleReviews } from '../lib/google-reviews';
 
 // Fetch data from Payload CMS (Local API)
 const siteSettings = await getSiteSettings();
@@ -13,27 +14,31 @@ const homepage = await getHomepage();
 const spaces = await getSpaces();
 const experiences = await getExperiences();
 const featuredDishes = await getFeaturedDishes();
+const rawOpiniones = await getGoogleReviews();
+
+// Filtrar por 4-5 estrellas y ordenar por las más recientes
+const opiniones = rawOpiniones
+  ?.filter((review: any) => review.rating >= 4)
+  .sort((a: any, b: any) => b.time - a.time);
 
 const pageTitle = siteSettings?.title || "Warynessy 2026";
 ---
 
-<MainLayout title={pageTitle} description={homepage?.heroSubtitle || undefined}>
-  
+<MainLayout title={pageTitle} description={homepage?.heroSubtitle || undefined} noPaddingTop={true}>
+
   {/* SECTION 1: HERO */}
   <section class="relative h-screen w-full overflow-hidden group">
-    <div 
-      class="absolute inset-0 parallax-bg" 
+    <div
+      class="absolute inset-0 fixed-bg"
       style={`background-image: url('${typeof homepage?.heroImage === 'object' && homepage?.heroImage?.url ? homepage.heroImage.url : 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80'}');`}
     >
     </div>
     <div class="absolute inset-0 hero-content-gradient"></div>
-    
+
     <Container class="relative h-full flex flex-col justify-end items-start pb-20 w-full animate-fade-up">
       <div class="flex flex-col gap-6 max-w-2xl">
         <h1 class="text-white font-display text-7xl md:text-8xl font-black leading-tight drop-shadow-2xl">
-          {homepage?.heroTitle ? (
-            <Fragment set:html={homepage.heroTitle.replace(' ', ' & <br/><span class="font-medium">').concat('</span>')} />
-          ) : (
+          {homepage?.heroTitle || (
             <>Sabor & <br/><span class="font-medium">Vanguardia</span></>
           )}
         </h1>
@@ -57,57 +62,29 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
     </div>
   </section>
 
-  {/* SECTION 2: BUSINESS HOURS */}
-  <Section background="light">
-    <Container>
-      <div class="flex flex-col md:flex-row items-center gap-16 animate-fade-up">
-        <div class="md:w-1/2">
-          <div class="flex items-center gap-3 mb-6">
-            <span class="material-symbols-outlined text-primary text-3xl">schedule</span>
-            <h3 class="text-warynessy-black dark:text-white text-2xl font-bold font-display uppercase tracking-widest">Horarios</h3>
-          </div>
-          <p class="text-gray-500 dark:text-gray-400 mb-8 max-w-sm">
-            Disfruta de nuestra excelencia culinaria durante nuestros horarios de servicio habituales.
-          </p>
-        </div>
-        <div class="md:w-1/2 w-full">
-          <div class="bg-white dark:bg-zinc-900 rounded-2xl p-8 shadow-2xl border border-gray-100 dark:border-zinc-800 animate-stagger-container">
-            {siteSettings?.openingHours?.map((schedule: any) => (
-              <div class="flex justify-between items-center py-6 border-b border-gray-100 dark:border-zinc-800 last:border-0 animate-stagger-item">
-                <p class="text-primary dark:text-red-400 font-bold text-lg">{schedule.days}</p>
-                <p class="text-base font-medium text-right leading-relaxed">
-                  {schedule.closed ? "Cerrado" : <Fragment set:html={schedule.hours.replace(' / ', '<br/>')} />}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </Container>
-  </Section>
-
-  {/* SECTION 3: STORY */}
-  <Section id="story" class="bg-beige-light dark:bg-[#2c2621]">
+  {/* SECTION 2: BIENVENIDO A WARYNESSY */}
+  <Section id="story" background="dark">
     <Container class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
       <div class="flex flex-col gap-8 order-2 lg:order-1 animate-fade-up">
-        <h2 class="text-warynessy-black dark:text-[#f5e6d3] font-serif text-5xl font-bold leading-tight">Nuestra Historia</h2>
+        <h2 class="text-white font-serif text-5xl font-bold leading-tight">
+          {homepage?.welcomeTitle || "Nuestra Historia"}
+        </h2>
         <div class="w-20 h-1.5 bg-primary"></div>
-        <div class="text-[#5c4a4c] dark:text-[#d1c2b4] text-xl leading-relaxed font-light">
-          {Array.isArray(homepage?.welcomeText) 
-            ? homepage.welcomeText.map((block: any) => block.children?.map((child: any) => child.text).join('')).join('\n')
-            : (homepage?.welcomeText || "Ubicados en el corazón de Alicante, nuestra historia es una de pasión por el producto local y la excelencia gastronómica.")
+        <div class="text-white/70 text-xl leading-relaxed font-light">
+          {homepage?.welcomeText?.root?.children && Array.isArray(homepage.welcomeText.root.children)
+            ? homepage.welcomeText.root.children.map((block: any, i: number) => (
+                <p class={i > 0 ? "mt-4" : ""}>
+                  {block.children?.map((child: any) => child.text).join('')}
+                </p>
+              ))
+            : "Ubicados en el corazón de Alicante, nuestra historia es una de pasión por el producto local y la excelencia gastronómica."
           }
-        </div>
-        <div class="flex gap-6 mt-4">
-           <Button href="/nosotros" variant="outline" class="border-primary/50 text-primary hover:bg-primary hover:text-white hover:border-primary">
-             Leer Más
-           </Button>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-6 order-1 lg:order-2 animate-stagger-container">
         {homepage?.galeriaInicio?.slice(0, 2).map((img: any, i: number) => (
-          <ResponsiveImage 
-            src={typeof img.imagen === 'object' ? img.imagen?.url : ''} 
+          <ResponsiveImage
+            src={typeof img.imagen === 'object' ? img.imagen?.url : ''}
             alt="Interior del restaurante"
             class={`rounded-2xl shadow-2xl ${i === 1 ? 'mt-12' : ''} animate-stagger-item`}
             aspectRatio="3/4"
@@ -123,7 +100,36 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
     </Container>
   </Section>
 
-  {/* SECTION 4: GIFT CARD */}
+  {/* SECTION 3: HORARIOS */}
+  <Section background="none" class="bg-[#2B2621]">
+    <Container>
+      <div class="flex flex-col md:flex-row items-center gap-16 animate-fade-up">
+        <div class="md:w-1/2">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="material-symbols-outlined text-primary text-3xl">schedule</span>
+            <h3 class="text-white text-5xl font-serif font-bold">Horarios</h3>
+          </div>
+          <p class="text-white/60 mb-8 max-w-sm">
+            Disfruta de nuestra excelencia culinaria durante nuestros horarios de servicio habituales.
+          </p>
+        </div>
+        <div class="md:w-1/2 w-full">
+          <div class="bg-matte-black rounded-2xl p-8 shadow-2xl border border-white/5 animate-stagger-container">
+            {siteSettings?.openingHours?.map((schedule: any) => (
+              <div class="flex justify-between items-center py-6 border-b border-white/5 last:border-0 animate-stagger-item">
+                <p class="text-[#FDFDFD] font-bold text-lg">{schedule.days}</p>
+                <p class="text-[#D1C2B4] text-base font-medium text-right leading-relaxed">
+                  {schedule.closed ? "Cerrado" : <Fragment set:html={schedule.hours.replace(' / ', '<br/>')} />}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  {/* SECTION 4: REGALA GASTRONOMÍA */}
   <section class="w-full bg-accent-red py-24 relative overflow-hidden">
     <Container class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
       <div class="text-center md:text-left">
@@ -132,8 +138,9 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
           {experiences?.[0]?.resumen || "Sorprende a tus seres queridos con una experiencia sensorial inolvidable en nuestro restaurante."}
         </p>
       </div>
-      <Button href="/experiencias" variant="white" size="lg" class="text-accent-red hover:bg-black hover:text-white">
+      <Button href="/experiencias" variant="white" size="lg" class="text-accent-red hover:bg-black hover:text-white group">
         Comprar Tarjeta Regalo
+        <span class="material-symbols-outlined ml-2 transition-transform group-hover:translate-x-1">arrow_right_alt</span>
       </Button>
     </Container>
     <div class="absolute top-0 right-0 opacity-10 scale-150 pointer-events-none">
@@ -141,60 +148,224 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
     </div>
   </section>
 
-  {/* SECTION 5: SPACES */}
-  <Section id="espacios" background="light">
+  {/* SECTION 5: ATMÓSFERAS / ESPACIOS */}
+  <Section id="espacios" background="dark">
     <Container>
-      <div class="flex justify-between items-end mb-16 animate-fade-up">
-        <h3 class="text-5xl font-serif font-bold">Nuestros Espacios</h3>
-        <p class="text-gray-500 dark:text-gray-400 max-w-xs text-right">Atmósferas diseñadas para cada tipo de celebración.</p>
+      <div class="flex flex-col md:flex-row justify-between items-end mb-12 animate-fade-up gap-6">
+        <div>
+          <h3 class="text-5xl font-serif font-bold text-white">Nuestros Espacios</h3>
+          <p class="text-white/60 mt-2">Atmósferas diseñadas para cada tipo de celebración.</p>
+        </div>
+        <Button href="/espacios" variant="outline" class="border-white text-white hover:bg-white hover:text-black">
+          Ver todos los espacios
+        </Button>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 animate-stagger-container">
-        {spaces?.map((space: any) => (
-          <div class="animate-stagger-item">
-            <SpaceCard space={space} />
-          </div>
-        ))}
+
+      {/* Gallery Grid - Images 03-07 from galeriaInicio */}
+      <div class="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] md:auto-rows-[250px] gap-3 mb-16 animate-stagger-container">
+        {homepage?.galeriaInicio?.slice(2, 7).map((img: any, i: number) => {
+          // Bento layout for 5 images:
+          // Image 0 (inicio-03): Large (2 cols x 2 rows) - columns 1-2
+          // Image 1, 2 (inicio-04, 05): Small (1 col x 1 row) - column 3
+          // Image 3, 4 (inicio-06, 07): Small (1 col x 1 row) - column 4
+
+          let gridClasses = "col-span-1 row-span-1";
+          if (i === 0) gridClasses = "col-span-2 row-span-2";
+
+          return (
+            <div class={`animate-stagger-item ${gridClasses} overflow-hidden rounded-xl group`}>
+              <ResponsiveImage
+                src={typeof img.imagen === 'object' ? img.imagen?.url : ''}
+                alt={typeof img.imagen === 'object' && img.imagen?.alt ? img.imagen.alt : 'Espacio del restaurante'}
+                class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+            </div>
+          );
+        })}
+        {/* Fallback placeholders if no images */}
+        {(!homepage?.galeriaInicio || homepage.galeriaInicio.length < 5) && (
+          <>
+            <div class="col-span-2 row-span-2 rounded-xl bg-zinc-200 dark:bg-zinc-800 animate-stagger-item"></div>
+            <div class="col-span-1 row-span-1 rounded-xl bg-zinc-200 dark:bg-zinc-800 animate-stagger-item"></div>
+            <div class="col-span-1 row-span-1 rounded-xl bg-zinc-200 dark:bg-zinc-800 animate-stagger-item"></div>
+            <div class="col-span-1 row-span-1 rounded-xl bg-zinc-200 dark:bg-zinc-800 animate-stagger-item"></div>
+            <div class="col-span-1 row-span-1 rounded-xl bg-zinc-200 dark:bg-zinc-800 animate-stagger-item"></div>
+          </>
+        )}
+      </div>
+
+      {/* Spaces Cards */}
+      <div class="grid grid-cols-1 md:grid-cols-4 auto-rows-[300px] gap-4 animate-stagger-container">
+        {spaces?.slice(0, 4).map((space: any, i: number) => {
+          // Layout for 4 items:
+          // Item 0: Large square (2x2) - Left
+          // Item 1: Tall vertical (1x2) - Middle Right
+          // Item 2: Small square (1x1) - Top Right
+          // Item 3: Small square (1x1) - Bottom Right
+
+          let gridClasses = "md:col-span-1 md:row-span-1";
+
+          if (i === 0) gridClasses = "md:col-span-2 md:row-span-2";
+          else if (i === 1) gridClasses = "md:col-span-1 md:row-span-2";
+
+          return (
+            <div class={`animate-stagger-item ${gridClasses}`}>
+              <SpaceCard space={space} class="h-full" />
+            </div>
+          );
+        })}
       </div>
     </Container>
   </Section>
 
-  {/* SECTION 6: REVIEWS & FEED */}
-  <Section background="default" class="bg-white dark:bg-zinc-950">
+  {/* SECTION 6: OPINIONES */}
+  <Section background="light" class="overflow-hidden">
     <Container>
-      <div class="flex flex-col lg:flex-row gap-20">
-        <div class="lg:w-1/3 animate-fade-up">
-          <h3 class="text-4xl font-serif font-bold mb-6">Opiniones</h3>
-          <div class="flex items-center gap-4 mb-4">
-            <div class="flex text-yellow-500 gap-1">
+      <div class="flex flex-col items-center text-center animate-fade-up">
+        <h3 class="text-5xl font-serif font-bold mb-6">Opiniones de Clientes</h3>
+        <div class="flex items-center gap-4 mb-12">
+          <div class="flex text-yellow-500 gap-1">
+            {[1, 2, 3, 4, 5].map(() => (
               <span class="material-symbols-outlined fill-[1]">star</span>
-              <span class="material-symbols-outlined fill-[1]">star</span>
-              <span class="material-symbols-outlined fill-[1]">star</span>
-              <span class="material-symbols-outlined fill-[1]">star</span>
-              <span class="material-symbols-outlined fill-[1]">star_half</span>
-            </div>
-            <span class="text-xl font-bold">4.8</span>
+            ))}
           </div>
-          <p class="text-gray-500 mb-8 uppercase tracking-widest text-sm">Google Ratings based on 1.2k reviews</p>
-          <div class="h-px w-full bg-gray-100 dark:bg-zinc-800 mb-8"></div>
-          <h3 class="text-2xl font-bold mb-6">Instagram</h3>
-          <p class="text-gray-500 mb-8 italic">Síguenos en @restaurante_warynessy</p>
-          <Button href="https://instagram.com" target="_blank" variant="outline" class="border-black text-black hover:bg-black hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black">
-            Ver Instagram
-          </Button>
+          <span class="text-xl font-bold">4.8</span>
+          <span class="text-gray-400">|</span>
+          <p class="text-gray-500 uppercase tracking-widest text-sm">Google Reviews</p>
         </div>
-        <div class="lg:w-2/3 grid grid-cols-2 md:grid-cols-3 gap-2 animate-stagger-container">
-           {/* Placeholders for feed images */}
-           {[1,2,3,4,5,6].map(() => (
-             <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 hover:opacity-80 transition-opacity cursor-pointer overflow-hidden rounded-md animate-stagger-item">
-                <ResponsiveImage 
-                  src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80" 
-                  alt="Instagram post"
-                  class="h-full w-full"
-                  aspectRatio="1/1"
-                />
-             </div>
-           ))}
+      </div>
+
+      <div class="relative px-4 md:px-12">
+        <div class="swiper reviews-swiper">
+          <div class="swiper-wrapper">
+            {opiniones?.map((review: any) => (
+              <div class="swiper-slide h-auto">
+                <div class="bg-white dark:bg-zinc-900/50 p-6 rounded-2xl shadow-sm border border-black/5 dark:border-white/5 flex flex-col gap-3 h-full transition-all hover:shadow-md">
+                  <div class="flex items-center gap-3">
+                    {review.profile_photo_url ? (
+                      <img 
+                        src={review.profile_photo_url} 
+                        alt={review.author_name} 
+                        class="w-10 h-10 rounded-full object-cover" 
+                        referrerpolicy="no-referrer"
+                      />
+                    ) : (
+                      <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
+                        {review.author_name.charAt(0)}
+                      </div>
+                    )}
+                    <div>
+                      <h4 class="font-bold text-warynessy-black dark:text-white text-sm line-clamp-1">{review.author_name}</h4>
+                      <div class="flex text-yellow-500 text-[10px]">
+                        {Array.from({ length: Math.floor(review.rating) }).map(() => (
+                          <span class="material-symbols-outlined text-[10px] fill-[1]">star</span>
+                        ))}
+                        {review.rating % 1 !== 0 && (
+                          <span class="material-symbols-outlined text-[10px]">star_half</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <p class="text-gray-600 dark:text-gray-400 italic text-sm line-clamp-4">"{review.text}"</p>
+                  <p class="text-[9px] text-gray-400 uppercase tracking-widest pt-3 border-t border-black/5 dark:border-white/5 mt-auto">
+                    {review.relative_time_description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Navegación */}
+          <div class="swiper-button-prev !text-primary !w-8 !h-8 after:!text-xl -left-2 md:-left-6"></div>
+          <div class="swiper-button-next !text-primary !w-8 !h-8 after:!text-xl -right-2 md:-right-6"></div>
         </div>
+        
+        {(!opiniones || opiniones.length === 0) && (
+          <div class="text-center py-12 text-gray-400 italic">
+            Esperando opiniones reales de Google...
+          </div>
+        )}
+      </div>
+    </Container>
+  </Section>
+
+  <script>
+    import Swiper from 'swiper';
+    import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+    import 'swiper/css';
+    import 'swiper/css/navigation';
+    import 'swiper/css/pagination';
+
+    document.addEventListener('astro:page-load', () => {
+      new Swiper('.reviews-swiper', {
+        modules: [Navigation, Pagination, Autoplay],
+        slidesPerView: 1,
+        spaceBetween: 20,
+        loop: true,
+        autoplay: {
+          delay: 5000,
+          disableOnInteraction: false,
+        },
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+        breakpoints: {
+          640: {
+            slidesPerView: 2,
+          },
+          1024: {
+            slidesPerView: 3,
+          },
+          1280: {
+            slidesPerView: 4,
+          },
+        },
+      });
+    });
+  </script>
+
+  <style is:global>
+    .reviews-swiper {
+      padding: 10px 5px !important;
+    }
+    .swiper-button-next, .swiper-button-prev {
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    .dark .swiper-button-next, .dark .swiper-button-prev {
+      background: #1F1F1F;
+      border-color: rgba(255,255,255,0.05);
+    }
+  </style>
+
+  {/* SECTION 7: INSTAGRAM */}
+  <Section background="light">
+    <Container>
+      <div class="flex flex-col items-center text-center mb-12 animate-fade-up">
+        <h3 class="text-5xl font-serif font-bold mb-4">Instagram</h3>
+        <p class="text-gray-500 mb-6 italic">Síguenos en @restaurante_warynessy</p>
+        <Button href="https://instagram.com" target="_blank" variant="outline" class="border-black text-black hover:bg-black hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black">
+          Ver Instagram
+        </Button>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 animate-stagger-container">
+        {[1,2,3,4,5,6].map(() => (
+          <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 hover:opacity-80 transition-opacity cursor-pointer overflow-hidden rounded-md animate-stagger-item">
+            <ResponsiveImage
+              src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80"
+              alt="Instagram post"
+              class="h-full w-full"
+              aspectRatio="1/1"
+            />
+          </div>
+        ))}
       </div>
     </Container>
   </Section>

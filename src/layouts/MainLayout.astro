@@ -7,15 +7,16 @@ import ScrollAnimations from '../components/ui/ScrollAnimations.astro';
 interface Props {
 	title: string;
 	description?: string;
+  noPaddingTop?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, noPaddingTop = false } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description}>
 	<Header />
 
-	<main class="flex-grow pt-20">
+	<main class={`flex-grow ${noPaddingTop ? '' : 'pt-20'}`}>
 		<slot />
 	</main>
 

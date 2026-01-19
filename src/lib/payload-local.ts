@@ -133,7 +133,7 @@ export async function getPaginaInicio() {
   const payload = await getPayloadClient()
   return payload.findGlobal({
     slug: 'pagina-inicio',
-    depth: 2,
+    depth: 3,
   })
 }
 
@@ -180,7 +180,6 @@ export async function getPlatosDestacados() {
 // ALIAS (compatibilidad con nombres anteriores)
 // ============================================
 
-// Alias en inglés para compatibilidad
 export const getDishes = getPlatos
 export const getDishesByCategory = getPlatosPorCategoria
 export const getCategories = getCategorias
@@ -192,3 +191,4 @@ export const getHomepage = getPaginaInicio
 export const getSiteSettings = getConfiguracionSitio
 export const getCategoriesWithDishes = getCategoriasConPlatos
 export const getFeaturedDishes = getPlatosDestacados
+
