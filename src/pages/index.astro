@@ -103,18 +103,33 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
   {/* SECTION 3: HORARIOS */}
   <Section background="none" class="bg-[#2B2621]">
     <Container>
-      <div class="flex flex-col md:flex-row items-center gap-16 animate-fade-up">
-        <div class="md:w-1/2">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 animate-fade-up">
+        {/* Columna 1: Widget de Covermanager */}
+        <div class="flex flex-col">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="material-symbols-outlined text-primary text-3xl">calendar_month</span>
+            <h3 class="text-white text-4xl font-serif font-bold">Reserva tu mesa</h3>
+          </div>
+          <div class="bg-matte-black rounded-2xl p-6 shadow-2xl border border-white/5 flex-1">
+            <div id="covermanager-widget" class="w-full min-h-[300px]">
+              <!-- Widget de Covermanager se cargará aquí -->
+              <script src="https://www.covermanager.com/js/iframeResizer.min.js"></script>
+              <iframe
+                src="https://www.covermanager.com/reservation/module_restaurant/warynessy/spanish"
+                style="width: 100%; min-height: 400px; border: none;"
+                id="covermanager-iframe"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+
+        {/* Columna 2: Horarios */}
+        <div class="flex flex-col">
           <div class="flex items-center gap-3 mb-6">
             <span class="material-symbols-outlined text-primary text-3xl">schedule</span>
-            <h3 class="text-white text-5xl font-serif font-bold">Horarios</h3>
+            <h3 class="text-white text-4xl font-serif font-bold">Horarios</h3>
           </div>
-          <p class="text-white/60 mb-8 max-w-sm">
-            Disfruta de nuestra excelencia culinaria durante nuestros horarios de servicio habituales.
-          </p>
-        </div>
-        <div class="md:w-1/2 w-full">
-          <div class="bg-matte-black rounded-2xl p-8 shadow-2xl border border-white/5 animate-stagger-container">
+          <div class="bg-matte-black rounded-2xl p-8 shadow-2xl border border-white/5 flex-1 animate-stagger-container">
             {siteSettings?.openingHours?.map((schedule: any) => (
               <div class="flex justify-between items-center py-6 border-b border-white/5 last:border-0 animate-stagger-item">
                 <p class="text-[#FDFDFD] font-bold text-lg">{schedule.days}</p>
@@ -219,19 +234,19 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
   </Section>
 
   {/* SECTION 6: OPINIONES */}
-  <Section background="light" class="overflow-hidden">
+  <Section background="none" class="bg-[#2B2621] text-white !pb-12 overflow-hidden">
     <Container>
       <div class="flex flex-col items-center text-center animate-fade-up">
-        <h3 class="text-5xl font-serif font-bold mb-6">Opiniones de Clientes</h3>
+        <h3 class="text-5xl font-serif font-bold mb-6 text-white">Opiniones de Clientes</h3>
         <div class="flex items-center gap-4 mb-12">
           <div class="flex text-yellow-500 gap-1">
             {[1, 2, 3, 4, 5].map(() => (
               <span class="material-symbols-outlined fill-[1]">star</span>
             ))}
           </div>
-          <span class="text-xl font-bold">4.8</span>
-          <span class="text-gray-400">|</span>
-          <p class="text-gray-500 uppercase tracking-widest text-sm">Google Reviews</p>
+          <span class="text-xl font-bold text-white">4.8</span>
+          <span class="text-white/20">|</span>
+          <p class="text-white/60 uppercase tracking-widest text-sm">Google Reviews</p>
         </div>
       </div>
 
@@ -240,7 +255,7 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
           <div class="swiper-wrapper">
             {opiniones?.map((review: any) => (
               <div class="swiper-slide h-auto">
-                <div class="bg-white dark:bg-zinc-900/50 p-6 rounded-2xl shadow-sm border border-black/5 dark:border-white/5 flex flex-col gap-3 h-full transition-all hover:shadow-md">
+                <div class="bg-white/5 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-white/10 flex flex-col gap-3 h-full transition-all hover:bg-white/10">
                   <div class="flex items-center gap-3">
                     {review.profile_photo_url ? (
                       <img 
@@ -255,7 +270,7 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
                       </div>
                     )}
                     <div>
-                      <h4 class="font-bold text-warynessy-black dark:text-white text-sm line-clamp-1">{review.author_name}</h4>
+                      <h4 class="font-bold text-white text-sm line-clamp-1">{review.author_name}</h4>
                       <div class="flex text-yellow-500 text-[10px]">
                         {Array.from({ length: Math.floor(review.rating) }).map(() => (
                           <span class="material-symbols-outlined text-[10px] fill-[1]">star</span>
@@ -266,8 +281,8 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
                       </div>
                     </div>
                   </div>
-                  <p class="text-gray-600 dark:text-gray-400 italic text-sm line-clamp-4">"{review.text}"</p>
-                  <p class="text-[9px] text-gray-400 uppercase tracking-widest pt-3 border-t border-black/5 dark:border-white/5 mt-auto">
+                   <p class="text-white/70 italic text-sm line-clamp-4">"{review.text}"</p>
+                  <p class="text-[10px] text-white/40 uppercase tracking-widest pt-3 border-t border-white/10 mt-auto font-medium">
                     {review.relative_time_description}
                   </p>
                 </div>
@@ -275,9 +290,7 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
             ))}
           </div>
           
-          {/* Navegación */}
-          <div class="swiper-button-prev !text-primary !w-8 !h-8 after:!text-xl -left-2 md:-left-6"></div>
-          <div class="swiper-button-next !text-primary !w-8 !h-8 after:!text-xl -right-2 md:-right-6"></div>
+          {/* Navegación - Eliminadas flechas por solicitud de usuario */}
         </div>
         
         {(!opiniones || opiniones.length === 0) && (
@@ -346,18 +359,18 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
   </style>
 
   {/* SECTION 7: INSTAGRAM */}
-  <Section background="light">
+  <Section background="none" class="bg-[#2B2621] text-white !pt-12">
     <Container>
       <div class="flex flex-col items-center text-center mb-12 animate-fade-up">
-        <h3 class="text-5xl font-serif font-bold mb-4">Instagram</h3>
-        <p class="text-gray-500 mb-6 italic">Síguenos en @restaurante_warynessy</p>
-        <Button href="https://instagram.com" target="_blank" variant="outline" class="border-black text-black hover:bg-black hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-black">
+        <h3 class="text-5xl font-serif font-bold mb-4 text-white">Instagram</h3>
+        <p class="text-white/60 mb-6 italic">Síguenos en @restaurante_warynessy</p>
+        <Button href="https://instagram.com" target="_blank" variant="outline" class="border-white text-white hover:bg-white hover:text-black">
           Ver Instagram
         </Button>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 animate-stagger-container">
         {[1,2,3,4,5,6].map(() => (
-          <div class="aspect-square bg-zinc-100 dark:bg-zinc-800 hover:opacity-80 transition-opacity cursor-pointer overflow-hidden rounded-md animate-stagger-item">
+          <div class="aspect-square bg-white/5 hover:opacity-80 transition-opacity cursor-pointer overflow-hidden rounded-md animate-stagger-item">
             <ResponsiveImage
               src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80"
               alt="Instagram post"
