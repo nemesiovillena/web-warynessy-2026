@@ -16,16 +16,18 @@ const pageTitle = `Reservas | ${siteSettings?.title || "Warynessy"}`;
         <p class="text-white/60 text-lg">Reserva tu mesa online de forma rápida y sencilla.</p>
       </div>
 
-      <div class="bg-white rounded-2xl overflow-hidden shadow-2xl min-h-[600px] flex items-center justify-center">
-         {/* Placeholder for CoverManager Iframe */}
-         <div class="text-center p-12">
-            <span class="material-symbols-outlined text-6xl text-gray-300 mb-4">calendar_month</span>
-            <h3 class="text-2xl font-bold text-gray-800 mb-2">Motor de Reservas</h3>
-            <p class="text-gray-500 mb-6">Aquí se cargará el iframe de CoverManager.</p>
-            <div class="p-4 bg-gray-100 rounded text-sm text-gray-600 font-mono">
-               &lt;iframe src="https://covermanager.com/..." /&gt;
-            </div>
-         </div>
+      <div class="bg-matte-black rounded-2xl overflow-hidden shadow-2xl min-h-[600px] border border-white/5">
+        <div id="covermanager-widget" class="w-full">
+           <script src="https://www.covermanager.com/js/iframeResizer.min.js"></script>
+           <iframe
+             src="https://www.covermanager.com/reservation/module_restaurant/restaurante-warynessy/spanish"
+             style="width: 100%; min-height: 600px; border: none;"
+             id="restaurante-warynessy"
+             title="Reservas"
+             allow="payment"
+             onload="iFrameResize();"
+           ></iframe>
+        </div>
       </div>
 
       <div class="mt-12 text-center">

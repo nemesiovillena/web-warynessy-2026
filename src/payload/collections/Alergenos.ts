@@ -45,9 +45,18 @@ export const Alergenos: CollectionConfig = {
     {
       name: 'icono',
       type: 'text',
-      label: 'Icono del Alérgeno',
+      label: 'Emoji del Alérgeno',
       admin: {
-        description: 'Emoji o icono del alérgeno (ej: 🌾)',
+        description: 'Emoji del alérgeno (ej: 🌾) - Fallback si no hay imagen',
+      },
+    },
+    {
+      name: 'imagen',
+      type: 'upload',
+      relationTo: 'archivos',
+      label: 'Icono Gráfico',
+      admin: {
+        description: 'Imagen del icono del alérgeno (preferiblemente WebP o SVG)',
       },
     },
     {

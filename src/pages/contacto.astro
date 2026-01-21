@@ -1,0 +1,153 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Container from '../components/ui/Container.astro';
+import Button from '../components/ui/Button.astro';
+import { getSiteSettings, getPaginaBySlug } from '../lib/payload-local';
+
+const siteSettings = await getSiteSettings();
+const pageData = await getPaginaBySlug('contacto');
+
+const pageTitle = pageData?.metaTitle || `Contacto | ${siteSettings?.title || "Warynessy"}`;
+const pageDescription = pageData?.metaDescription || "Contacta con nosotros para reservas o consultas.";
+
+const contact = siteSettings?.contact || {
+  address: "Calle Ejemplo 1, Alicante",
+  email: "info@warynessy.com",
+  phone: "+34 965 00 00 00"
+};
+
+// Imagen Hero desde el CMS o fallback
+const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.url 
+  ? pageData.heroImage.url 
+  : 'https://images.unsplash.com/photo-1534536281715-3bd66a50689b?auto=format&fit=crop&q=80';
+---
+
+<MainLayout title={pageTitle} description={pageDescription}>
+  <section class="relative py-32 bg-matte-black overflow-hidden">
+     <div class="absolute inset-0 bg-cover bg-center opacity-20" style={`background-image: url('${heroImg}')`}></div>
+     <div class="absolute inset-0 bg-gradient-to-t from-matte-black to-transparent"></div>
+     <Container class="relative z-10 text-center animate-fade-up">
+        <span class="text-primary font-bold tracking-[0.3em] uppercase text-sm mb-4 block">
+          {pageData?.heroSubtitle || "Contacto"}
+        </span>
+        <h1 class="text-5xl md:text-7xl font-display font-black text-white mb-6">
+          {pageData?.heroTitle || "Estamos aquí"}
+        </h1>
+        <p class="text-white/60 text-lg max-w-2xl mx-auto font-light">
+          {pageData?.heroSubtitle ? "" : "¿Tienes alguna duda o quieres organizar un evento especial? Contacta con nosotros."}
+        </p>
+     </Container>
+  </section>
+
+  <Section class="bg-matte-black pt-0">
+    <Container>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 -mt-16 relative z-20">
+        
+        {/* Información de contacto */}
+        <div class="bg-[#1A1816] p-10 md:p-16 rounded-2xl shadow-2xl border border-white/5 animate-fade-up">
+          <h2 class="text-3xl font-serif font-bold text-white mb-10">Datos de Contacto</h2>
+          
+          <div class="space-y-8">
+            <div class="flex gap-6">
+              <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-primary">location_on</span>
+              </div>
+              <div>
+                <h4 class="text-white font-bold mb-1">Ubicación</h4>
+                <p class="text-white/60">{contact.address}</p>
+              </div>
+            </div>
+
+            <div class="flex gap-6">
+              <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-primary">call</span>
+              </div>
+              <div>
+                <h4 class="text-white font-bold mb-1">Teléfono</h4>
+                <a href={`tel:${contact.phone}`} class="text-white/60 hover:text-primary transition-colors">{contact.phone}</a>
+              </div>
+            </div>
+
+            <div class="flex gap-6">
+              <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-primary">mail</span>
+              </div>
+              <div>
+                <h4 class="text-white font-bold mb-1">Email</h4>
+                <a href={`mailto:${contact.email}`} class="text-white/60 hover:text-primary transition-colors">{contact.email}</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-12 pt-12 border-t border-white/5">
+            <h3 class="text-white font-bold mb-6">Siguenos</h3>
+            <div class="flex gap-4">
+              {siteSettings?.socialMedia?.instagram && (
+                <a href={siteSettings.socialMedia.instagram} target="_blank" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-primary transition-colors">
+                   <i class="fab fa-instagram"></i>
+                </a>
+              )}
+              {siteSettings?.socialMedia?.facebook && (
+                <a href={siteSettings.socialMedia.facebook} target="_blank" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-primary transition-colors">
+                   <i class="fab fa-facebook-f"></i>
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Formulario de contacto */}
+        <div class="bg-white p-10 md:p-16 rounded-2xl shadow-2xl animate-fade-up" style="animation-delay: 200ms;">
+          <h2 class="text-3xl font-serif font-bold text-gray-900 mb-8">Envíanos un mensaje</h2>
+          
+          <form class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="text-sm font-bold text-gray-500 uppercase tracking-widest">Nombre</label>
+                <input type="text" placeholder="Tu nombre" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors" />
+              </div>
+              <div class="space-y-2">
+                <label class="text-sm font-bold text-gray-500 uppercase tracking-widest">Email</label>
+                <input type="email" placeholder="tu@email.com" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors" />
+              </div>
+            </div>
+            
+            <div class="space-y-2">
+              <label class="text-sm font-bold text-gray-500 uppercase tracking-widest">Asunto</label>
+              <select class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors">
+                <option>Reserva Especial / Evento</option>
+                <option>Sugerencia / Feedback</option>
+                <option>Trabaja con nosotros</option>
+                <option>Otro</option>
+              </select>
+            </div>
+
+            <div class="space-y-2">
+              <label class="text-sm font-bold text-gray-500 uppercase tracking-widest">Mensaje</label>
+              <textarea rows="4" placeholder="¿En qué podemos ayudarte?" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors resize-none"></textarea>
+            </div>
+
+            <Button variant="primary" size="lg" class="w-full justify-center">
+              Enviar Mensaje
+            </Button>
+          </form>
+        </div>
+
+      </div>
+    </Container>
+  </Section>
+
+  {/* Mapa */}
+  <section class="h-[500px] w-full bg-zinc-900 grayscale hover:grayscale-0 transition-all duration-700">
+     <iframe
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3129.584620579177!2d-0.485579923428383!3d38.33544487184499!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd62358000000001%3A0xe5a1b3b24f5a6b7e!2sRestaurante%20Warynessy!5e0!3m2!1ses!2ses!4v1710000000000!5m2!1ses!2ses"
+      width="100%"
+      height="100%"
+      style="border:0;"
+      allowfullscreen=""
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+    ></iframe>
+  </section>
+</MainLayout>

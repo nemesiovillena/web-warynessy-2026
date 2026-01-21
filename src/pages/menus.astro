@@ -3,24 +3,35 @@ import MainLayout from '../layouts/MainLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Container from '../components/ui/Container.astro';
 import MenuCard from '../components/content/MenuCard.astro';
-import { getSiteSettings, getMenus } from '../lib/payload-local';
+import { getSiteSettings, getMenus, getPaginaBySlug } from '../lib/payload-local';
 
 const siteSettings = await getSiteSettings();
 const menus = await getMenus();
+const pageData = await getPaginaBySlug('menus');
 
-const pageTitle = `Menús | ${siteSettings?.title || "Warynessy"}`;
+const pageTitle = pageData?.metaTitle || `Menús | ${siteSettings?.title || "Warynessy"}`;
+const pageDescription = pageData?.metaDescription || "Descubre nuestros menús degustación y opciones especiales.";
+
+// Imagen Hero desde el CMS o fallback
+const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.url 
+  ? pageData.heroImage.url 
+  : 'https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&q=80';
 ---
 
-<MainLayout title={pageTitle} description="Descubre nuestros menús degustación y opciones especiales para grupos y eventos.">
+<MainLayout title={pageTitle} description={pageDescription}>
   
   <section class="relative py-32 bg-matte-black overflow-hidden">
-     <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-20"></div>
+     <div class="absolute inset-0 bg-cover bg-center opacity-20" style={`background-image: url('${heroImg}')`}></div>
      <div class="absolute inset-0 bg-gradient-to-t from-matte-black to-transparent"></div>
      <Container class="relative z-10 text-center">
-        <span class="text-primary font-bold tracking-[0.3em] uppercase text-sm mb-4 block">Experiencias</span>
-        <h1 class="text-5xl md:text-7xl font-display font-black text-white mb-6">Menús Especiales</h1>
+        <span class="text-primary font-bold tracking-[0.3em] uppercase text-sm mb-4 block">
+          {pageData?.heroSubtitle || "Experiencias"}
+        </span>
+        <h1 class="text-5xl md:text-7xl font-display font-black text-white mb-6">
+          {pageData?.heroTitle || "Menús Especiales"}
+        </h1>
         <p class="text-white/60 text-lg max-w-2xl mx-auto font-light">
-           Propuestas diseñadas para compartir y disfrutar de la esencia de nuestra cocina en buena compañía.
+          {pageData?.heroSubtitle ? "" : "Propuestas diseñadas para compartir y disfrutar de la esencia de nuestra cocina."}
         </p>
      </Container>
   </section>

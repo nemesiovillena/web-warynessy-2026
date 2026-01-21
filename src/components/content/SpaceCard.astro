@@ -12,20 +12,33 @@ const { space, class: className = "h-[500px]" } = Astro.props;
 const imageUrl = typeof space.imagenPrincipal === 'object' && space.imagenPrincipal?.url ? space.imagenPrincipal.url : '';
 ---
 
-<div class={`relative group w-full overflow-hidden rounded-2xl cursor-pointer ${className}`}>
+<div class={`relative group w-full overflow-hidden rounded-2xl cursor-pointer shadow-2xl ${className}`}>
   {imageUrl && (
     <ResponsiveImage 
       src={imageUrl} 
       alt={space.nombre} 
-      class="h-full w-full absolute inset-0 transition-transform duration-1000 group-hover:scale-110"
+      class="h-full w-full absolute inset-0 transition-transform duration-[1.5s] ease-out group-hover:scale-110"
     />
   )}
-  <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-500"></div>
   
-  <div class="absolute bottom-0 left-0 w-full p-8 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-    <h3 class="text-3xl font-serif font-bold text-white mb-2">{space.nombre}</h3>
-    <p class="text-white/80 max-w-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-      Capacidad: {space.capacidad || 'N/A'} personas
-    </p>
+  {/* Gradiente sofisticado */}
+  <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-700"></div>
+  
+  {/* Borde sutil de cristal */}
+  <div class="absolute inset-0 border border-white/10 rounded-2xl pointer-events-none group-hover:border-white/30 transition-colors duration-700"></div>
+
+  <div class="absolute bottom-0 left-0 w-full p-8 md:p-12 z-10">
+    <div class="overflow-hidden">
+      <h3 class="text-3xl md:text-4xl font-serif font-bold text-white mb-3 translate-y-0 transition-transform duration-700">
+        {space.nombre}
+      </h3>
+    </div>
+    
+    <div class="h-0 group-hover:h-8 transition-all duration-500 overflow-hidden">
+      <p class="text-primary font-bold tracking-widest text-xs uppercase flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-200">
+        <span class="w-8 h-px bg-primary/50"></span>
+        Capacidad: {space.capacidad || 'N/A'} comensales
+      </p>
+    </div>
   </div>
 </div>

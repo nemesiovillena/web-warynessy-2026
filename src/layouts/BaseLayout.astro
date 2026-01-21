@@ -9,16 +9,17 @@ interface Props {
 	description?: string;
 	image?: string;
 	schemaType?: 'Restaurant' | 'Menu' | 'Article';
+  schemaData?: Record<string, any>;
 }
 
-const { title, description, image, schemaType = 'Restaurant' } = Astro.props;
+const { title, description, image, schemaType = 'Restaurant', schemaData } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="es" class="scroll-smooth">
 	<head>
 		<SEO title={title} description={description} image={image} />
-		<Schema type={schemaType} />
+		<Schema type={schemaType} data={schemaData} />
 		<ClientRouter />
 	</head>
 	<body class="bg-warynessy-black text-warynessy-cream antialiased min-h-screen flex flex-col">

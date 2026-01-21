@@ -11,8 +11,22 @@ interface Props {
 const { src, alt, class: className = '', sizes = "100vw", aspectRatio, lazy = true } = Astro.props;
 
 // Simple helper to generate dummy placeholder if no src (development)
-// In production with Payload, src should be a full URL from the media collection
-const imageSrc = src || '/images/placeholder.jpg';
+const BUNNY_URL = import.meta.env.BUNNY_CDN_URL || process.env.BUNNY_CDN_URL;
+const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
+
+let imageSrc = src || '/images/placeholder.jpg';
+
+// Si la imagen es de Payload (empieza por /api/media o es relativa)
+if (imageSrc.startsWith('/api/media') || (imageSrc.startsWith('/media/') && !imageSrc.startsWith('http'))) {
+  if (BUNNY_URL) {
+    // En producción con Bunny CDN
+    const cleanPath = imageSrc.replace('/api/media/', '/media/');
+    imageSrc = `${BUNNY_URL}${cleanPath}`;
+  } else {
+    // En desarrollo local, apuntamos directamente al servidor de Payload
+    imageSrc = `${PAYLOAD_URL}${imageSrc}`;
+  }
+}
 ---
 
 <div class:list={["overflow-hidden bg-white/5", className]} style={aspectRatio ? `aspect-ratio: ${aspectRatio};` : ''}>

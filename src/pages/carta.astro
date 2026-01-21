@@ -3,11 +3,14 @@ import MainLayout from '../layouts/MainLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Container from '../components/ui/Container.astro';
 import CategorySection from '../components/content/CategorySection.astro';
-import { getSiteSettings, getCategorias, getPlatos } from '../lib/payload-local';
+import { getSiteSettings, getCategorias, getPlatos, getAlergenos, getPaginaBySlug } from '../lib/payload-local';
 
 const siteSettings = await getSiteSettings();
 const allCategories = await getCategorias();
 const allDishes = await getPlatos();
+const allAlergenos = await getAlergenos();
+
+const pageData = await getPaginaBySlug('carta');
 
 const categoriesWithDishes = allCategories.map((cat: any) => ({
   ...cat,
@@ -16,19 +19,32 @@ const categoriesWithDishes = allCategories.map((cat: any) => ({
   )
 }));
 
-// Filter out categories without dishes to keep it clean, if desired. 
-// Or keep them to show "Coming soon". Let's keep empty ones for now but maybe filtered in UI if needed.
 const activeCategories = categoriesWithDishes.filter((cat: any) => cat.activa);
 
-const pageTitle = `Carta | ${siteSettings?.title || "Warynessy"}`;
-const pageDescription = "Descubre nuestra exquisita selección de platos, elaborados con productos locales y de temporada.";
+const pageTitle = pageData?.metaTitle || `Carta | ${siteSettings?.title || "Warynessy"}`;
+const pageDescription = pageData?.metaDescription || "Descubre nuestra exquisita selección de platos.";
+
+// Imagen Hero desde el CMS o fallback
+const rawHeroImage = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.url 
+  ? pageData.heroImage.url 
+  : '/media/Warynessy-carta.webp';
+
+const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
+const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('http')) 
+  ? `${PAYLOAD_URL}${rawHeroImage}` 
+  : rawHeroImage;
 ---
 
-<MainLayout title={pageTitle} description={pageDescription}>
+<MainLayout 
+  title={pageTitle} 
+  description={pageDescription}
+  schemaType="Menu"
+  schemaData={{ name: "Carta Warynessy 2026" }}
+>
   
   {/* Header Hero for Menu */}
   <section class="relative py-32 bg-matte-black overflow-hidden">
-     <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-20"></div>
+     <div class="absolute inset-0 bg-cover bg-center opacity-40" style={`background-image: url('${heroImage}')`}></div>
      <div class="absolute inset-0 bg-gradient-to-t from-matte-black to-transparent"></div>
      <Container class="relative z-10 text-center animate-fade-up">
         <span class="text-primary font-bold tracking-[0.3em] uppercase text-sm mb-4 block">Gastronomía</span>
@@ -41,46 +57,239 @@ const pageDescription = "Descubre nuestra exquisita selección de platos, elabor
 
   <Section class="bg-matte-black min-h-screen relative">
     <Container>
+      
+      {/* Allergen Filter Bar */}
+      <div class="mb-12 bg-[#1A1816] p-6 rounded-2xl border border-white/5 animate-fade-up">
+        <h3 class="text-white/60 text-xs uppercase tracking-widest font-bold mb-4 flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">filter_list</span>
+          Filtrar sin alérgenos:
+        </h3>
+        <div class="flex flex-wrap gap-3">
+          {allAlergenos.map((alergeno: any) => {
+            const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
+            const imgUrl = typeof alergeno.imagen === 'object' && alergeno.imagen?.url 
+              ? (alergeno.imagen.url.startsWith('/') ? `${PAYLOAD_URL}${alergeno.imagen.url}` : alergeno.imagen.url)
+              : null;
+
+            return (
+              <button 
+                class="allergen-filter-btn group flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 text-white/40 hover:border-primary/50 hover:text-white transition-all text-sm"
+                data-alergeno-id={alergeno.id}
+              >
+                <span class="w-6 h-6 flex items-center justify-center bg-white/5 rounded-full group-hover:bg-primary/20 transition-colors overflow-hidden p-1">
+                  {imgUrl ? (
+                    <img src={imgUrl} alt={alergeno.nombre} class="w-full h-full object-contain invert opacity-60 group-hover:opacity-100 transition-opacity" />
+                  ) : (
+                    alergeno.icono || '•'
+                  )}
+                </span>
+                {alergeno.nombre}
+              </button>
+            );
+          })}
+          <button 
+            id="clear-filters"
+            class="hidden px-4 py-2 text-primary text-sm font-bold hover:underline"
+          >
+            Limpiar filtros
+          </button>
+        </div>
+      </div>
+
       <div class="flex flex-col lg:flex-row gap-12">
         
         {/* Sidebar Navigation (Desktop) */}
         <aside class="hidden lg:block w-1/4 relative">
           <div class="sticky top-32">
              <h3 class="text-white font-bold uppercase tracking-widest mb-6 border-b border-primary/30 pb-2">Categorías</h3>
-             <nav class="flex flex-col gap-2">
-               {activeCategories.map((cat: any) => (
-                 <a 
-                   href={`#${cat.slug}`} 
-                   class="text-white/60 hover:text-primary transition-colors py-2 text-sm font-medium border-l-2 border-transparent hover:border-primary pl-4 -ml-[2px]"
-                 >
-                   {cat.nombre}
-                 </a>
-               ))}
-             </nav>
+              <nav class="flex flex-col gap-2">
+                {activeCategories.map((cat: any, index: number) => (
+                  <button 
+                    data-category-slug={cat.slug}
+                    class={`category-nav-link text-left transition-all py-2 text-sm font-medium border-l-2 pl-4 -ml-[2px] ${index === 0 ? 'active text-primary border-primary' : 'text-white/60 border-transparent hover:text-primary hover:border-primary/50'}`}
+                  >
+                    {cat.nombre}
+                  </button>
+                ))}
+              </nav>
           </div>
         </aside>
 
         {/* Mobile Filter Pills */}
-        <div class="lg:hidden flex overflow-x-auto gap-4 pb-4 mb-8 sticky top-20 z-40 bg-matte-black/95 backdrop-blur py-4 -mx-6 px-6 border-b border-white/5">
-           {activeCategories.map((cat: any) => (
-             <a 
-               href={`#${cat.slug}`} 
-               class="whitespace-nowrap px-6 py-2 rounded-full border border-white/20 text-white/80 text-sm font-medium active:bg-primary active:text-white active:border-primary"
+        <div class="lg:hidden flex overflow-x-auto gap-4 pb-4 mb-8 sticky top-20 z-40 bg-matte-black/95 backdrop-blur py-4 -mx-6 px-6 border-b border-white/5 no-scrollbar">
+           {activeCategories.map((cat: any, index: number) => (
+             <button 
+               data-category-slug={cat.slug}
+               class={`category-nav-link whitespace-nowrap px-6 py-2 rounded-full border transition-all text-sm font-medium ${index === 0 ? 'active border-primary bg-primary/10 text-white' : 'border-white/20 text-white/80'}`}
              >
                {cat.nombre}
-             </a>
+             </button>
            ))}
         </div>
 
         {/* Main Content */}
-        <div class="w-full lg:w-3/4">
-           {activeCategories.map((cat: any) => (
-             <CategorySection category={cat} dishes={cat.platos} />
+        <div class="w-full lg:w-3/4" id="carta-container">
+           {activeCategories.map((cat: any, index: number) => (
+             <div 
+               class={`category-content transition-all duration-500 ${index === 0 ? 'block opacity-100 translate-y-0' : 'hidden opacity-0 translate-y-4'}`} 
+               data-category={cat.slug}
+             >
+               <CategorySection category={cat} dishes={cat.platos} />
+             </div>
            ))}
+           <div id="no-results" class="hidden text-center py-20 text-white/40 italic">
+              No se han encontrado platos que coincidan con tu selección de alérgenos.
+           </div>
         </div>
 
       </div>
     </Container>
   </Section>
+
+  <script>
+    document.addEventListener('astro:page-load', () => {
+      const filterBtns = document.querySelectorAll('.allergen-filter-btn');
+      const clearBtn = document.getElementById('clear-filters');
+      const dishCards = document.querySelectorAll('.dish-card');
+      const categoryNavLinks = document.querySelectorAll('.category-nav-link');
+      const categoryContents = document.querySelectorAll('.category-content');
+      const noResults = document.getElementById('no-results');
+      
+      let activeFilters = new Set();
+      let activeCategory = categoryNavLinks[0]?.getAttribute('data-category-slug');
+
+      // CATEGORY NAVIGATION LOGIC
+      categoryNavLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          const slug = link.getAttribute('data-category-slug');
+          switchCategory(slug);
+        });
+      });
+
+      function switchCategory(slug) {
+        if (activeCategory === slug) return;
+        activeCategory = slug;
+
+        // Update nav buttons
+        categoryNavLinks.forEach(link => {
+          const isTarget = link.getAttribute('data-category-slug') === slug;
+          if (isTarget) {
+            link.classList.add('active', 'text-primary', 'border-primary');
+            link.classList.remove('text-white/60', 'border-transparent', 'border-white/20', 'text-white/80');
+            if (link.classList.contains('rounded-full')) { // Mobile
+              link.classList.add('bg-primary/10', 'text-white');
+            }
+          } else {
+            link.classList.remove('active', 'text-primary', 'border-primary', 'bg-primary/10', 'text-white');
+            if (link.classList.contains('rounded-full')) { // Mobile
+              link.classList.add('border-white/20', 'text-white/80');
+            } else { // Desktop
+              link.classList.add('text-white/60', 'border-transparent');
+            }
+          }
+        });
+
+        // Update content visibility with transitions
+        categoryContents.forEach(content => {
+          const isTarget = content.getAttribute('data-category') === slug;
+          if (isTarget) {
+            content.classList.remove('hidden');
+            // Small timeout to allow transition
+            setTimeout(() => {
+              content.classList.add('opacity-100', 'translate-y-0');
+              content.classList.remove('opacity-0', 'translate-y-4');
+            }, 10);
+          } else {
+            content.classList.add('opacity-0', 'translate-y-4');
+            content.classList.remove('opacity-100', 'translate-y-0');
+            setTimeout(() => {
+              if (content.getAttribute('data-category') !== activeCategory) {
+                content.classList.add('hidden');
+              }
+            }, 500); // Transition duration
+          }
+        });
+
+        // Scroll top on mobile when changing category
+        if (window.innerWidth < 1024) {
+          const container = document.getElementById('carta-container');
+          if (container) {
+             const offset = 150;
+             const elementPosition = container.getBoundingClientRect().top;
+             const offsetPosition = elementPosition + window.pageYOffset - offset;
+             window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+             });
+          }
+        }
+
+        updateFilters();
+      }
+
+      // ALLERGEN FILTER LOGIC
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-alergeno-id');
+          
+          if (activeFilters.has(id)) {
+            activeFilters.delete(id);
+            btn.classList.remove('active', 'border-primary', 'text-white', 'bg-primary/10');
+            btn.classList.add('text-white/40', 'border-white/10');
+          } else {
+            activeFilters.add(id);
+            btn.classList.add('active', 'border-primary', 'text-white', 'bg-primary/10');
+            btn.classList.remove('text-white/40', 'border-white/10');
+          }
+
+          updateFilters();
+        });
+      });
+
+      clearBtn?.addEventListener('click', () => {
+        activeFilters.clear();
+        filterBtns.forEach(btn => {
+          btn.classList.remove('active', 'border-primary', 'text-white', 'bg-primary/10');
+          btn.classList.add('text-white/40', 'border-white/10');
+        });
+        updateFilters();
+      });
+
+      function updateFilters() {
+        if (activeFilters.size > 0) {
+          clearBtn?.classList.remove('hidden');
+        } else {
+          clearBtn?.classList.add('hidden');
+        }
+
+        let totalVisibleInActiveCategory = 0;
+
+        dishCards.forEach(card => {
+          const cardAlergenos = (card.getAttribute('data-alergenos') || '').split(',').filter(Boolean);
+          const hasBlockedAlergen = Array.from(activeFilters).some(filterId => cardAlergenos.includes(filterId));
+          
+          if (hasBlockedAlergen) {
+             card.closest('.animate-stagger-item')?.classList.add('hidden');
+          } else {
+             card.closest('.animate-stagger-item')?.classList.remove('hidden');
+             
+             // Count only if it belongs to the active category
+             if (card.closest('.category-content')?.getAttribute('data-category') === activeCategory) {
+                totalVisibleInActiveCategory++;
+             }
+          }
+        });
+
+        if (totalVisibleInActiveCategory === 0) {
+          noResults?.classList.remove('hidden');
+        } else {
+          noResults?.classList.add('hidden');
+        }
+      }
+
+      // Initial run
+      updateFilters();
+    });
+  </script>
 
 </MainLayout>

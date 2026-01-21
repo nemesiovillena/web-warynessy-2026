@@ -12,7 +12,10 @@ const { plato } = Astro.props;
 const imageUrl = typeof plato.imagen === 'object' && plato.imagen?.url ? plato.imagen.url : '';
 ---
 
-<div class="group relative flex flex-col gap-4">
+<div 
+  class="group relative flex flex-col gap-4 dish-card" 
+  data-alergenos={plato.alergenos?.map((a: any) => typeof a === 'object' ? a.id : a).join(',')}
+>
   <div class="aspect-square overflow-hidden rounded-2xl bg-white/5">
     {imageUrl ? (
       <ResponsiveImage 
@@ -46,14 +49,25 @@ const imageUrl = typeof plato.imagen === 'object' && plato.imagen?.url ? plato.i
 
   {plato.alergenos && plato.alergenos.length > 0 && (
     <div class="flex gap-2 flex-wrap">
-      {plato.alergenos.map((alergeno: any) => (
-        <span 
-          class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/10 text-[10px] text-white/70"
-          title={alergeno.nombre}
-        >
-          {alergeno.icono || alergeno.codigo}
-        </span>
-      ))}
+      {plato.alergenos.map((alergeno: any) => {
+        const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
+        const imgUrl = typeof alergeno.imagen === 'object' && alergeno.imagen?.url 
+          ? (alergeno.imagen.url.startsWith('/') ? `${PAYLOAD_URL}${alergeno.imagen.url}` : alergeno.imagen.url)
+          : null;
+          
+        return (
+          <span 
+            class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-white/10 text-[10px] text-white/70 overflow-hidden"
+            title={alergeno.nombre}
+          >
+            {imgUrl ? (
+              <img src={imgUrl} alt={alergeno.nombre} class="w-full h-full object-contain p-1 invert opacity-80" />
+            ) : (
+              alergeno.icono || alergeno.codigo
+            )}
+          </span>
+        );
+      })}
     </div>
   )}
 </div>

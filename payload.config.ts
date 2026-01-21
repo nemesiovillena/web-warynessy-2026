@@ -24,6 +24,7 @@ import { Experiencias } from './src/payload/collections/Experiencias'
 import { Banners } from './src/payload/collections/Banners'
 import { Archivos } from './src/payload/collections/Archivos'
 import { Usuarios } from './src/payload/collections/Usuarios'
+import { Paginas } from './src/payload/collections/Paginas'
 
 // Globals
 import { PaginaInicio } from './src/payload/globals/PaginaInicio'
@@ -49,6 +50,7 @@ export default buildConfig({
     Espacios,
     Experiencias,
     Banners,
+    Paginas,
   ],
 
   // Globals (singletons)

@@ -2,13 +2,27 @@
 // Usa la API local de Payload directamente (sin servidor HTTP)
 
 import { getPayload } from 'payload'
-import config from '../../payload.config'
+// La configuración se importa dinámicamente en getPayloadClient para evitar caché
 
 let payloadInstance: Awaited<ReturnType<typeof getPayload>> | null = null
 
-async function getPayloadClient() {
+export async function getPayloadClient() {
+  // Si la instancia ya existe, verificamos si contiene todas las colecciones necesarias
+  if (payloadInstance) {
+    const collections = Object.keys(payloadInstance.collections)
+    if (!collections.includes('paginas')) {
+      console.log('⚠️ Detectada configuración antigua de Payload. Reinicializando...')
+      payloadInstance = null
+    }
+  }
+
   if (!payloadInstance) {
-    payloadInstance = await getPayload({ config })
+    // Importamos la configuración dinámicamente para evitar problemas de caché en desarrollo
+    const configModule = await import('../../payload.config')
+    const freshConfig = configModule.default
+
+    payloadInstance = await getPayload({ config: freshConfig })
+    console.log('🚀 Payload Initialized with collections:', Object.keys(payloadInstance.collections))
   }
   return payloadInstance
 }
@@ -143,6 +157,31 @@ export async function getConfiguracionSitio() {
     slug: 'configuracion-sitio',
     depth: 1,
   })
+}
+
+export async function getPaginaBySlug(slug: string) {
+  try {
+    const payload = await getPayloadClient()
+
+    // Verificamos si la colección existe antes de buscar
+    if (!payload.collections['paginas' as any]) {
+      console.warn(`⚠️ La colección "paginas" no está disponible en esta instancia de Payload.`);
+      return null;
+    }
+
+    const result = await payload.find({
+      collection: 'paginas',
+      where: {
+        slug: { equals: slug },
+      },
+      limit: 1,
+      depth: 1,
+    })
+    return result.docs[0] || null
+  } catch (error) {
+    console.error(`❌ Error al obtener página por slug (${slug}):`, error);
+    return null;
+  }
 }
 
 // ============================================

@@ -1,0 +1,86 @@
+import type { CollectionConfig } from 'payload'
+
+export const Paginas: CollectionConfig = {
+    slug: 'paginas',
+    labels: {
+        singular: 'Página',
+        plural: 'Páginas',
+    },
+    admin: {
+        useAsTitle: 'tituloInterno',
+        defaultColumns: ['tituloInterno', 'slug', 'updatedAt'],
+        group: 'Contenido',
+    },
+    access: {
+        read: () => true,
+    },
+    fields: [
+        {
+            name: 'tituloInterno',
+            type: 'text',
+            label: 'Nombre Interno (Admin)',
+            required: true,
+            admin: {
+                description: 'Ej: Página de Inicio, Nosotros, etc.',
+            },
+        },
+        {
+            name: 'slug',
+            type: 'text',
+            label: 'Slug (URL)',
+            required: true,
+            unique: true,
+            admin: {
+                description: 'Identificador único (nosotros, carta, contacto...)',
+            },
+        },
+        {
+            type: 'tabs',
+            tabs: [
+                {
+                    label: 'Cabecera (Hero)',
+                    fields: [
+                        {
+                            name: 'heroImage',
+                            type: 'upload',
+                            label: 'Imagen Hero',
+                            relationTo: 'archivos',
+                            required: true,
+                        },
+                        {
+                            name: 'heroTitle',
+                            type: 'text',
+                            label: 'Título de la Cabecera',
+                        },
+                        {
+                            name: 'heroSubtitle',
+                            type: 'textarea',
+                            label: 'Subtítulo de la Cabecera',
+                        },
+                    ],
+                },
+                {
+                    label: 'SEO y Metadatos',
+                    fields: [
+                        {
+                            name: 'metaTitle',
+                            type: 'text',
+                            label: 'Título SEO (Meta Title)',
+                            admin: {
+                                description: 'Aparece en la pestaña del navegador y Google',
+                            },
+                        },
+                        {
+                            name: 'metaDescription',
+                            type: 'textarea',
+                            label: 'Descripción SEO (Meta Description)',
+                            admin: {
+                                description: 'Breve resumen para los resultados de búsqueda',
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
+}

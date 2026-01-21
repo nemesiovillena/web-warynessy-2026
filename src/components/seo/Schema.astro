@@ -15,39 +15,46 @@ let schema: Record<string, any> = {
   "@context": "https://schema.org"
 };
 
+const siteUrl = "https://warynessy.com"; // TODO: Configurar PUBLIC_SITE_URL en .env
+
 if (type === 'Restaurant') {
+  const contact = settings?.contact || {};
+  
   schema = {
     ...schema,
     "@type": "Restaurant",
     "name": settings?.title || "Restaurante Warynessy",
-    "image": [
-      "https://warynessy.com/images/exterior.jpg", // TODO: Usar imagen real del CMS
-      "https://warynessy.com/images/interior.jpg"
-    ],
-    "description": settings?.description,
+    "image": settings?.logo?.url ? [settings.logo.url] : [],
+    "description": settings?.description || "Alta cocina mediterránea",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": settings?.contact?.address,
-      "addressLocality": settings?.contact?.city,
-      "addressRegion": settings?.contact?.province,
-      "postalCode": settings?.contact?.postalCode,
+      "streetAddress": contact.address || "",
+      "addressLocality": "Villena",
+      "addressRegion": "Alicante",
+      "postalCode": "03400",
       "addressCountry": "ES"
     },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": settings?.contact?.coordinates?.lat || 38.6366,
-      "longitude": settings?.contact?.coordinates?.lng || -0.865
-    },
-    "url": "https://warynessy.com",
-    "telephone": settings?.contact?.phone,
-    "servesCuisine": "Mediterránea, Alta Cocina",
+    "url": siteUrl,
+    "telephone": contact.phone || "",
+    "servesCuisine": "Mediterránea, Contemporánea",
     "priceRange": "€€€",
     "openingHoursSpecification": settings?.openingHours?.map((oh: any) => ({
       "@type": "OpeningHoursSpecification",
-      "dayOfWeek": oh.days, // Esto requerirá mapeo si el formato no es estándar de Schema.org
-      "opens": "13:00", // Placeholder, idealmente parsear 'hours'
-      "closes": "23:00"
+      "dayOfWeek": oh.days,
+      "opens": oh.closed ? "00:00" : "13:30",
+      "closes": oh.closed ? "00:00" : "23:00"
     })) || []
+  };
+} else if (type === 'Menu') {
+  schema = {
+    ...schema,
+    "@type": "Menu",
+    "name": data.name || "Nuestra Carta",
+    "mainEntityOfPage": `${siteUrl}/carta`,
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "EUR"
+    }
   };
 }
 

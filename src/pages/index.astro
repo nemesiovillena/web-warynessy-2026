@@ -7,6 +7,7 @@ import ResponsiveImage from '../components/ui/ResponsiveImage.astro';
 import SpaceCard from '../components/content/SpaceCard.astro';
 import { getSiteSettings, getHomepage, getSpaces, getExperiences, getFeaturedDishes } from '../lib/payload-local';
 import { getGoogleReviews } from '../lib/google-reviews';
+import { getInstagramFeed } from '../lib/instagram';
 
 // Fetch data from Payload CMS (Local API)
 const siteSettings = await getSiteSettings();
@@ -15,6 +16,7 @@ const spaces = await getSpaces();
 const experiences = await getExperiences();
 const featuredDishes = await getFeaturedDishes();
 const rawOpiniones = await getGoogleReviews();
+const instagramPosts = await getInstagramFeed();
 
 // Filtrar por 4-5 estrellas y ordenar por las más recientes
 const opiniones = rawOpiniones
@@ -66,7 +68,7 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
   <Section id="story" background="dark">
     <Container class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
       <div class="flex flex-col gap-8 order-2 lg:order-1 animate-fade-up">
-        <h2 class="text-white font-serif text-5xl font-bold leading-tight">
+        <h2 class="text-white font-serif text-4xl md:text-6xl font-bold leading-tight">
           {homepage?.welcomeTitle || "Nuestra Historia"}
         </h2>
         <div class="w-20 h-1.5 bg-primary"></div>
@@ -101,44 +103,33 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
   </Section>
 
   {/* SECTION 3: HORARIOS */}
-  <Section background="none" class="bg-[#2B2621]">
-    <Container>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 animate-fade-up">
-        {/* Columna 1: Widget de Covermanager */}
-        <div class="flex flex-col">
-          <div class="flex items-center gap-3 mb-6">
-            <span class="material-symbols-outlined text-primary text-3xl">calendar_month</span>
-            <h3 class="text-white text-4xl font-serif font-bold">Reserva tu mesa</h3>
-          </div>
-          <div class="bg-matte-black rounded-2xl p-6 shadow-2xl border border-white/5 flex-1">
-            <div id="covermanager-widget" class="w-full min-h-[300px]">
-              <!-- Widget de Covermanager se cargará aquí -->
-              <script src="https://www.covermanager.com/js/iframeResizer.min.js"></script>
-              <iframe
-                src="https://www.covermanager.com/reservation/module_restaurant/warynessy/spanish"
-                style="width: 100%; min-height: 400px; border: none;"
-                id="covermanager-iframe"
-              ></iframe>
+  <Section background="none" class="bg-[#2B2621] py-20">
+    <Container class="max-w-2xl">
+      <div class="flex flex-col items-center animate-fade-up">
+        <div class="flex items-center gap-3 mb-8">
+          <span class="material-symbols-outlined text-primary text-3xl">schedule</span>
+          <h2 class="text-white text-4xl md:text-5xl font-serif font-bold italic tracking-tight">Nuestros Horarios</h2>
+        </div>
+        
+        <div class="w-full bg-matte-black/50 backdrop-blur-md rounded-2xl p-6 md:p-10 shadow-2xl border border-white/5 animate-stagger-container">
+          {siteSettings?.openingHours?.map((schedule: any) => (
+            <div class="flex justify-between items-center py-4 border-b border-white/5 last:border-0 animate-stagger-item">
+              <p class="text-[#FDFDFD] font-bold text-base md:text-lg">{schedule.days}</p>
+              <p class="text-[#D1C2B4] text-sm md:text-base font-medium text-right leading-relaxed">
+                {schedule.closed ? 
+                  <span class="text-white/30 uppercase tracking-widest text-xs font-black">Cerrado</span> : 
+                  <Fragment set:html={schedule.hours.replace(' / ', '<br/>')} />
+                }
+              </p>
             </div>
-          </div>
+          ))}
         </div>
 
-        {/* Columna 2: Horarios */}
-        <div class="flex flex-col">
-          <div class="flex items-center gap-3 mb-6">
-            <span class="material-symbols-outlined text-primary text-3xl">schedule</span>
-            <h3 class="text-white text-4xl font-serif font-bold">Horarios</h3>
-          </div>
-          <div class="bg-matte-black rounded-2xl p-8 shadow-2xl border border-white/5 flex-1 animate-stagger-container">
-            {siteSettings?.openingHours?.map((schedule: any) => (
-              <div class="flex justify-between items-center py-6 border-b border-white/5 last:border-0 animate-stagger-item">
-                <p class="text-[#FDFDFD] font-bold text-lg">{schedule.days}</p>
-                <p class="text-[#D1C2B4] text-base font-medium text-right leading-relaxed">
-                  {schedule.closed ? "Cerrado" : <Fragment set:html={schedule.hours.replace(' / ', '<br/>')} />}
-                </p>
-              </div>
-            ))}
-          </div>
+        <div class="mt-12">
+          <Button href="/reservas" variant="primary" size="lg" class="group">
+            Ir a Reservas
+            <span class="material-symbols-outlined ml-2 transition-transform group-hover:translate-x-1">calendar_month</span>
+          </Button>
         </div>
       </div>
     </Container>
@@ -148,7 +139,7 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
   <section class="w-full bg-accent-red py-24 relative overflow-hidden">
     <Container class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
       <div class="text-center md:text-left">
-        <h2 class="text-white font-serif text-5xl font-bold mb-4">Regala Gastronomía</h2>
+        <h2 class="text-white font-serif text-4xl md:text-6xl font-bold mb-4">Regala Gastronomía</h2>
         <p class="text-white/80 text-xl max-w-lg">
           {experiences?.[0]?.resumen || "Sorprende a tus seres queridos con una experiencia sensorial inolvidable en nuestro restaurante."}
         </p>
@@ -164,68 +155,35 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
   </section>
 
   {/* SECTION 5: ATMÓSFERAS / ESPACIOS */}
-  <Section id="espacios" background="dark">
+  <Section id="espacios" background="dark" class="overflow-hidden">
     <Container>
-      <div class="flex flex-col md:flex-row justify-between items-end mb-12 animate-fade-up gap-6">
-        <div>
-          <h3 class="text-5xl font-serif font-bold text-white">Nuestros Espacios</h3>
-          <p class="text-white/60 mt-2">Atmósferas diseñadas para cada tipo de celebración.</p>
+      <div class="flex flex-col md:flex-row justify-between items-end mb-16 animate-fade-up gap-8">
+        <div class="max-w-2xl">
+          <h2 class="text-4xl md:text-6xl font-serif font-bold text-white leading-tight">Nuestros Espacios</h2>
+          <p class="text-white/70 text-xl font-light mt-4">Atmósferas únicas diseñadas para elevar cada momento.</p>
         </div>
-        <Button href="/espacios" variant="outline" class="border-white text-white hover:bg-white hover:text-black">
-          Ver todos los espacios
+        <Button href="/espacios" variant="outline" class="border-white/20 text-white hover:bg-white hover:text-black hover:border-white transition-all">
+          Descubrir todos los espacios
         </Button>
       </div>
 
-      {/* Gallery Grid - Images 03-07 from galeriaInicio */}
-      <div class="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] md:auto-rows-[250px] gap-3 mb-16 animate-stagger-container">
+      <div class="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] md:auto-rows-[250px] gap-4 md:gap-6 animate-stagger-container">
         {homepage?.galeriaInicio?.slice(2, 7).map((img: any, i: number) => {
-          // Bento layout for 5 images:
-          // Image 0 (inicio-03): Large (2 cols x 2 rows) - columns 1-2
-          // Image 1, 2 (inicio-04, 05): Small (1 col x 1 row) - column 3
-          // Image 3, 4 (inicio-06, 07): Small (1 col x 1 row) - column 4
-
+          // Bento Grid para las imágenes de espacios (hasta la 07)
           let gridClasses = "col-span-1 row-span-1";
-          if (i === 0) gridClasses = "col-span-2 row-span-2";
+          
+          if (i === 0) {
+            gridClasses = "col-span-2 row-span-2"; // Imagen destacada (2x2)
+          }
 
           return (
-            <div class={`animate-stagger-item ${gridClasses} overflow-hidden rounded-xl group`}>
+            <div class={`animate-stagger-item ${gridClasses} overflow-hidden rounded-2xl group relative shadow-xl`}>
               <ResponsiveImage
                 src={typeof img.imagen === 'object' ? img.imagen?.url : ''}
                 alt={typeof img.imagen === 'object' && img.imagen?.alt ? img.imagen.alt : 'Espacio del restaurante'}
-                class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                class="h-full w-full object-cover transition-transform duration-[1.5s] group-hover:scale-110"
               />
-            </div>
-          );
-        })}
-        {/* Fallback placeholders if no images */}
-        {(!homepage?.galeriaInicio || homepage.galeriaInicio.length < 5) && (
-          <>
-            <div class="col-span-2 row-span-2 rounded-xl bg-zinc-200 dark:bg-zinc-800 animate-stagger-item"></div>
-            <div class="col-span-1 row-span-1 rounded-xl bg-zinc-200 dark:bg-zinc-800 animate-stagger-item"></div>
-            <div class="col-span-1 row-span-1 rounded-xl bg-zinc-200 dark:bg-zinc-800 animate-stagger-item"></div>
-            <div class="col-span-1 row-span-1 rounded-xl bg-zinc-200 dark:bg-zinc-800 animate-stagger-item"></div>
-            <div class="col-span-1 row-span-1 rounded-xl bg-zinc-200 dark:bg-zinc-800 animate-stagger-item"></div>
-          </>
-        )}
-      </div>
-
-      {/* Spaces Cards */}
-      <div class="grid grid-cols-1 md:grid-cols-4 auto-rows-[300px] gap-4 animate-stagger-container">
-        {spaces?.slice(0, 4).map((space: any, i: number) => {
-          // Layout for 4 items:
-          // Item 0: Large square (2x2) - Left
-          // Item 1: Tall vertical (1x2) - Middle Right
-          // Item 2: Small square (1x1) - Top Right
-          // Item 3: Small square (1x1) - Bottom Right
-
-          let gridClasses = "md:col-span-1 md:row-span-1";
-
-          if (i === 0) gridClasses = "md:col-span-2 md:row-span-2";
-          else if (i === 1) gridClasses = "md:col-span-1 md:row-span-2";
-
-          return (
-            <div class={`animate-stagger-item ${gridClasses}`}>
-              <SpaceCard space={space} class="h-full" />
+              <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-700"></div>
             </div>
           );
         })}
@@ -237,7 +195,7 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
   <Section background="none" class="bg-[#2B2621] text-white !pb-12 overflow-hidden">
     <Container>
       <div class="flex flex-col items-center text-center animate-fade-up">
-        <h3 class="text-5xl font-serif font-bold mb-6 text-white">Opiniones de Clientes</h3>
+        <h2 class="text-4xl md:text-6xl font-serif font-bold mb-6 text-white leading-tight">Opiniones de Clientes</h2>
         <div class="flex items-center gap-4 mb-12">
           <div class="flex text-yellow-500 gap-1">
             {[1, 2, 3, 4, 5].map(() => (
@@ -362,22 +320,26 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
   <Section background="none" class="bg-[#2B2621] text-white !pt-12">
     <Container>
       <div class="flex flex-col items-center text-center mb-12 animate-fade-up">
-        <h3 class="text-5xl font-serif font-bold mb-4 text-white">Instagram</h3>
-        <p class="text-white/60 mb-6 italic">Síguenos en @restaurante_warynessy</p>
+        <h2 class="text-4xl md:text-6xl font-serif font-bold mb-4 text-white leading-tight">Instagram</h2>
+        <p class="text-white/70 text-xl font-light mb-8 italic">Síguenos en @restaurante_warynessy</p>
         <Button href="https://instagram.com" target="_blank" variant="outline" class="border-white text-white hover:bg-white hover:text-black">
           Ver Instagram
         </Button>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 animate-stagger-container">
-        {[1,2,3,4,5,6].map(() => (
-          <div class="aspect-square bg-white/5 hover:opacity-80 transition-opacity cursor-pointer overflow-hidden rounded-md animate-stagger-item">
+        {instagramPosts?.map((post) => (
+          <a 
+            href={post.permalink} 
+            target="_blank" 
+            class="aspect-square bg-white/5 hover:opacity-80 transition-opacity cursor-pointer overflow-hidden rounded-md animate-stagger-item"
+          >
             <ResponsiveImage
-              src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80"
-              alt="Instagram post"
+              src={post.media_url}
+              alt={post.caption || "Instagram post"}
               class="h-full w-full"
               aspectRatio="1/1"
             />
-          </div>
+          </a>
         ))}
       </div>
     </Container>

@@ -8,12 +8,14 @@ interface Props {
 	title: string;
 	description?: string;
   noPaddingTop?: boolean;
+  schemaType?: 'Restaurant' | 'Menu' | 'Article';
+  schemaData?: Record<string, any>;
 }
 
-const { title, description, noPaddingTop = false } = Astro.props;
+const { title, description, noPaddingTop = false, schemaType, schemaData } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} schemaType={schemaType} schemaData={schemaData}>
 	<Header />
 
 	<main class={`flex-grow ${noPaddingTop ? '' : 'pt-20'}`}>
