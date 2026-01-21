@@ -2,20 +2,40 @@
 import MainLayout from '../layouts/MainLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Container from '../components/ui/Container.astro';
-import { getSiteSettings } from '../lib/payload-local';
+import { getSiteSettings, getPaginaBySlug } from '../lib/payload-local';
 
 const siteSettings = await getSiteSettings();
-const pageTitle = `Reservas | ${siteSettings?.title || "Warynessy"}`;
+const pageData = await getPaginaBySlug('reservas');
+
+const pageTitle = pageData?.metaTitle || `Reservas | ${siteSettings?.title || "Warynessy"}`;
+const pageDescription = pageData?.metaDescription || "Reserva tu mesa en Warynessy de forma rápida y sencilla.";
+
+// Imagen Hero desde el CMS o fallback
+const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.url
+  ? pageData.heroImage.url
+  : 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80';
 ---
 
-<MainLayout title={pageTitle}>
-  <Section class="bg-matte-black min-h-screen flex items-center justify-center py-32">
-    <Container class="w-full max-w-4xl">
-      <div class="text-center mb-12">
-        <h1 class="text-4xl md:text-6xl font-display font-black text-white mb-4">Haz tu Reserva</h1>
-        <p class="text-white/60 text-lg">Reserva tu mesa online de forma rápida y sencilla.</p>
-      </div>
+<MainLayout title={pageTitle} description={pageDescription}>
+  {/* Hero Section */}
+  <section class="relative py-32 bg-matte-black overflow-hidden">
+    <div class="absolute inset-0 bg-cover bg-center opacity-30" style={`background-image: url('${heroImg}')`}></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-matte-black to-transparent"></div>
+    <Container class="relative z-10 text-center animate-fade-up">
+      <span class="text-primary font-bold tracking-[0.3em] uppercase text-sm mb-4 block">
+        {pageData?.heroSubtitle || "Reservas"}
+      </span>
+      <h1 class="text-5xl md:text-7xl font-display font-black text-white mb-6">
+        {pageData?.heroTitle || "Haz tu Reserva"}
+      </h1>
+      <p class="text-white/60 text-lg max-w-2xl mx-auto font-light">
+        Reserva tu mesa online de forma rápida y sencilla.
+      </p>
+    </Container>
+  </section>
 
+  <Section class="bg-matte-black pt-0">
+    <Container class="w-full max-w-4xl -mt-8">
       <div class="bg-matte-black rounded-2xl overflow-hidden shadow-2xl min-h-[600px] border border-white/5">
         <div id="covermanager-widget" class="w-full">
            <script src="https://www.covermanager.com/js/iframeResizer.min.js"></script>

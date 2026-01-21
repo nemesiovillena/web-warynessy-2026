@@ -1,0 +1,47 @@
+# Dependencies
+node_modules
+
+# Build outputs
+.next
+dist
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment (use docker-compose env instead)
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation (not needed in container)
+*.md
+!README.md
+docs/
+
+# Test files
+*.test.ts
+*.spec.ts
+__tests__
+
+# Temporary files
+*.tmp
+*.temp
+.cache
+
+# Claude plans
+.claude/

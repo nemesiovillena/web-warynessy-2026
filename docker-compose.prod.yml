@@ -1,0 +1,91 @@
+# Docker Compose for Production
+# Usage: docker-compose -f docker-compose.prod.yml up -d --build
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: warynessy-db-prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # No exponer puerto en producción (solo acceso interno)
+    # ports:
+    #   - "5432:5432"
+
+  # Payload CMS + Astro (Combined in production)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: warynessy-app-prod
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      # Database
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      # Payload
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      PAYLOAD_PUBLIC_SERVER_URL: ${PAYLOAD_PUBLIC_SERVER_URL}
+      PUBLIC_PAYLOAD_API_URL: ${PUBLIC_PAYLOAD_API_URL}
+      # Site
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
+      PUBLIC_SITE_NAME: ${PUBLIC_SITE_NAME:-Restaurante Warynessy}
+      # Bunny CDN (producción)
+      BUNNY_CDN_URL: ${BUNNY_CDN_URL}
+      BUNNY_STORAGE_ZONE_NAME: ${BUNNY_STORAGE_ZONE_NAME}
+      BUNNY_API_KEY: ${BUNNY_API_KEY}
+      BUNNY_STORAGE_PASSWORD: ${BUNNY_STORAGE_PASSWORD}
+      # Google Services
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      GOOGLE_PLACE_ID: ${GOOGLE_PLACE_ID}
+      PUBLIC_GOOGLE_ANALYTICS_ID: ${PUBLIC_GOOGLE_ANALYTICS_ID}
+      # Instagram
+      INSTAGRAM_ACCESS_TOKEN: ${INSTAGRAM_ACCESS_TOKEN}
+      INSTAGRAM_USER_ID: ${INSTAGRAM_USER_ID}
+      # Email
+      EMAIL_SERVICE_API_KEY: ${EMAIL_SERVICE_API_KEY}
+      EMAIL_FROM: ${EMAIL_FROM}
+      EMAIL_TO: ${EMAIL_TO}
+    ports:
+      - "3000:3000"
+    # No volume for media in production (using Bunny CDN)
+    # If you need local fallback, uncomment:
+    # volumes:
+    #   - media_prod:/app/media
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/admin"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+
+volumes:
+  postgres_data_prod:
+    driver: local
+  # media_prod:
+  #   driver: local
+
+networks:
+  default:
+    name: warynessy-prod-network

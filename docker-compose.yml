@@ -1,0 +1,96 @@
+# Docker Compose for Development
+# Usage: docker-compose up -d
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: warynessy-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-warynessy}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-warynessy_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-warynessy}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-warynessy} -d ${POSTGRES_DB:-warynessy}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Payload CMS (Admin Panel + API)
+  payload:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: warynessy-payload
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://${POSTGRES_USER:-warynessy}:${POSTGRES_PASSWORD:-warynessy_dev}@db:5432/${POSTGRES_DB:-warynessy}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:-0123456789abcdef0123456789abcdef}
+      PAYLOAD_PUBLIC_SERVER_URL: http://localhost:3000
+      PUBLIC_SITE_URL: http://localhost:4321
+      PUBLIC_PAYLOAD_API_URL: http://localhost:3000/api
+    volumes:
+      # Source code for hot reload
+      - ./src:/app/src
+      - ./payload.config.ts:/app/payload.config.ts
+      - ./server.ts:/app/server.ts
+      - ./next.config.mjs:/app/next.config.mjs
+      - ./astro.config.mjs:/app/astro.config.mjs
+      - ./tsconfig.json:/app/tsconfig.json
+      # Persist media uploads
+      - ./media:/app/media
+      # Exclude node_modules from bind mount
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    command: npm run dev:admin
+
+  # Astro Frontend
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: warynessy-web
+    restart: unless-stopped
+    depends_on:
+      - payload
+    environment:
+      NODE_ENV: development
+      PUBLIC_PAYLOAD_API_URL: http://payload:3000/api
+      PUBLIC_SITE_URL: http://localhost:4321
+      PAYLOAD_PUBLIC_SERVER_URL: http://payload:3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-warynessy}:${POSTGRES_PASSWORD:-warynessy_dev}@db:5432/${POSTGRES_DB:-warynessy}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:-0123456789abcdef0123456789abcdef}
+    volumes:
+      # Source code for hot reload
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./payload.config.ts:/app/payload.config.ts
+      - ./astro.config.mjs:/app/astro.config.mjs
+      - ./tsconfig.json:/app/tsconfig.json
+      # Shared media
+      - ./media:/app/media
+      # Exclude node_modules from bind mount
+      - /app/node_modules
+    ports:
+      - "4321:4321"
+    command: npm run dev
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  default:
+    name: warynessy-network
