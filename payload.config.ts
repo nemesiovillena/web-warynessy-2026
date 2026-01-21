@@ -20,7 +20,6 @@ import { Categorias } from './src/payload/collections/Categorias'
 import { Platos } from './src/payload/collections/Platos'
 import { Menus } from './src/payload/collections/Menus'
 import { Espacios } from './src/payload/collections/Espacios'
-import { Experiencias } from './src/payload/collections/Experiencias'
 import { Banners } from './src/payload/collections/Banners'
 import { Archivos } from './src/payload/collections/Archivos'
 import { Usuarios } from './src/payload/collections/Usuarios'
@@ -48,7 +47,6 @@ export default buildConfig({
     Platos,
     Menus,
     Espacios,
-    Experiencias,
     Banners,
     Paginas,
   ],

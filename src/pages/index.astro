@@ -5,7 +5,7 @@ import Container from '../components/ui/Container.astro';
 import Button from '../components/ui/Button.astro';
 import ResponsiveImage from '../components/ui/ResponsiveImage.astro';
 import SpaceCard from '../components/content/SpaceCard.astro';
-import { getSiteSettings, getHomepage, getSpaces, getExperiences, getFeaturedDishes } from '../lib/payload-local';
+import { getSiteSettings, getHomepage, getSpaces, getFeaturedDishes } from '../lib/payload-local';
 import { getGoogleReviews } from '../lib/google-reviews';
 import { getInstagramFeed } from '../lib/instagram';
 
@@ -13,7 +13,6 @@ import { getInstagramFeed } from '../lib/instagram';
 const siteSettings = await getSiteSettings();
 const homepage = await getHomepage();
 const spaces = await getSpaces();
-const experiences = await getExperiences();
 const featuredDishes = await getFeaturedDishes();
 const rawOpiniones = await getGoogleReviews();
 const instagramPosts = await getInstagramFeed();
@@ -141,7 +140,7 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
       <div class="text-center md:text-left">
         <h2 class="text-white font-serif text-4xl md:text-6xl font-bold mb-4">Regala Gastronomía</h2>
         <p class="text-white/80 text-xl max-w-lg">
-          {experiences?.[0]?.resumen || "Sorprende a tus seres queridos con una experiencia sensorial inolvidable en nuestro restaurante."}
+          Sorprende a tus seres queridos con una experiencia sensorial inolvidable en nuestro restaurante.
         </p>
       </div>
       <Button href="/experiencias" variant="white" size="lg" class="text-accent-red hover:bg-black hover:text-white group">

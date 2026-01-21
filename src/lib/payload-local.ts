@@ -103,17 +103,6 @@ export async function getEspacios(activo = true) {
   return result.docs
 }
 
-export async function getExperiencias(activo = true) {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'experiencias',
-    where: activo ? { activo: { equals: true } } : {},
-    sort: 'orden',
-    depth: 1,
-    limit: 100,
-  })
-  return result.docs
-}
 
 export async function getBannersActivos(posicion?: string) {
   const payload = await getPayloadClient()
@@ -224,7 +213,6 @@ export const getDishesByCategory = getPlatosPorCategoria
 export const getCategories = getCategorias
 export const getAllergens = getAlergenos
 export const getSpaces = getEspacios
-export const getExperiences = getExperiencias
 export const getActiveBanners = getBannersActivos
 export const getHomepage = getPaginaInicio
 export const getSiteSettings = getConfiguracionSitio

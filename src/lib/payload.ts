@@ -131,13 +131,6 @@ export const getSpaces = (active = true) =>
     depth: 1,
   })
 
-export const getExperiences = (active = true) =>
-  getAll('experiences', {
-    where: active ? { activo: { equals: true } } : {},
-    sort: 'orden',
-    depth: 1,
-  })
-
 export const getActiveBanners = (position?: string) => {
   const now = new Date().toISOString()
   const where: any = {
