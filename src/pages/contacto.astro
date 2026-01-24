@@ -2,7 +2,6 @@
 import MainLayout from '../layouts/MainLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Container from '../components/ui/Container.astro';
-import Button from '../components/ui/Button.astro';
 import { getSiteSettings, getPaginaBySlug } from '../lib/payload-local';
 
 const siteSettings = await getSiteSettings();
@@ -100,22 +99,22 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
         {/* Formulario de contacto */}
         <div class="bg-white p-10 md:p-16 rounded-2xl shadow-2xl animate-fade-up" style="animation-delay: 200ms;">
           <h2 class="text-3xl font-serif font-bold text-gray-900 mb-8">Envíanos un mensaje</h2>
-          
-          <form class="space-y-6">
+
+          <form id="contact-form" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <label class="text-sm font-bold text-gray-500 uppercase tracking-widest">Nombre</label>
-                <input type="text" placeholder="Tu nombre" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors" />
+                <label for="nombre" class="text-sm font-bold text-gray-500 uppercase tracking-widest">Nombre</label>
+                <input id="nombre" name="nombre" type="text" required placeholder="Tu nombre" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors" />
               </div>
               <div class="space-y-2">
-                <label class="text-sm font-bold text-gray-500 uppercase tracking-widest">Email</label>
-                <input type="email" placeholder="tu@email.com" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors" />
+                <label for="email" class="text-sm font-bold text-gray-500 uppercase tracking-widest">Email</label>
+                <input id="email" name="email" type="email" required placeholder="tu@email.com" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors" />
               </div>
             </div>
-            
+
             <div class="space-y-2">
-              <label class="text-sm font-bold text-gray-500 uppercase tracking-widest">Asunto</label>
-              <select class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors">
+              <label for="asunto" class="text-sm font-bold text-gray-500 uppercase tracking-widest">Asunto</label>
+              <select id="asunto" name="asunto" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors">
                 <option>Reserva Especial / Evento</option>
                 <option>Sugerencia / Feedback</option>
                 <option>Trabaja con nosotros</option>
@@ -124,19 +123,82 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
             </div>
 
             <div class="space-y-2">
-              <label class="text-sm font-bold text-gray-500 uppercase tracking-widest">Mensaje</label>
-              <textarea rows="4" placeholder="¿En qué podemos ayudarte?" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors resize-none"></textarea>
+              <label for="mensaje" class="text-sm font-bold text-gray-500 uppercase tracking-widest">Mensaje</label>
+              <textarea id="mensaje" name="mensaje" rows="4" required placeholder="¿En qué podemos ayudarte?" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors resize-none"></textarea>
             </div>
 
-            <Button variant="primary" size="lg" class="w-full justify-center">
+            <button type="submit" id="submit-btn" class="w-full bg-primary text-white font-bold py-4 px-8 rounded-lg hover:bg-primary/90 transition-colors text-center uppercase tracking-wider">
               Enviar Mensaje
-            </Button>
+            </button>
+
+            <div id="form-message" class="hidden rounded-lg p-4 text-center text-sm font-medium"></div>
           </form>
         </div>
 
       </div>
     </Container>
   </Section>
+
+  <script>
+    document.addEventListener('astro:page-load', () => {
+      const form = document.getElementById('contact-form') as HTMLFormElement | null;
+      const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+      const formMessage = document.getElementById('form-message');
+
+      if (!form || !submitBtn || !formMessage) return;
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const nombre = (document.getElementById('nombre') as HTMLInputElement).value.trim();
+        const email = (document.getElementById('email') as HTMLInputElement).value.trim();
+        const asunto = (document.getElementById('asunto') as HTMLSelectElement).value;
+        const mensaje = (document.getElementById('mensaje') as HTMLTextAreaElement).value.trim();
+
+        if (!nombre || !email || !mensaje) {
+          showMessage('Por favor, completa todos los campos obligatorios.', 'error');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Enviando...';
+
+        try {
+          const response = await fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, email, asunto, mensaje }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            showMessage('Mensaje enviado correctamente. Te responderemos pronto.', 'success');
+            form.reset();
+          } else {
+            showMessage(data.error || 'Error al enviar el mensaje.', 'error');
+          }
+        } catch {
+          showMessage('Error de conexión. Inténtalo de nuevo.', 'error');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Enviar Mensaje';
+        }
+      });
+
+      function showMessage(text: string, type: 'success' | 'error') {
+        if (!formMessage) return;
+        formMessage.textContent = text;
+        formMessage.classList.remove('hidden', 'bg-green-50', 'text-green-700', 'bg-red-50', 'text-red-700');
+        if (type === 'success') {
+          formMessage.classList.add('bg-green-50', 'text-green-700');
+        } else {
+          formMessage.classList.add('bg-red-50', 'text-red-700');
+        }
+        formMessage.classList.remove('hidden');
+      }
+    });
+  </script>
 
   {/* Mapa */}
   <section class="h-[500px] w-full bg-zinc-900 grayscale hover:grayscale-0 transition-all duration-700">

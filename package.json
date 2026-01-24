@@ -14,6 +14,7 @@
     "generate:types": "payload generate:types"
   },
   "dependencies": {
+    "@astrojs/node": "^9.5.2",
     "@astrojs/sitemap": "^3.6.1",
     "@payloadcms/db-postgres": "^3.71.1",
     "@payloadcms/next": "^3.71.1",
@@ -32,6 +33,7 @@
     "pg": "^8.17.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "resend": "^6.8.0",
     "sharp": "^0.34.5",
     "swiper": "^12.0.3",
     "tailwindcss": "^4.1.18",
