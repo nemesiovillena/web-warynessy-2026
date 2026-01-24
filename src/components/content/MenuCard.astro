@@ -9,6 +9,21 @@ interface Props {
 
 const { menu } = Astro.props;
 const imageUrl = typeof menu.imagen === 'object' && menu.imagen?.url ? menu.imagen.url : '';
+
+// Extract plain text from Lexical rich text
+function extractText(richText: any): string {
+  if (!richText?.root?.children) return '';
+  function walk(nodes: any[]): string {
+    return nodes.map((node: any) => {
+      if (node.type === 'text') return node.text || '';
+      if (node.children) return walk(node.children);
+      return '';
+    }).join(' ');
+  }
+  return walk(richText.root.children).trim();
+}
+
+const descriptionText = extractText(menu.descripcion);
 ---
 
 <div class="group relative overflow-hidden rounded-3xl bg-surface-dark border border-white/5 hover:border-primary/30 transition-all duration-500">
@@ -37,11 +52,12 @@ const imageUrl = typeof menu.imagen === 'object' && menu.imagen?.url ? menu.imag
   </div>
 
   <div class="p-6">
-    <div class="prose prose-invert prose-sm mb-6 line-clamp-3 text-white/70">
-       {/* Simple render description if it's rich text or string. Ideally use a RichText renderer */}
-       {menu.descripcion && 'Descripción disponible'}
-    </div>
-    
+    {descriptionText && (
+      <p class="text-sm text-white/70 mb-6 line-clamp-3">
+        {descriptionText}
+      </p>
+    )}
+
     <div class="flex gap-4">
        <Button variant="outline" size="sm" class="w-full">Ver Detalles</Button>
        <Button variant="primary" size="sm" class="w-full">Reservar</Button>
