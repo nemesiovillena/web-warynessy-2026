@@ -1,0 +1,51 @@
+---
+import { type Plato } from '../../payload-types';
+
+interface Props {
+  plato: Plato;
+}
+
+const { plato } = Astro.props;
+---
+
+<div
+  class="dish-card group flex items-baseline justify-between py-3 border-b border-white/10 last:border-b-0 hover:bg-white/5 -mx-4 px-4 transition-colors"
+  data-alergenos={plato.alergenos?.map((a: any) => typeof a === 'object' ? a.id : a).join(',')}
+>
+  <div class="flex-1 pr-4">
+    <h3 class="font-sans text-base font-medium text-white group-hover:text-primary transition-colors inline">
+      {plato.nombre}
+    </h3>
+    {plato.descripcion && (
+      <span class="text-sm text-white/50 ml-2 italic">
+        {plato.descripcion}
+      </span>
+    )}
+    {plato.alergenos && plato.alergenos.length > 0 && (
+      <span class="inline-flex gap-1 ml-2 align-middle">
+        {plato.alergenos.map((alergeno: any) => {
+          const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
+          const imgUrl = typeof alergeno.imagen === 'object' && alergeno.imagen?.url
+            ? (alergeno.imagen.url.startsWith('/') ? `${PAYLOAD_URL}${alergeno.imagen.url}` : alergeno.imagen.url)
+            : null;
+
+          return (
+            <span
+              class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-white/10 text-[8px] text-white/60 overflow-hidden"
+              title={alergeno.nombre}
+            >
+              {imgUrl ? (
+                <img src={imgUrl} alt={alergeno.nombre} class="w-full h-full object-contain p-0.5 invert opacity-70" />
+              ) : (
+                alergeno.icono || alergeno.codigo
+              )}
+            </span>
+          );
+        })}
+      </span>
+    )}
+  </div>
+  <span class="font-medium text-base text-primary tabular-nums whitespace-nowrap">
+    {plato.precio?.toFixed(2)}€
+  </span>
+</div>

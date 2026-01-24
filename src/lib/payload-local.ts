@@ -38,7 +38,7 @@ export async function getPlatos(activo = true) {
     where: activo ? { activo: { equals: true } } : {},
     sort: 'orden',
     depth: 2,
-    limit: 100,
+    limit: 500,
   })
   return result.docs
 }

@@ -2,7 +2,7 @@
 import MainLayout from '../layouts/MainLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Container from '../components/ui/Container.astro';
-import CategorySection from '../components/content/CategorySection.astro';
+import DishListItem from '../components/content/DishListItem.astro';
 import { getSiteSettings, getCategorias, getPlatos, getAlergenos, getPaginaBySlug } from '../lib/payload-local';
 
 const siteSettings = await getSiteSettings();
@@ -12,283 +12,409 @@ const allAlergenos = await getAlergenos();
 
 const pageData = await getPaginaBySlug('carta');
 
+// Add dishes to each category
 const categoriesWithDishes = allCategories.map((cat: any) => ({
   ...cat,
-  platos: allDishes.filter((dish: any) => 
+  platos: allDishes.filter((dish: any) =>
      dish.categoria === cat.id || dish.categoria?.id === cat.id
   )
 }));
 
-const activeCategories = categoriesWithDishes.filter((cat: any) => cat.activa);
+// Filter active categories with dishes
+const activeCategories = categoriesWithDishes.filter((cat: any) => cat.activa && cat.platos.length > 0);
+
+// Extract main category from name (before " - ")
+function getMainCategory(nombre: string): string {
+  if (nombre.includes(' - ')) {
+    return nombre.split(' - ')[0].trim();
+  }
+  return nombre;
+}
+
+// Extract subcategory from name (after " - ")
+function getSubcategory(nombre: string): string | null {
+  if (nombre.includes(' - ')) {
+    return nombre.split(' - ')[1].trim();
+  }
+  return null;
+}
+
+// Define the order of main categories as they appear on the original site
+const mainCategoryOrder = [
+  'Aperitivos',
+  'Ensaladas',
+  'Cuchara',
+  'Arroces',
+  'Carnes',
+  'Pescados',
+  'Montaditos y panes',
+  'Postres',
+  'Vinos',
+  'Vermut y Cervezas',
+  'Espumosos y vinos dulces'
+];
+
+// Group categories by main category name
+interface SubcategoryGroup {
+  subcategoryName: string | null;
+  slug: string;
+  descripcion?: string;
+  platos: any[];
+  orden: number;
+}
+
+interface MainCategoryGroup {
+  mainName: string;
+  slug: string;
+  subcategories: SubcategoryGroup[];
+}
+
+const groupedCategories = new Map<string, MainCategoryGroup>();
+
+activeCategories.forEach((cat: any) => {
+  const mainName = getMainCategory(cat.nombre);
+  const subName = getSubcategory(cat.nombre);
+
+  if (!groupedCategories.has(mainName)) {
+    // Create slug from main category name
+    const mainSlug = mainName.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
+
+    groupedCategories.set(mainName, {
+      mainName,
+      slug: mainSlug,
+      subcategories: []
+    });
+  }
+
+  groupedCategories.get(mainName)!.subcategories.push({
+    subcategoryName: subName,
+    slug: cat.slug,
+    descripcion: cat.descripcion,
+    platos: cat.platos,
+    orden: cat.orden || 999
+  });
+});
+
+// Sort subcategories within each main category by orden
+groupedCategories.forEach((group) => {
+  group.subcategories.sort((a, b) => a.orden - b.orden);
+});
+
+// Convert to array, filter only categories in the defined order, and sort
+const sortedMainCategories = Array.from(groupedCategories.values())
+  .filter((cat) => mainCategoryOrder.includes(cat.mainName))
+  .sort((a, b) => {
+    const indexA = mainCategoryOrder.indexOf(a.mainName);
+    const indexB = mainCategoryOrder.indexOf(b.mainName);
+    return indexA - indexB;
+  });
 
 const pageTitle = pageData?.metaTitle || `Carta | ${siteSettings?.title || "Warynessy"}`;
 const pageDescription = pageData?.metaDescription || "Descubre nuestra exquisita selección de platos.";
 
 // Imagen Hero desde el CMS o fallback
-const rawHeroImage = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.url 
-  ? pageData.heroImage.url 
+const rawHeroImage = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.url
+  ? pageData.heroImage.url
   : '/media/Warynessy-carta.webp';
 
 const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
-const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('http')) 
-  ? `${PAYLOAD_URL}${rawHeroImage}` 
+const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('http'))
+  ? `${PAYLOAD_URL}${rawHeroImage}`
   : rawHeroImage;
 ---
 
-<MainLayout 
-  title={pageTitle} 
+<MainLayout
+  title={pageTitle}
   description={pageDescription}
   schemaType="Menu"
   schemaData={{ name: "Carta Warynessy 2026" }}
 >
-  
+
   {/* Header Hero for Menu */}
-  <section class="relative py-32 bg-matte-black overflow-hidden">
-     <div class="absolute inset-0 bg-cover bg-center opacity-40" style={`background-image: url('${heroImage}')`}></div>
-     <div class="absolute inset-0 bg-gradient-to-t from-matte-black to-transparent"></div>
+  <section class="relative py-24 md:py-32 bg-[#181818] overflow-hidden">
+     <div class="absolute inset-0 bg-cover bg-center opacity-30" style={`background-image: url('${heroImage}')`}></div>
+     <div class="absolute inset-0 bg-gradient-to-t from-[#181818] via-[#181818]/80 to-transparent"></div>
      <Container class="relative z-10 text-center animate-fade-up">
-        <span class="text-primary font-bold tracking-[0.3em] uppercase text-sm mb-4 block">Gastronomía</span>
-        <h1 class="text-5xl md:text-7xl font-display font-black text-white mb-6">Nuestra Carta</h1>
-        <p class="text-white/60 text-lg max-w-2xl mx-auto font-light">
-          Una propuesta culinaria que fusiona la tradición mediterránea con técnicas contemporáneas y los mejores productos de mercado.
+        <span class="text-primary font-medium tracking-[0.3em] uppercase text-sm mb-4 block">Gastronomía</span>
+        <h1 class="text-4xl md:text-6xl font-display font-bold text-white mb-4">Nuestra Carta</h1>
+        <p class="text-white/50 text-base max-w-xl mx-auto">
+          Cocina mediterránea con los mejores productos de mercado
         </p>
      </Container>
   </section>
 
-  <Section class="bg-matte-black min-h-screen relative">
-    <Container>
-      
-      {/* Allergen Filter Bar */}
-      <div class="mb-12 bg-[#1A1816] p-6 rounded-2xl border border-white/5 animate-fade-up">
-        <h3 class="text-white/60 text-xs uppercase tracking-widest font-bold mb-4 flex items-center gap-2">
-          <span class="material-symbols-outlined text-sm">filter_list</span>
-          Filtrar sin alérgenos:
-        </h3>
-        <div class="flex flex-wrap gap-3">
-          {allAlergenos.map((alergeno: any) => {
-            const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
-            const imgUrl = typeof alergeno.imagen === 'object' && alergeno.imagen?.url 
-              ? (alergeno.imagen.url.startsWith('/') ? `${PAYLOAD_URL}${alergeno.imagen.url}` : alergeno.imagen.url)
-              : null;
+  <Section class="bg-[#181818] min-h-screen py-12 md:py-16">
+    <Container class="max-w-4xl">
 
-            return (
-              <button 
-                class="allergen-filter-btn group flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 text-white/40 hover:border-primary/50 hover:text-white transition-all text-sm"
-                data-alergeno-id={alergeno.id}
-              >
-                <span class="w-6 h-6 flex items-center justify-center bg-white/5 rounded-full group-hover:bg-primary/20 transition-colors overflow-hidden p-1">
-                  {imgUrl ? (
-                    <img src={imgUrl} alt={alergeno.nombre} class="w-full h-full object-contain invert opacity-60 group-hover:opacity-100 transition-opacity" />
-                  ) : (
-                    alergeno.icono || '•'
+      {/* Allergen Filter Bar - Compact */}
+      {allAlergenos.length > 0 && (
+        <div class="mb-10 p-4 rounded-lg border border-white/10 animate-fade-up">
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="text-white/40 text-xs uppercase tracking-wider font-medium">Filtrar sin:</span>
+            {allAlergenos.map((alergeno: any) => {
+              const imgUrl = typeof alergeno.imagen === 'object' && alergeno.imagen?.url
+                ? (alergeno.imagen.url.startsWith('/') ? `${PAYLOAD_URL}${alergeno.imagen.url}` : alergeno.imagen.url)
+                : null;
+
+              return (
+                <button
+                  class="allergen-filter-btn group flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 text-white/50 hover:border-primary/50 hover:text-white transition-all text-xs"
+                  data-alergeno-id={alergeno.id}
+                >
+                  {imgUrl && (
+                    <img src={imgUrl} alt="" class="w-4 h-4 object-contain invert opacity-60 group-hover:opacity-100" />
                   )}
-                </span>
-                {alergeno.nombre}
-              </button>
-            );
-          })}
-          <button 
-            id="clear-filters"
-            class="hidden px-4 py-2 text-primary text-sm font-bold hover:underline"
-          >
-            Limpiar filtros
-          </button>
-        </div>
-      </div>
-
-      <div class="flex flex-col lg:flex-row gap-12">
-        
-        {/* Sidebar Navigation (Desktop) */}
-        <aside class="hidden lg:block w-1/4 relative">
-          <div class="sticky top-32">
-             <h3 class="text-white font-bold uppercase tracking-widest mb-6 border-b border-primary/30 pb-2">Categorías</h3>
-              <nav class="flex flex-col gap-2">
-                {activeCategories.map((cat: any, index: number) => (
-                  <button 
-                    data-category-slug={cat.slug}
-                    class={`category-nav-link text-left transition-all py-2 text-sm font-medium border-l-2 pl-4 -ml-[2px] ${index === 0 ? 'active text-primary border-primary' : 'text-white/60 border-transparent hover:text-primary hover:border-primary/50'}`}
-                  >
-                    {cat.nombre}
-                  </button>
-                ))}
-              </nav>
+                  {alergeno.nombre}
+                </button>
+              );
+            })}
+            <button
+              id="clear-filters"
+              class="hidden px-3 py-1.5 text-primary text-xs font-medium hover:underline"
+            >
+              Limpiar
+            </button>
           </div>
-        </aside>
-
-        {/* Mobile Filter Pills */}
-        <div class="lg:hidden flex overflow-x-auto gap-4 pb-4 mb-8 sticky top-20 z-40 bg-matte-black/95 backdrop-blur py-4 -mx-6 px-6 border-b border-white/5 no-scrollbar">
-           {activeCategories.map((cat: any, index: number) => (
-             <button 
-               data-category-slug={cat.slug}
-               class={`category-nav-link whitespace-nowrap px-6 py-2 rounded-full border transition-all text-sm font-medium ${index === 0 ? 'active border-primary bg-primary/10 text-white' : 'border-white/20 text-white/80'}`}
-             >
-               {cat.nombre}
-             </button>
-           ))}
         </div>
+      )}
 
-        {/* Main Content */}
-        <div class="w-full lg:w-3/4" id="carta-container">
-           {activeCategories.map((cat: any, index: number) => (
-             <div 
-               class={`category-content transition-all duration-500 ${index === 0 ? 'block opacity-100 translate-y-0' : 'hidden opacity-0 translate-y-4'}`} 
-               data-category={cat.slug}
-             >
-               <CategorySection category={cat} dishes={cat.platos} />
-             </div>
-           ))}
-           <div id="no-results" class="hidden text-center py-20 text-white/40 italic">
-              No se han encontrado platos que coincidan con tu selección de alérgenos.
-           </div>
+      {/* Category Navigation - Tabs Style */}
+      <nav class="mb-12 sticky top-24 z-30 bg-[#181818]/90 backdrop-blur-md py-4 -mx-4 px-4 md:mx-0 md:px-0 border-b border-white/10 md:border-none md:bg-transparent md:static overflow-x-auto">
+        <div class="flex flex-nowrap md:flex-wrap justify-start md:justify-center gap-3 min-w-max md:min-w-0 px-2 md:px-0" id="category-nav">
+          {sortedMainCategories.map((mainCat, index) => (
+            <button
+              data-category={mainCat.slug}
+              class:list={[
+                "category-tab px-6 py-2.5 rounded-full border transition-all text-sm font-medium whitespace-nowrap",
+                index === 0 ? "bg-primary border-primary text-white" : "border-white/20 text-white/60 hover:border-primary/50 hover:text-white"
+              ]}
+            >
+              {mainCat.mainName}
+            </button>
+          ))}
         </div>
+      </nav>
 
+      {/* Categories Content */}
+      <div id="carta-container" class="min-h-[50vh]">
+        {sortedMainCategories.map((mainCat, index) => (
+          <section 
+            id={mainCat.slug} 
+            class:list={[
+              "category-section transition-all duration-500",
+              index === 0 ? "block animate-fade-in" : "hidden"
+            ]}
+          >
+            {/* Main Category Header - Hidden visually as we have tabs, but kept for semantics/SEO if needed, or we can show it as a title for the section */}
+            <div class="mb-8 pb-3 border-b-2 border-primary/50 flex justify-between items-end">
+              <h2 class="text-3xl md:text-4xl font-display font-bold text-white uppercase tracking-wide">
+                {mainCat.mainName}
+              </h2>
+              <span class="text-primary text-sm font-medium hidden md:block">
+                {mainCat.subcategories.reduce((acc, sub) => acc + sub.platos.length, 0)} platos
+              </span>
+            </div>
+
+            {/* Subcategories and dishes */}
+            {mainCat.subcategories.map((subcat) => (
+              <div class="mb-12 last:mb-0">
+                {/* Subcategory header */}
+                {subcat.subcategoryName && (
+                  <div class="mb-6 pb-2 border-b border-white/10">
+                    <h3 class="text-xl font-medium text-primary italic">
+                      {subcat.subcategoryName}
+                    </h3>
+                    {subcat.descripcion && (
+                      <p class="text-white/40 text-sm mt-1">{subcat.descripcion}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Dishes list grid */}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
+                  {subcat.platos.map((dish: any) => (
+                    <div class="dish-item-wrapper">
+                      <DishListItem plato={dish} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </section>
+        ))}
+        
+        <div id="no-results" class="hidden flex flex-col items-center justify-center py-20 text-center animate-fade-up">
+          <span class="material-symbols-outlined text-tx-muted text-5xl mb-4">no_food</span>
+          <p class="text-white/60 text-lg">No se han encontrado platos con los filtros seleccionados en esta categoría.</p>
+          <button id="clear-filters-msg" class="mt-4 text-primary hover:underline">Limpiar filtros</button>
+        </div>
       </div>
+
     </Container>
   </Section>
 
   <script>
     document.addEventListener('astro:page-load', () => {
+      // DOM Elements
+      const tabs = document.querySelectorAll('.category-tab');
+      const sections = document.querySelectorAll('.category-section');
       const filterBtns = document.querySelectorAll('.allergen-filter-btn');
       const clearBtn = document.getElementById('clear-filters');
-      const dishCards = document.querySelectorAll('.dish-card');
-      const categoryNavLinks = document.querySelectorAll('.category-nav-link');
-      const categoryContents = document.querySelectorAll('.category-content');
+      const clearBtnMsg = document.getElementById('clear-filters-msg');
+      const dishWrappers = document.querySelectorAll('.dish-item-wrapper');
       const noResults = document.getElementById('no-results');
-      
-      let activeFilters = new Set();
-      let activeCategory = categoryNavLinks[0]?.getAttribute('data-category-slug');
 
-      // CATEGORY NAVIGATION LOGIC
-      categoryNavLinks.forEach(link => {
-        link.addEventListener('click', () => {
-          const slug = link.getAttribute('data-category-slug');
-          switchCategory(slug);
+      // State
+      let activeCategory = '';
+      let activeFilters = new Set<string>();
+
+      // Initialize
+      init();
+
+      function init() {
+        // Check hash for initial category
+        const hash = window.location.hash.replace('#', '');
+        if (hash && document.getElementById(hash)) {
+          switchCategory(hash);
+        } else {
+          // Default to first category
+          const firstCat = document.querySelector('.category-section')?.id;
+          if (firstCat) switchCategory(firstCat);
+        }
+
+        setupEventListeners();
+        checkScroll();
+      }
+
+      function setupEventListeners() {
+        // Tab Clicks
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            const slug = tab.getAttribute('data-category');
+            if (slug) {
+              switchCategory(slug);
+              // Update URL without scroll
+              history.replaceState(null, '', `#${slug}`);
+            }
+          });
         });
-      });
 
-      function switchCategory(slug) {
+        // Allergen Filters
+        filterBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-alergeno-id');
+            if (!id) return;
+
+            if (activeFilters.has(id)) {
+              activeFilters.delete(id);
+              btn.classList.remove('active', 'bg-primary', 'text-white', 'border-primary');
+              btn.classList.add('text-white/50', 'border-white/10');
+            } else {
+              activeFilters.add(id);
+              btn.classList.add('active', 'bg-primary', 'text-white', 'border-primary');
+              btn.classList.remove('text-white/50', 'border-white/10');
+            }
+
+            updateVisibility();
+          });
+        });
+
+        // Clear Filters
+        const clearAll = () => {
+          activeFilters.clear();
+          filterBtns.forEach(btn => {
+            btn.classList.remove('active', 'bg-primary', 'text-white', 'border-primary');
+            btn.classList.add('text-white/50', 'border-white/10');
+          });
+          updateVisibility();
+        };
+
+        clearBtn?.addEventListener('click', clearAll);
+        clearBtnMsg?.addEventListener('click', clearAll);
+      }
+
+      function switchCategory(slug: string) {
         if (activeCategory === slug) return;
         activeCategory = slug;
 
-        // Update nav buttons
-        categoryNavLinks.forEach(link => {
-          const isTarget = link.getAttribute('data-category-slug') === slug;
-          if (isTarget) {
-            link.classList.add('active', 'text-primary', 'border-primary');
-            link.classList.remove('text-white/60', 'border-transparent', 'border-white/20', 'text-white/80');
-            if (link.classList.contains('rounded-full')) { // Mobile
-              link.classList.add('bg-primary/10', 'text-white');
-            }
+        // Update Tabs
+        tabs.forEach(tab => {
+          const isActive = tab.getAttribute('data-category') === slug;
+          if (isActive) {
+            tab.classList.remove('border-white/20', 'text-white/60', 'hover:border-primary/50', 'hover:text-white');
+            tab.classList.add('bg-primary', 'border-primary', 'text-white');
+            
+            // Scroll nav to visible if needed (mobile)
+            tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
           } else {
-            link.classList.remove('active', 'text-primary', 'border-primary', 'bg-primary/10', 'text-white');
-            if (link.classList.contains('rounded-full')) { // Mobile
-              link.classList.add('border-white/20', 'text-white/80');
-            } else { // Desktop
-              link.classList.add('text-white/60', 'border-transparent');
-            }
+            tab.classList.add('border-white/20', 'text-white/60', 'hover:border-primary/50', 'hover:text-white');
+            tab.classList.remove('bg-primary', 'border-primary', 'text-white');
           }
         });
 
-        // Update content visibility with transitions
-        categoryContents.forEach(content => {
-          const isTarget = content.getAttribute('data-category') === slug;
-          if (isTarget) {
-            content.classList.remove('hidden');
-            // Small timeout to allow transition
-            setTimeout(() => {
-              content.classList.add('opacity-100', 'translate-y-0');
-              content.classList.remove('opacity-0', 'translate-y-4');
-            }, 10);
+        // Update Categories Visibility
+        sections.forEach(section => {
+          if (section.id === slug) {
+            section.classList.remove('hidden');
+            section.classList.add('block', 'animate-fade-in');
           } else {
-            content.classList.add('opacity-0', 'translate-y-4');
-            content.classList.remove('opacity-100', 'translate-y-0');
-            setTimeout(() => {
-              if (content.getAttribute('data-category') !== activeCategory) {
-                content.classList.add('hidden');
-              }
-            }, 500); // Transition duration
+            section.classList.add('hidden');
+            section.classList.remove('block', 'animate-fade-in');
           }
         });
 
-        // Scroll top on mobile when changing category
-        if (window.innerWidth < 1024) {
-          const container = document.getElementById('carta-container');
-          if (container) {
-             const offset = 150;
-             const elementPosition = container.getBoundingClientRect().top;
-             const offsetPosition = elementPosition + window.pageYOffset - offset;
-             window.scrollTo({
-                top: offsetPosition,
-                behavior: 'smooth'
-             });
-          }
-        }
-
-        updateFilters();
+        updateVisibility();
       }
 
-      // ALLERGEN FILTER LOGIC
-      filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.getAttribute('data-alergeno-id');
-          
-          if (activeFilters.has(id)) {
-            activeFilters.delete(id);
-            btn.classList.remove('active', 'border-primary', 'text-white', 'bg-primary/10');
-            btn.classList.add('text-white/40', 'border-white/10');
-          } else {
-            activeFilters.add(id);
-            btn.classList.add('active', 'border-primary', 'text-white', 'bg-primary/10');
-            btn.classList.remove('text-white/40', 'border-white/10');
-          }
-
-          updateFilters();
-        });
-      });
-
-      clearBtn?.addEventListener('click', () => {
-        activeFilters.clear();
-        filterBtns.forEach(btn => {
-          btn.classList.remove('active', 'border-primary', 'text-white', 'bg-primary/10');
-          btn.classList.add('text-white/40', 'border-white/10');
-        });
-        updateFilters();
-      });
-
-      function updateFilters() {
+      function updateVisibility() {
+        // Check filters logic
         if (activeFilters.size > 0) {
           clearBtn?.classList.remove('hidden');
         } else {
           clearBtn?.classList.add('hidden');
         }
 
-        let totalVisibleInActiveCategory = 0;
+        // We only care about dishes in the ACTIVE category for the "No results" message
+        // But we update ALL dishes just in case user switches back
+        let visibleInActiveCategory = 0;
 
-        dishCards.forEach(card => {
+        dishWrappers.forEach(wrapper => {
+          const card = wrapper.querySelector('.dish-card');
+          if (!card) return;
+
           const cardAlergenos = (card.getAttribute('data-alergenos') || '').split(',').filter(Boolean);
-          const hasBlockedAlergen = Array.from(activeFilters).some(filterId => cardAlergenos.includes(filterId));
+          // Logic: Hide if dish HAS any of the selected blockers (assuming "Filtrar sin")
+          const hasBlockedAlergen = Array.from(activeFilters).some(filterId => cardAlergenos.includes(filterId as string));
           
+          // Use inline style for reliability over classList
           if (hasBlockedAlergen) {
-             card.closest('.animate-stagger-item')?.classList.add('hidden');
+            wrapper.style.display = 'none';
           } else {
-             card.closest('.animate-stagger-item')?.classList.remove('hidden');
-             
-             // Count only if it belongs to the active category
-             if (card.closest('.category-content')?.getAttribute('data-category') === activeCategory) {
-                totalVisibleInActiveCategory++;
-             }
+            wrapper.style.display = '';
+            
+            // Check if this visible dish is in the current category
+            const section = wrapper.closest('.category-section');
+            if (section && section.id === activeCategory) {
+              visibleInActiveCategory++;
+            }
           }
         });
 
-        if (totalVisibleInActiveCategory === 0) {
+        // Show/Hide No Results Message
+        if (visibleInActiveCategory === 0 && activeFilters.size > 0) {
           noResults?.classList.remove('hidden');
         } else {
           noResults?.classList.add('hidden');
         }
       }
 
-      // Initial run
-      updateFilters();
+      function checkScroll() {
+        const nav = document.getElementById('category-nav');
+        // Optional: Add shadow or indicator if scrollable
+      }
     });
   </script>
 
