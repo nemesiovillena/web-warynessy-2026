@@ -27,7 +27,7 @@ async function serverFunction(args: any) {
 }
 
 const Layout = ({ children }: Args) => (
-    <RootLayout config={configPromise} importMap={importMap} serverFunction={serverFunction}>
+    <RootLayout config={configPromise} importMap={importMap} serverFunction={serverFunction} htmlProps={{ suppressHydrationWarning: true }}>
         {children}
     </RootLayout>
 )

@@ -33,10 +33,15 @@ const imageUrl = typeof plato.imagen === 'object' && plato.imagen?.url ? plato.i
     <!-- Name & Price Group: Row on mobile, split on desktop -->
     <div class="flex flex-row items-center justify-between gap-4 w-full md:contents">
       <!-- Name -->
-      <div class="flex-grow text-left">
+      <div class="flex-grow text-left flex flex-col gap-1">
         <h3 class="font-display text-lg md:text-xl font-medium text-zinc-800">
           {plato.nombre}
         </h3>
+        {plato.descripcion && (
+          <p class="text-sm md:text-base text-zinc-500 italic leading-relaxed">
+            {plato.descripcion}
+          </p>
+        )}
       </div>
 
       <!-- Price -->
@@ -50,14 +55,6 @@ const imageUrl = typeof plato.imagen === 'object' && plato.imagen?.url ? plato.i
 
   <!-- Description Section: Always below the main header -->
   <div class="flex flex-col gap-2">
-    {plato.descripcion && (
-      <div class="mt-1">
-        <p class="text-sm md:text-base text-zinc-500 italic leading-relaxed">
-          {plato.descripcion}
-        </p>
-      </div>
-    )}
-
     <!-- Allergen tags -->
     {plato.alergenos && plato.alergenos.length > 0 && (
       <div class="flex gap-2 flex-wrap mt-2">
