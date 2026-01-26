@@ -3,7 +3,10 @@ import MainLayout from '../layouts/MainLayout.astro';
 import Section from '../components/ui/Section.astro';
 import Container from '../components/ui/Container.astro';
 import DishListItem from '../components/content/DishListItem.astro';
+import DishCard from '../components/content/DishCard.astro';
 import { getSiteSettings, getCategorias, getPlatos, getAlergenos, getPaginaBySlug } from '../lib/payload-local';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const siteSettings = await getSiteSettings();
 const allCategories = await getCategorias();
@@ -11,6 +14,49 @@ const allDishes = await getPlatos();
 const allAlergenos = await getAlergenos();
 
 const pageData = await getPaginaBySlug('carta');
+
+// Image mapping logic
+const imagesBaseDir = path.resolve('public/images/carta');
+const imageCategories: Record<string, string> = {
+  'vinos': 'vinos',
+  'espumosos-y-vinos-dulces': 'espumosos',
+  'vermut-y-cervezas': 'vermuts'
+};
+
+const availableImages = new Map<string, string[]>();
+
+if (fs.existsSync(imagesBaseDir)) {
+  Object.entries(imageCategories).forEach(([slug, dirName]) => {
+    const dirPath = path.join(imagesBaseDir, dirName);
+    if (fs.existsSync(dirPath)) {
+      availableImages.set(slug, fs.readdirSync(dirPath));
+    }
+  });
+}
+
+function getLocalImageForDish(dishName: string, categorySlug: string): string | null {
+  // Only look for images for specific categories
+  const dirName = imageCategories[categorySlug];
+  if (!dirName) return null;
+
+  const files = availableImages.get(categorySlug) || [];
+  
+  // Normalize dish name to match filename format (remove non-ascii, snake_case)
+  // Observation: "Marqués" -> "marqus" (accented char dropped), "Paco & Lola" -> "paco__lola" (spaces preserved as underscores)
+  const normalized = dishName.toLowerCase()
+    .replace(/[^a-z0-9\s]/g, "") // remove ANY non-alphanumeric chars (including accents)
+    .trim()
+    .replace(/\s/g, "_"); // replace spaces with underscores (one-to-one)
+
+  // Try to find a file that starts with this normalized name
+  const match = files.find(f => f.toLowerCase().startsWith(normalized));
+  
+  if (match) {
+    return `/images/carta/${dirName}/${match}`;
+  }
+  
+  return null;
+}
 
 // Add dishes to each category
 const categoriesWithDishes = allCategories.map((cat: any) => ({
@@ -146,14 +192,14 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
      </Container>
   </section>
 
-  <Section class="bg-[#181818] min-h-screen py-12 md:py-16">
-    <Container class="max-w-4xl">
+  <Section class="bg-white min-h-screen py-12 md:py-16">
+    <Container>
 
       {/* Allergen Filter Bar - Compact */}
       {allAlergenos.length > 0 && (
-        <div class="mb-10 p-4 rounded-lg border border-white/10 animate-fade-up">
+        <div class="mb-10 p-4 rounded-lg border border-zinc-200 animate-fade-up">
           <div class="flex flex-wrap items-center gap-3">
-            <span class="text-white/40 text-xs uppercase tracking-wider font-medium">Filtrar sin:</span>
+            <span class="text-zinc-400 text-xs uppercase tracking-wider font-medium">Filtrar sin:</span>
             {allAlergenos.map((alergeno: any) => {
               const imgUrl = typeof alergeno.imagen === 'object' && alergeno.imagen?.url
                 ? (alergeno.imagen.url.startsWith('/') ? `${PAYLOAD_URL}${alergeno.imagen.url}` : alergeno.imagen.url)
@@ -161,11 +207,11 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
 
               return (
                 <button
-                  class="allergen-filter-btn group flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 text-white/50 hover:border-primary/50 hover:text-white transition-all text-xs"
+                  class="allergen-filter-btn group flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-zinc-200 text-zinc-500 hover:border-primary/50 hover:text-zinc-900 transition-all text-xs"
                   data-alergeno-id={alergeno.id}
                 >
                   {imgUrl && (
-                    <img src={imgUrl} alt="" class="w-4 h-4 object-contain invert opacity-60 group-hover:opacity-100" />
+                    <img src={imgUrl} alt="" class="w-4 h-4 object-contain opacity-60 group-hover:opacity-100" />
                   )}
                   {alergeno.nombre}
                 </button>
@@ -182,14 +228,14 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
       )}
 
       {/* Category Navigation - Tabs Style */}
-      <nav class="mb-12 sticky top-24 z-30 bg-[#181818]/90 backdrop-blur-md py-4 -mx-4 px-4 md:mx-0 md:px-0 border-b border-white/10 md:border-none md:bg-transparent md:static overflow-x-auto">
+      <nav class="mb-12 sticky top-24 z-30 bg-white/90 backdrop-blur-md py-4 -mx-4 px-4 md:mx-0 md:px-0 border-b border-zinc-200 md:border-none md:bg-transparent md:static overflow-x-auto">
         <div class="flex flex-nowrap md:flex-wrap justify-start md:justify-center gap-3 min-w-max md:min-w-0 px-2 md:px-0" id="category-nav">
           {sortedMainCategories.map((mainCat, index) => (
             <button
               data-category={mainCat.slug}
               class:list={[
                 "category-tab px-6 py-2.5 rounded-full border transition-all text-sm font-medium whitespace-nowrap",
-                index === 0 ? "bg-primary border-primary text-white" : "border-white/20 text-white/60 hover:border-primary/50 hover:text-white"
+                index === 0 ? "bg-primary border-primary text-white" : "border-zinc-200 text-zinc-500 hover:border-primary/50 hover:text-zinc-900"
               ]}
             >
               {mainCat.mainName}
@@ -209,40 +255,58 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
             ]}
           >
             {/* Main Category Header - Hidden visually as we have tabs, but kept for semantics/SEO if needed, or we can show it as a title for the section */}
-            <div class="mb-8 pb-3 border-b-2 border-primary/50 flex justify-between items-end">
-              <h2 class="text-3xl md:text-4xl font-display font-bold text-white uppercase tracking-wide">
+            <div class="mb-12 pb-4 border-b-2 border-zinc-100 flex flex-col items-center justify-center text-center gap-2">
+              <h2 class="text-3xl md:text-5xl font-display font-bold text-zinc-900 uppercase tracking-widest">
                 {mainCat.mainName}
               </h2>
-              <span class="text-primary text-sm font-medium hidden md:block">
-                {mainCat.subcategories.reduce((acc, sub) => acc + sub.platos.length, 0)} platos
-              </span>
+              <div class="h-1 w-20 bg-primary/30 rounded-full mt-1"></div>
             </div>
 
             {/* Subcategories and dishes */}
-            {mainCat.subcategories.map((subcat) => (
+            {mainCat.subcategories.map((subcat) => {
+              const isVisualCategory = ['vinos', 'espumosos-y-vinos-dulces', 'vermut-y-cervezas'].includes(mainCat.slug);
+              
+              return (
               <div class="mb-12 last:mb-0">
                 {/* Subcategory header */}
                 {subcat.subcategoryName && (
-                  <div class="mb-6 pb-2 border-b border-white/10">
-                    <h3 class="text-xl font-medium text-primary italic">
+                  <div class="mb-6">
+                    <h3 class="text-xl md:text-2xl font-medium text-zinc-900 border-b-2 border-zinc-800 pb-1 inline-block uppercase tracking-wider mb-2">
                       {subcat.subcategoryName}
                     </h3>
                     {subcat.descripcion && (
-                      <p class="text-white/40 text-sm mt-1">{subcat.descripcion}</p>
+                      <p class="text-zinc-500 text-sm mt-1">{subcat.descripcion}</p>
                     )}
                   </div>
                 )}
 
                 {/* Dishes list grid */}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
-                  {subcat.platos.map((dish: any) => (
+                <div class:list={[
+                  "grid gap-y-4", 
+                  isVisualCategory ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"
+                ]}>
+                  {subcat.platos.map((dish: any) => {
+                    let dishWithImg = dish;
+                    
+                    if (isVisualCategory) {
+                       const localImg = getLocalImageForDish(dish.nombre, mainCat.slug);
+                       if (localImg) {
+                         dishWithImg = { ...dish, imagen: { url: localImg } };
+                       }
+                    }
+
+                    return (
                     <div class="dish-item-wrapper">
-                      <DishListItem plato={dish} />
+                      {isVisualCategory ? (
+                        <DishCard plato={dishWithImg} />
+                      ) : (
+                        <DishListItem plato={dish} />
+                      )}
                     </div>
-                  ))}
+                  )})}
                 </div>
               </div>
-            ))}
+            )})}
           </section>
         ))}
         

@@ -9,15 +9,15 @@ const { plato } = Astro.props;
 ---
 
 <div
-  class="dish-card group flex items-baseline justify-between py-3 border-b border-white/10 last:border-b-0 hover:bg-white/5 -mx-4 px-4 transition-colors"
+  class="dish-card group flex items-baseline justify-between py-3 border-b border-zinc-100 last:border-b-0 hover:bg-zinc-50 -mx-4 px-4 transition-colors"
   data-alergenos={plato.alergenos?.map((a: any) => typeof a === 'object' ? a.id : a).join(',')}
 >
   <div class="flex-1 pr-4">
-    <h3 class="font-sans text-base font-medium text-white group-hover:text-primary transition-colors inline">
+    <h3 class="font-display text-base font-medium text-zinc-900 group-hover:text-primary transition-colors inline">
       {plato.nombre}
     </h3>
     {plato.descripcion && (
-      <span class="text-sm text-white/50 ml-2 italic">
+      <span class="text-sm text-zinc-500 ml-2 italic">
         {plato.descripcion}
       </span>
     )}
@@ -31,11 +31,11 @@ const { plato } = Astro.props;
 
           return (
             <span
-              class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-white/10 text-[8px] text-white/60 overflow-hidden"
+              class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-zinc-100 text-[8px] text-zinc-500 overflow-hidden"
               title={alergeno.nombre}
             >
               {imgUrl ? (
-                <img src={imgUrl} alt={alergeno.nombre} class="w-full h-full object-contain p-0.5 invert opacity-70" />
+                <img src={imgUrl} alt={alergeno.nombre} class="w-full h-full object-contain p-0.5 opacity-60" />
               ) : (
                 alergeno.icono || alergeno.codigo
               )}
@@ -45,7 +45,7 @@ const { plato } = Astro.props;
       </span>
     )}
   </div>
-  <span class="font-medium text-base text-primary tabular-nums whitespace-nowrap">
-    {plato.precio?.toFixed(2)}€
+  <span class="font-medium text-base text-zinc-900 tabular-nums whitespace-nowrap">
+    {plato.precio?.toLocaleString('es-ES', { minimumFractionDigits: 2 })} €
   </span>
 </div>
