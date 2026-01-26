@@ -342,15 +342,14 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
         // Check hash for initial category
         const hash = window.location.hash.replace('#', '');
         if (hash && document.getElementById(hash)) {
-          switchCategory(hash);
+          switchCategory(hash, false);
         } else {
           // Default to first category
           const firstCat = document.querySelector('.category-section')?.id;
-          if (firstCat) switchCategory(firstCat);
+          if (firstCat) switchCategory(firstCat, false);
         }
 
         setupEventListeners();
-        checkScroll();
       }
 
       function setupEventListeners() {
@@ -359,7 +358,7 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
           tab.addEventListener('click', () => {
             const slug = tab.getAttribute('data-category');
             if (slug) {
-              switchCategory(slug);
+              switchCategory(slug, true);
               // Update URL without scroll
               history.replaceState(null, '', `#${slug}`);
             }
@@ -375,11 +374,11 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
             if (activeFilters.has(id)) {
               activeFilters.delete(id);
               btn.classList.remove('active', 'bg-primary', 'text-white', 'border-primary');
-              btn.classList.add('text-white/50', 'border-white/10');
+              btn.classList.add('text-zinc-500', 'border-zinc-200');
             } else {
               activeFilters.add(id);
               btn.classList.add('active', 'bg-primary', 'text-white', 'border-primary');
-              btn.classList.remove('text-white/50', 'border-white/10');
+              btn.classList.remove('text-zinc-500', 'border-zinc-200');
             }
 
             updateVisibility();
@@ -391,7 +390,7 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
           activeFilters.clear();
           filterBtns.forEach(btn => {
             btn.classList.remove('active', 'bg-primary', 'text-white', 'border-primary');
-            btn.classList.add('text-white/50', 'border-white/10');
+            btn.classList.add('text-zinc-500', 'border-zinc-200');
           });
           updateVisibility();
         };
@@ -400,7 +399,7 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
         clearBtnMsg?.addEventListener('click', clearAll);
       }
 
-      function switchCategory(slug: string) {
+      function switchCategory(slug: string, shouldScroll = false) {
         if (activeCategory === slug) return;
         activeCategory = slug;
 
@@ -408,13 +407,15 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
         tabs.forEach(tab => {
           const isActive = tab.getAttribute('data-category') === slug;
           if (isActive) {
-            tab.classList.remove('border-white/20', 'text-white/60', 'hover:border-primary/50', 'hover:text-white');
+            tab.classList.remove('border-zinc-200', 'text-zinc-500', 'hover:border-primary/50', 'hover:text-zinc-900');
             tab.classList.add('bg-primary', 'border-primary', 'text-white');
-            
-            // Scroll nav to visible if needed (mobile)
-            tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+
+            // Scroll nav to visible if needed (mobile) - only on user click
+            if (shouldScroll) {
+              tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
           } else {
-            tab.classList.add('border-white/20', 'text-white/60', 'hover:border-primary/50', 'hover:text-white');
+            tab.classList.add('border-zinc-200', 'text-zinc-500', 'hover:border-primary/50', 'hover:text-zinc-900');
             tab.classList.remove('bg-primary', 'border-primary', 'text-white');
           }
         });
@@ -475,10 +476,6 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
         }
       }
 
-      function checkScroll() {
-        const nav = document.getElementById('category-nav');
-        // Optional: Add shadow or indicator if scrollable
-      }
     });
   </script>
 
