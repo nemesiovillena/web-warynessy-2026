@@ -175,14 +175,15 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
 <MainLayout
   title={pageTitle}
   description={pageDescription}
+  hideFloatingButton={true}
   schemaType="Menu"
   schemaData={{ name: "Carta Warynessy 2026" }}
 >
 
   {/* Header Hero for Menu */}
-  <section class="relative py-24 md:py-32 bg-[#181818] overflow-hidden">
+  <section class="relative py-24 md:py-32 bg-matte-black overflow-hidden">
      <div class="absolute inset-0 bg-cover bg-center opacity-30" style={`background-image: url('${heroImage}')`}></div>
-     <div class="absolute inset-0 bg-gradient-to-t from-[#181818] via-[#181818]/80 to-transparent"></div>
+     <div class="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/80 to-transparent"></div>
      <Container class="relative z-10 text-center animate-fade-up">
         <span class="text-primary font-medium tracking-[0.3em] uppercase text-sm mb-4 block">Gastronomía</span>
         <h1 class="text-4xl md:text-6xl font-display font-bold text-white mb-4">Nuestra Carta</h1>
@@ -192,50 +193,56 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
      </Container>
   </section>
 
-  <Section class="bg-white min-h-screen py-12 md:py-16">
+  <Section class="bg-matte-black min-h-screen py-12 md:py-16">
     <Container>
 
       {/* Allergen Filter Bar - Compact */}
       {allAlergenos.length > 0 && (
-        <div class="mb-10 p-4 rounded-lg border border-zinc-200 animate-fade-up">
-          <div class="flex flex-wrap items-center gap-3">
-            <span class="text-zinc-400 text-xs uppercase tracking-wider font-medium">Filtrar sin:</span>
-            {allAlergenos.map((alergeno: any) => {
-              const imgUrl = typeof alergeno.imagen === 'object' && alergeno.imagen?.url
-                ? (alergeno.imagen.url.startsWith('/') ? `${PAYLOAD_URL}${alergeno.imagen.url}` : alergeno.imagen.url)
-                : null;
+        <div class="mb-12 animate-fade-up">
+          <div class="flex flex-col items-center text-center gap-6">
+            <span class="text-primary text-sm uppercase tracking-[0.2em] font-black border-b border-primary/20 pb-2">Filtrar sin:</span>
+            
+            <div class="flex flex-wrap justify-center gap-4 max-w-5xl">
+              {allAlergenos.map((alergeno: any) => {
+                const imgUrl = typeof alergeno.imagen === 'object' && alergeno.imagen?.url
+                  ? (alergeno.imagen.url.startsWith('/') ? `${PAYLOAD_URL}${alergeno.imagen.url}` : alergeno.imagen.url)
+                  : null;
 
-              return (
-                <button
-                  class="allergen-filter-btn group flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-zinc-200 text-zinc-500 hover:border-primary/50 hover:text-zinc-900 transition-all text-xs"
-                  data-alergeno-id={alergeno.id}
-                >
-                  {imgUrl && (
-                    <img src={imgUrl} alt="" class="w-4 h-4 object-contain opacity-60 group-hover:opacity-100" />
-                  )}
-                  {alergeno.nombre}
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    class="allergen-filter-btn group flex flex-col items-center gap-2 p-2 rounded-2xl border border-white/5 text-white/50 hover:border-primary/50 hover:text-white transition-all text-sm font-bold tracking-tight w-24"
+                    data-alergeno-id={alergeno.id}
+                  >
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-white/5 flex items-center justify-center p-3 group-hover:bg-primary/20 transition-colors border border-white/10">
+                      {imgUrl && (
+                        <img src={imgUrl} alt="" class="w-full h-full object-contain group-hover:scale-110 transition-transform opacity-70 group-hover:opacity-100" />
+                      )}
+                    </div>
+                    <span class="text-center leading-tight lowercase italic h-8 flex items-center">{alergeno.nombre}</span>
+                  </button>
+                );
+              })}
+            </div>
+
             <button
               id="clear-filters"
-              class="hidden px-3 py-1.5 text-primary text-xs font-medium hover:underline"
+              class="hidden px-6 py-2 bg-white/5 hover:bg-white/10 text-primary text-xs font-black uppercase tracking-widest rounded-full transition-colors border border-primary/20"
             >
-              Limpiar
+              Mostrar todo
             </button>
           </div>
         </div>
       )}
 
       {/* Category Navigation - Tabs Style */}
-      <nav class="mb-12 sticky top-24 z-30 bg-white/90 backdrop-blur-md py-4 -mx-4 px-4 md:mx-0 md:px-0 border-b border-zinc-200 md:border-none md:bg-transparent md:static overflow-x-auto">
+      <nav class="mb-12 sticky top-24 z-30 bg-matte-black/90 backdrop-blur-md py-4 -mx-4 px-4 md:mx-0 md:px-0 border-b border-white/10 md:border-none md:bg-transparent md:static overflow-x-auto">
         <div class="flex flex-nowrap md:flex-wrap justify-start md:justify-center gap-3 min-w-max md:min-w-0 px-2 md:px-0" id="category-nav">
           {sortedMainCategories.map((mainCat, index) => (
             <button
               data-category={mainCat.slug}
               class:list={[
-                "category-tab px-6 py-2.5 rounded-full border transition-all text-sm font-medium whitespace-nowrap",
-                index === 0 ? "bg-primary border-primary text-white" : "border-zinc-200 text-zinc-500 hover:border-primary/50 hover:text-zinc-900"
+                "category-tab px-6 py-2.5 rounded-full border transition-all text-sm font-bold whitespace-nowrap",
+                index === 0 ? "bg-primary border-primary text-white" : "border-white/10 text-white/50 hover:border-primary/50 hover:text-white"
               ]}
             >
               {mainCat.mainName}
@@ -255,8 +262,8 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
             ]}
           >
             {/* Main Category Header - Hidden visually as we have tabs, but kept for semantics/SEO if needed, or we can show it as a title for the section */}
-            <div class="mb-12 pb-4 border-b-2 border-zinc-100 flex flex-col items-center justify-center text-center gap-2">
-              <h2 class="text-3xl md:text-5xl font-display font-bold text-zinc-900 uppercase tracking-widest">
+            <div class="mb-12 pb-4 border-b-2 border-white/5 flex flex-col items-center justify-center text-center gap-2">
+              <h2 class="text-3xl md:text-5xl font-display font-black text-white uppercase tracking-widest">
                 {mainCat.mainName}
               </h2>
               <div class="h-1 w-20 bg-primary/30 rounded-full mt-1"></div>
@@ -271,7 +278,7 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
                 {/* Subcategory header */}
                 {subcat.subcategoryName && (
                   <div class="mb-6">
-                    <h3 class="text-xl md:text-2xl font-medium text-zinc-900 border-b-2 border-zinc-800 pb-1 inline-block uppercase tracking-wider mb-2">
+                    <h3 class="text-xl md:text-2xl font-bold text-white border-b-2 border-primary/50 pb-1 inline-block uppercase tracking-wider mb-2">
                       {subcat.subcategoryName}
                     </h3>
                     {subcat.descripcion && (
@@ -282,7 +289,7 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
 
                 {/* Dishes list grid */}
                 <div class:list={[
-                  "grid gap-y-4", 
+                  "grid gap-y-4 gap-x-12",
                   isVisualCategory ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"
                 ]}>
                   {subcat.platos.map((dish: any) => {
@@ -296,7 +303,7 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
                     }
 
                     return (
-                    <div class="dish-item-wrapper">
+                    <div class="dish-item-wrapper last:border-none">
                       {isVisualCategory ? (
                         <DishCard plato={dishWithImg} />
                       ) : (
@@ -313,7 +320,7 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
         <div id="no-results" class="hidden flex flex-col items-center justify-center py-20 text-center animate-fade-up">
           <span class="material-symbols-outlined text-tx-muted text-5xl mb-4">no_food</span>
           <p class="text-white/60 text-lg">No se han encontrado platos con los filtros seleccionados en esta categoría.</p>
-          <button id="clear-filters-msg" class="mt-4 text-primary hover:underline">Limpiar filtros</button>
+          <button id="clear-filters-msg" class="mt-4 text-primary text-xl font-bold hover:underline">Limpiar filtros</button>
         </div>
       </div>
 
@@ -374,11 +381,11 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
             if (activeFilters.has(id)) {
               activeFilters.delete(id);
               btn.classList.remove('active', 'bg-primary', 'text-white', 'border-primary');
-              btn.classList.add('text-zinc-500', 'border-zinc-200');
+              btn.classList.add('text-white/40', 'border-white/5');
             } else {
               activeFilters.add(id);
               btn.classList.add('active', 'bg-primary', 'text-white', 'border-primary');
-              btn.classList.remove('text-zinc-500', 'border-zinc-200');
+              btn.classList.remove('text-white/40', 'border-white/5');
             }
 
             updateVisibility();
@@ -390,7 +397,7 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
           activeFilters.clear();
           filterBtns.forEach(btn => {
             btn.classList.remove('active', 'bg-primary', 'text-white', 'border-primary');
-            btn.classList.add('text-zinc-500', 'border-zinc-200');
+            btn.classList.add('text-white/40', 'border-white/5');
           });
           updateVisibility();
         };
@@ -407,7 +414,7 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
         tabs.forEach(tab => {
           const isActive = tab.getAttribute('data-category') === slug;
           if (isActive) {
-            tab.classList.remove('border-zinc-200', 'text-zinc-500', 'hover:border-primary/50', 'hover:text-zinc-900');
+            tab.classList.remove('border-white/10', 'text-white/50', 'hover:border-primary/50', 'hover:text-white');
             tab.classList.add('bg-primary', 'border-primary', 'text-white');
 
             // Scroll nav to visible if needed (mobile) - only on user click
@@ -415,7 +422,7 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
               tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             }
           } else {
-            tab.classList.add('border-zinc-200', 'text-zinc-500', 'hover:border-primary/50', 'hover:text-zinc-900');
+            tab.classList.add('border-white/10', 'text-white/50', 'hover:border-primary/50', 'hover:text-white');
             tab.classList.remove('bg-primary', 'border-primary', 'text-white');
           }
         });

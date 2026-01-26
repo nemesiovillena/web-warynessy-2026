@@ -4,8 +4,6 @@ import { getSiteSettings } from '../../lib/payload-local';
 // Fetch site settings for logo and title
 const siteSettings = await getSiteSettings();
 
-const title = siteSettings?.title || "Warynessy";
-
 const navLinks = [
   { name: "Carta", href: "/carta" },
   { name: "Menús", href: "/menus" },

@@ -15,7 +15,18 @@ const homepage = await getHomepage();
 const spaces = await getSpaces();
 const featuredDishes = await getFeaturedDishes();
 const rawOpiniones = await getGoogleReviews();
-const instagramPosts = await getInstagramFeed();
+const instagramConfig = siteSettings?.instagramConfig;
+
+// Si no hay config o el método es 'api', intentamos obtener el feed (ya sea real o mock)
+const instagramPosts = (!instagramConfig || instagramConfig.method === 'api') 
+  ? await getInstagramFeed(instagramConfig) 
+  : [];
+
+console.log('🔍 index.astro - Instagram Config:', !!instagramConfig, instagramConfig?.method);
+console.log('🔍 index.astro - Instagram Posts count:', instagramPosts?.length);
+if (instagramConfig?.method === 'widget') {
+  console.log('🔍 index.astro - Widget Code present:', !!instagramConfig?.embedCode);
+}
 
 // Filtrar por 4-5 estrellas y ordenar por las más recientes
 const opiniones = rawOpiniones
@@ -320,26 +331,42 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
     <Container>
       <div class="flex flex-col items-center text-center mb-12 animate-fade-up">
         <h2 class="text-4xl md:text-6xl font-serif font-bold mb-4 text-white leading-tight">Instagram</h2>
-        <p class="text-white/70 text-xl font-light mb-8 italic">Síguenos en @restaurante_warynessy</p>
-        <Button href="https://instagram.com" target="_blank" variant="outline" class="border-white text-white hover:bg-white hover:text-black">
+
+        <Button 
+          href={siteSettings?.socialMedia?.instagram || "https://www.instagram.com/warynessy/"} 
+          target="_blank" 
+          variant="outline" 
+          class="border-white text-white hover:bg-white hover:text-black"
+        >
           Ver Instagram
         </Button>
       </div>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 animate-stagger-container">
-        {instagramPosts?.map((post) => (
-          <a 
-            href={post.permalink} 
-            target="_blank" 
-            class="aspect-square bg-white/5 hover:opacity-80 transition-opacity cursor-pointer overflow-hidden rounded-md animate-stagger-item"
-          >
-            <ResponsiveImage
-              src={post.media_url}
-              alt={post.caption || "Instagram post"}
-              class="h-full w-full"
-              aspectRatio="1/1"
-            />
-          </a>
-        ))}
+      <div class="instagram-content">
+        {instagramConfig?.method === 'widget' && instagramConfig?.embedCode ? (
+          <div class="instagram-widget-container max-w-5xl mx-auto" set:html={instagramConfig.embedCode} />
+        ) : (
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 animate-stagger-container">
+            {instagramPosts?.map((post) => (
+              <a 
+                href={post.permalink} 
+                target="_blank" 
+                class="aspect-square bg-white/5 hover:opacity-80 transition-opacity cursor-pointer overflow-hidden rounded-md animate-stagger-item"
+              >
+                <ResponsiveImage
+                  src={post.media_url}
+                  alt={post.caption || "Instagram post"}
+                  class="h-full w-full"
+                  aspectRatio="1/1"
+                />
+              </a>
+            ))}
+            {(!instagramPosts || instagramPosts.length === 0) && (
+              <div class="col-span-full py-12 text-center text-white/30 italic">
+                Cargando feed de Instagram...
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </Container>
   </Section>

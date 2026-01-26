@@ -8,11 +8,12 @@ interface Props {
 	title: string;
 	description?: string;
   noPaddingTop?: boolean;
+  hideFloatingButton?: boolean;
   schemaType?: 'Restaurant' | 'Menu' | 'Article';
   schemaData?: Record<string, any>;
 }
 
-const { title, description, noPaddingTop = false, schemaType, schemaData } = Astro.props;
+const { title, description, noPaddingTop = false, hideFloatingButton = false, schemaType, schemaData } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description} schemaType={schemaType} schemaData={schemaData}>
@@ -22,6 +23,6 @@ const { title, description, noPaddingTop = false, schemaType, schemaData } = Ast
 		<slot />
 	</main>
 
-	<Footer />
+	<Footer hideFloatingButton={hideFloatingButton} />
 	<ScrollAnimations />
 </BaseLayout>

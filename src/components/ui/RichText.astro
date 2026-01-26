@@ -1,0 +1,91 @@
+---
+interface Props {
+  content: any;
+  class?: string;
+}
+
+const { content, class: className } = Astro.props;
+
+if (!content?.root?.children) return null;
+
+function renderNode(node: any): string {
+  if (node.type === 'text') {
+    let text = node.text || '';
+    
+    // Lexical text formats are bitwise
+    // 1: Bold, 2: Italic, 4: Strikethrough, 8: Underline, 16: Code, 32: Subscript, 64: Superscript
+    if (node.format & 1) text = `<strong>${text}</strong>`;
+    if (node.format & 2) text = `<em>${text}</em>`;
+    if (node.format & 4) text = `<span class="line-through">${text}</span>`;
+    if (node.format & 8) text = `<u>${text}</u>`;
+    if (node.format & 16) text = `<code class="bg-white/10 px-1 rounded">${text}</code>`;
+    
+    return text;
+  }
+
+  if (node.type === 'linebreak') {
+    return '<br />';
+  }
+
+  if (node.type === 'paragraph') {
+    const children = node.children?.map(renderNode).join('') || '';
+    if (!children) return '<p class="mb-4">&nbsp;</p>';
+    return `<p class="mb-6 text-white/70 leading-relaxed font-light text-lg whitespace-pre-line">${children}</p>`;
+  }
+
+  if (node.type === 'heading') {
+    const Tag = node.tag || 'h2';
+    const children = node.children?.map(renderNode).join('') || '';
+    let classes = "font-display font-black text-white mt-8 mb-4 ";
+    
+    if (Tag === 'h1') classes += "text-4xl md:text-5xl border-l-4 border-primary pl-6";
+    else if (Tag === 'h2') classes += "text-3xl md:text-4xl";
+    else if (Tag === 'h3') classes += "text-2xl md:text-3xl text-primary";
+    else classes += "text-xl md:text-2xl";
+
+    return `<${Tag} class="${classes}">${children}</${Tag}>`;
+  }
+
+  if (node.type === 'list') {
+    const Tag = node.listType === 'number' ? 'ol' : 'ul';
+    const children = node.children?.map(renderNode).join('') || '';
+    const classes = Tag === 'ol' 
+      ? 'list-decimal ml-6 mb-8 space-y-2 text-white/70 font-light' 
+      : 'list-disc ml-6 mb-8 space-y-2 text-white/70 font-light';
+    return `<${Tag} class="${classes}">${children}</${Tag}>`;
+  }
+
+  if (node.type === 'listitem') {
+    const children = node.children?.map(renderNode).join('') || '';
+    return `<li class="pl-2">${children}</li>`;
+  }
+
+  if (node.type === 'quote') {
+    const children = node.children?.map(renderNode).join('') || '';
+    return `<blockquote class="border-l-4 border-primary/40 pl-6 my-8 italic text-white/60 text-xl font-serif font-light">${children}</blockquote>`;
+  }
+
+  if (node.children) {
+    return node.children.map(renderNode).join('');
+  }
+
+  return '';
+}
+
+const html = content.root.children.map(renderNode).join('');
+---
+
+<div class:list={["rich-text-container", className]} set:html={html} />
+
+<style is:global>
+  .rich-text-container strong {
+    font-weight: 700;
+    color: white;
+  }
+  .rich-text-container em {
+    font-style: italic;
+  }
+  .rich-text-container p:last-child {
+    margin-bottom: 0;
+  }
+</style>

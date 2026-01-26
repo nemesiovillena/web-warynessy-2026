@@ -7,12 +7,20 @@ import { getPayload } from 'payload'
 let payloadInstance: Awaited<ReturnType<typeof getPayload>> | null = null
 
 export async function getPayloadClient() {
-  // Si la instancia ya existe, verificamos si contiene todas las colecciones necesarias
   if (payloadInstance) {
-    const collections = Object.keys(payloadInstance.collections)
-    if (!collections.includes('paginas')) {
-      console.log('⚠️ Detectada configuración antigua de Payload. Reinicializando...')
-      payloadInstance = null
+    // Verificamos si la colección 'menus' tiene el campo 'etiqueta'
+    const menusConfig = payloadInstance.collections['menus']?.config;
+    const hasEtiquetaField = menusConfig?.fields?.some(f => 'name' in f && f.name === 'etiqueta');
+
+    // Verificamos si el global 'configuracion-sitio' tiene el campo 'instagramConfig'
+    const siteConfig = payloadInstance.globals.config.find(g => g.slug === 'configuracion-sitio');
+    const hasInstagramConfig = siteConfig?.fields?.some(f => 'name' in f && f.name === 'instagramConfig');
+
+    console.log('🔍 getPayloadClient - Fields check:', { hasEtiquetaField, hasInstagramConfig });
+
+    if (!hasEtiquetaField || !hasInstagramConfig) {
+      console.log('🔄 Re-initializing Payload: New fields missing from active instance');
+      payloadInstance = null;
     }
   }
 
@@ -88,7 +96,39 @@ export async function getMenus(activo = true) {
     depth: 1,
     limit: 100,
   })
-  return result.docs
+
+  // Refuerzo manual del orden para asegurar consistencia total
+  return result.docs.sort((a: any, b: any) => {
+    const ordenA = typeof a.orden === 'number' ? a.orden : 999
+    const ordenB = typeof b.orden === 'number' ? b.orden : 999
+    if (ordenA !== ordenB) return ordenA - ordenB
+    return String(a.nombre).localeCompare(String(b.nombre))
+  })
+}
+
+export async function getMenuBySlug(slug: string) {
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection: 'menus',
+    where: {
+      slug: { equals: slug },
+    },
+    limit: 1,
+    depth: 2,
+  })
+  return result.docs[0] || null
+}
+
+export async function getActiveMenusSlugs() {
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection: 'menus',
+    where: {
+      activo: { equals: true },
+    },
+    limit: 100,
+  })
+  return result.docs.map((doc: any) => doc.slug)
 }
 
 export async function getEspacios(activo = true) {

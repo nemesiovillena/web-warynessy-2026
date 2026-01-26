@@ -12,9 +12,9 @@ export interface InstagramPost {
     timestamp: string;
 }
 
-export async function getInstagramFeed(): Promise<InstagramPost[]> {
-    const ACCESS_TOKEN = import.meta.env.INSTAGRAM_ACCESS_TOKEN || process.env.INSTAGRAM_ACCESS_TOKEN;
-    const USER_ID = import.meta.env.INSTAGRAM_USER_ID || process.env.INSTAGRAM_USER_ID;
+export async function getInstagramFeed(config?: any): Promise<InstagramPost[]> {
+    const ACCESS_TOKEN = config?.apiToken || import.meta.env.INSTAGRAM_ACCESS_TOKEN || process.env.INSTAGRAM_ACCESS_TOKEN;
+    const USER_ID = config?.apiUserId || import.meta.env.INSTAGRAM_USER_ID || process.env.INSTAGRAM_USER_ID;
 
     if (!ACCESS_TOKEN || !USER_ID) {
         console.warn('Instagram Access Token o User ID no configurados. Se mostrarán posts de prueba.');

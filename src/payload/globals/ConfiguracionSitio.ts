@@ -41,7 +41,23 @@ export const ConfiguracionSitio: GlobalConfig = {
         {
           name: 'phone',
           type: 'text',
-          label: 'Teléfono',
+          label: 'Teléfono fijo / contacto principal',
+        },
+        {
+          name: 'whatsapp',
+          type: 'text',
+          label: 'WhatsApp (Móvil)',
+          admin: {
+            description: 'Número para recibir reservas por WhatsApp (ej: +34600000000)',
+          },
+        },
+        {
+          name: 'whatsappMessage',
+          type: 'text',
+          label: 'Mensaje predeterminado de WhatsApp',
+          admin: {
+            description: 'Mensaje que aparecerá al abrir el chat (ej: "Hola, me gustaría reservar una mesa...")',
+          },
         },
         {
           name: 'email',
@@ -219,6 +235,55 @@ export const ConfiguracionSitio: GlobalConfig = {
       admin: {
         description: 'ID para el widget de reservas',
       },
+    },
+
+    // Configuración de Instagram
+    {
+      name: 'instagramConfig',
+      type: 'group',
+      label: 'Configuración de Instagram',
+      fields: [
+        {
+          name: 'method',
+          type: 'radio',
+          label: 'Método de visualización',
+          options: [
+            { label: 'API Oficial (Cuadrícula nativa)', value: 'api' },
+            { label: 'Widget Externo (Embed)', value: 'widget' },
+          ],
+          defaultValue: 'api',
+          admin: {
+            layout: 'horizontal',
+          },
+        },
+        {
+          name: 'apiToken',
+          type: 'text',
+          label: 'Instagram Access Token',
+          admin: {
+            condition: (data, siblingData) => siblingData?.method === 'api',
+            description: 'Token de acceso de larga duración para la API de Instagram',
+          },
+        },
+        {
+          name: 'apiUserId',
+          type: 'text',
+          label: 'Instagram User ID',
+          admin: {
+            condition: (data, siblingData) => siblingData?.method === 'api',
+            description: 'ID de usuario numérico de Instagram',
+          },
+        },
+        {
+          name: 'embedCode',
+          type: 'textarea',
+          label: 'Código de Embed (Widget)',
+          admin: {
+            condition: (data, siblingData) => siblingData?.method === 'widget',
+            description: 'Pega aquí el código HTML proporcionado por el servicio de widget (Behold, Elfsight, etc.)',
+          },
+        },
+      ],
     },
   ],
 }

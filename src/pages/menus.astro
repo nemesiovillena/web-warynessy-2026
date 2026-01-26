@@ -18,38 +18,37 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
   : 'https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&q=80';
 ---
 
-<MainLayout title={pageTitle} description={pageDescription}>
-  
-  <section class="relative py-32 bg-matte-black overflow-hidden">
-     <div class="absolute inset-0 bg-cover bg-center opacity-20" style={`background-image: url('${heroImg}')`}></div>
-     <div class="absolute inset-0 bg-gradient-to-t from-matte-black to-transparent"></div>
-     <Container class="relative z-10 text-center">
-        <span class="text-primary font-bold tracking-[0.3em] uppercase text-sm mb-4 block">
-          {pageData?.heroSubtitle || "Descubre nuestros sabores"}
-        </span>
-        <h1 class="text-5xl md:text-7xl font-display font-black text-white mb-6">
-          {pageData?.heroTitle || "Menús Especiales"}
-        </h1>
-        <p class="text-white/60 text-lg max-w-2xl mx-auto font-light">
-          {pageData?.heroSubtitle ? "" : "Propuestas diseñadas para compartir y disfrutar de la esencia de nuestra cocina."}
-        </p>
-     </Container>
-  </section>
+<MainLayout title={pageTitle} description={pageDescription} hideFloatingButton={true}>
+    <section class="relative py-24 md:py-32 bg-matte-black overflow-hidden">
+      <div class="absolute inset-0 bg-cover bg-center opacity-30" style={`background-image: url('${heroImg}')`}></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/60 to-transparent"></div>
+      <Container class="relative z-10 text-center animate-fade-up">
+         <span class="text-primary font-black tracking-[0.3em] uppercase text-sm mb-4 block">
+            Exclusividad
+         </span>
+         <h1 class="text-5xl md:text-7xl font-display font-black text-white mb-6 uppercase tracking-tight">
+           Selección de Menús
+         </h1>
+         <p class="text-white/50 text-base md:text-lg max-w-2xl mx-auto font-medium">
+           Experiencias culinarias diseñadas para cada momento
+         </p>
+      </Container>
+   </section>
 
-  <Section class="bg-matte-black min-h-screen">
-    <Container>
-      {menus.length > 0 ? (
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {menus.map((menu: any) => (
-             <MenuCard menu={menu} />
-          ))}
-        </div>
+   <Section class="bg-matte-black min-h-screen py-16 md:py-24">
+     <Container>
+       {menus.length > 0 ? (
+         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+           {menus.map((menu: any) => (
+              <MenuCard menu={menu} />
+           ))}
+         </div>
       ) : (
         <div class="text-center py-20">
           <p class="text-white/40 text-xl">Próximamente nuevos menús de temporada.</p>
         </div>
       )}
-    </Container>
+</Container>
   </Section>
 
 </MainLayout>

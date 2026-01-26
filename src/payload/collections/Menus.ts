@@ -8,7 +8,7 @@ export const Menus: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'nombre',
-    defaultColumns: ['nombre', 'precio', 'activo'],
+    defaultColumns: ['nombre', 'precio', 'orden', 'etiqueta', 'activo'],
     group: 'Carta',
   },
   access: {
@@ -22,6 +22,14 @@ export const Menus: CollectionConfig = {
       required: true,
       admin: {
         description: 'Ej: Menú del Día, Menú Degustación, Menú San Valentín, etc.',
+      },
+    },
+    {
+      name: 'etiqueta',
+      type: 'text',
+      label: 'Etiqueta (Badge)',
+      admin: {
+        description: 'Pequeño texto decorativo (ej: "Popular", "Exclusivo", "Nuevo")',
       },
     },
     {
@@ -60,6 +68,14 @@ export const Menus: CollectionConfig = {
       min: 0,
     },
     {
+      name: 'descripcion_menu',
+      type: 'textarea',
+      label: 'Descripción del menú',
+      admin: {
+        description: 'Breve descripción que aparecerá en la tarjeta (ej: "7 tiempos con maridaje incluido")',
+      },
+    },
+    {
       name: 'fechasDias',
       type: 'text',
       label: 'Fecha y Días de Validez',
@@ -92,9 +108,9 @@ export const Menus: CollectionConfig = {
     {
       name: 'descripcion',
       type: 'richText',
-      label: 'Descripción / Composición del Menú',
+      label: 'Composición detallada (Pestaña/Detalle)',
       admin: {
-        description: 'Descripción detallada del menú con formato',
+        description: 'Lista completa de platos y detalles del menú',
       },
     },
     {

@@ -9,20 +9,15 @@ const { plato } = Astro.props;
 ---
 
 <div
-  class="dish-card group flex items-baseline justify-between py-3 border-b border-zinc-100 last:border-b-0 hover:bg-zinc-50 -mx-4 px-4 transition-colors"
+  class="dish-card group flex items-start justify-between py-3 border-b border-white/5 hover:bg-white/5 -mx-4 px-4 transition-colors"
   data-alergenos={plato.alergenos?.map((a: any) => typeof a === 'object' ? a.id : a).join(',')}
 >
   <div class="flex-1 pr-4">
-    <h3 class="font-display text-base font-medium text-zinc-900 group-hover:text-primary transition-colors inline">
+    <h3 class="font-display text-base font-medium text-white transition-colors">
       {plato.nombre}
     </h3>
-    {plato.descripcion && (
-      <span class="text-sm text-zinc-500 ml-2 italic">
-        {plato.descripcion}
-      </span>
-    )}
     {plato.alergenos && plato.alergenos.length > 0 && (
-      <span class="inline-flex gap-1 ml-2 align-middle">
+      <div class="flex gap-2 mt-1 flex-wrap">
         {plato.alergenos.map((alergeno: any) => {
           const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
           const imgUrl = typeof alergeno.imagen === 'object' && alergeno.imagen?.url
@@ -30,22 +25,32 @@ const { plato } = Astro.props;
             : null;
 
           return (
+            <div class="flex flex-col items-center gap-1 group/alergeno">
             <span
-              class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-zinc-100 text-[8px] text-zinc-500 overflow-hidden"
-              title={alergeno.nombre}
-            >
-              {imgUrl ? (
-                <img src={imgUrl} alt={alergeno.nombre} class="w-full h-full object-contain p-0.5 opacity-60" />
-              ) : (
-                alergeno.icono || alergeno.codigo
-              )}
-            </span>
+              class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/5 text-xs text-white/40 overflow-hidden transition-transform group-hover/alergeno:scale-110"
+                title={alergeno.nombre}
+              >
+                {imgUrl ? (
+                  <img src={imgUrl} alt={alergeno.nombre} class="w-full h-full object-contain" />
+                ) : (
+                  alergeno.icono || alergeno.codigo
+                )}
+              </span>
+              <span class="text-[10px] text-zinc-400 font-medium lowercase italic tracking-tighter text-center leading-none max-w-[48px] line-clamp-2">
+                {alergeno.nombre}
+              </span>
+            </div>
           );
         })}
+      </div>
+    )}
+    {plato.descripcion && (
+      <span class="text-sm text-zinc-500 italic block mt-1">
+        {plato.descripcion}
       </span>
     )}
   </div>
-  <span class="font-medium text-base text-zinc-900 tabular-nums whitespace-nowrap">
+  <span class="inline-block px-6 py-3 bg-white/5 text-white font-medium text-base rounded-xl tabular-nums whitespace-nowrap">
     {plato.precio?.toLocaleString('es-ES', { minimumFractionDigits: 2 })} €
   </span>
 </div>
