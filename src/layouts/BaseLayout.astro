@@ -3,6 +3,7 @@ import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import SEO from '../components/seo/SEO.astro';
 import Schema from '../components/seo/Schema.astro';
+import GoogleAnalytics from '../components/analytics/GoogleAnalytics.astro';
 
 interface Props {
 	title: string;
@@ -13,6 +14,9 @@ interface Props {
 }
 
 const { title, description, image, schemaType = 'Restaurant', schemaData } = Astro.props;
+
+// Google Analytics 4 - Solo se carga si está configurado
+const gaId = import.meta.env.PUBLIC_GOOGLE_ANALYTICS_ID;
 ---
 
 <!doctype html>
@@ -20,6 +24,7 @@ const { title, description, image, schemaType = 'Restaurant', schemaData } = Ast
 	<head>
 		<SEO title={title} description={description} image={image} />
 		<Schema type={schemaType} data={schemaData} />
+		{gaId && <GoogleAnalytics measurementId={gaId} />}
 		<ClientRouter />
 	</head>
 	<body class="bg-warynessy-black text-warynessy-cream antialiased min-h-screen flex flex-col">

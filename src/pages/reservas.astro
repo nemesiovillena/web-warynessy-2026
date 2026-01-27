@@ -16,9 +16,9 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
   : 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80';
 ---
 
-<MainLayout title={pageTitle} description={pageDescription}>
+<MainLayout title={pageTitle} description={pageDescription} noPaddingTop={true}>
   {/* Hero Section */}
-  <section class="relative py-32 bg-matte-black overflow-hidden">
+  <section class="relative pt-32 pb-24 md:pt-48 md:pb-32 bg-matte-black overflow-hidden">
     <div class="absolute inset-0 bg-cover bg-center opacity-30" style={`background-image: url('${heroImg}')`}></div>
     <div class="absolute inset-0 bg-gradient-to-t from-matte-black to-transparent"></div>
     <Container class="relative z-10 text-center animate-fade-up">
@@ -57,6 +57,31 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
               {siteSettings.contact.phone}
             </a>
          )}
+      </div>
+
+      {/* Política de cancelación */}
+      <div class="mt-16 p-8 bg-white/5 rounded-2xl border border-white/10">
+        <h3 class="text-white font-serif text-xl font-bold mb-6 flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">info</span>
+          Política de Cancelación
+        </h3>
+        <div class="space-y-4 text-white/60 text-sm leading-relaxed">
+          <p>
+            <strong class="text-white">Cancelación gratuita:</strong> Puedes cancelar o modificar tu reserva sin coste hasta 24 horas antes de la hora reservada.
+          </p>
+          <p>
+            <strong class="text-white">Cancelación tardía:</strong> Las cancelaciones realizadas con menos de 24 horas de antelación pueden estar sujetas a un cargo del 50% del precio estimado del menú.
+          </p>
+          <p>
+            <strong class="text-white">No presentación (No-show):</strong> Si no te presentas sin aviso previo, podremos aplicar un cargo del 100% del precio estimado.
+          </p>
+          <p>
+            <strong class="text-white">Grupos grandes (+8 personas):</strong> Para reservas de grupos, el plazo de cancelación gratuita se amplía a 48 horas.
+          </p>
+          <p class="text-white/40 text-xs mt-6">
+            Para cancelar o modificar tu reserva, utiliza el enlace en tu email de confirmación o llámanos directamente.
+          </p>
+        </div>
       </div>
     </Container>
   </Section>

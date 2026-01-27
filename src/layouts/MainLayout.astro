@@ -3,6 +3,7 @@ import BaseLayout from './BaseLayout.astro';
 import Header from '../components/ui/Header.astro';
 import Footer from '../components/ui/Footer.astro';
 import ScrollAnimations from '../components/ui/ScrollAnimations.astro';
+import CookieBanner from '../components/ui/CookieBanner.astro';
 
 interface Props {
 	title: string;
@@ -17,12 +18,41 @@ const { title, description, noPaddingTop = false, hideFloatingButton = false, sc
 ---
 
 <BaseLayout title={title} description={description} schemaType={schemaType} schemaData={schemaData}>
+	<!-- Skip to Content Link - Accesibilidad -->
+	<a
+		href="#main-content"
+		class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
+	>
+		Saltar al contenido principal
+	</a>
+
 	<Header />
 
-	<main class={`flex-grow ${noPaddingTop ? '' : 'pt-20'}`}>
+	<main id="main-content" class={`flex-grow ${noPaddingTop ? '' : 'pt-20 md:pt-24'}`} tabindex="-1">
 		<slot />
 	</main>
 
 	<Footer hideFloatingButton={hideFloatingButton} />
 	<ScrollAnimations />
+	<CookieBanner />
+
+  <script>
+    import { trackEvent } from '../lib/analytics';
+
+    document.addEventListener('astro:page-load', () => {
+      document.body.addEventListener('click', (e) => {
+        const target = (e.target as HTMLElement).closest('[data-track]');
+        if (target) {
+          const eventName = target.getAttribute('data-track');
+          const eventCategory = target.getAttribute('data-track-category') || 'general';
+          if (eventName) {
+            trackEvent(eventName, {
+              event_category: eventCategory,
+              event_label: target.textContent?.trim().slice(0, 50) || 'unnamed'
+            });
+          }
+        }
+      });
+    });
+  </script>
 </BaseLayout>

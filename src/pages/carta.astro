@@ -176,12 +176,13 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
   title={pageTitle}
   description={pageDescription}
   hideFloatingButton={true}
+  noPaddingTop={true}
   schemaType="Menu"
   schemaData={{ name: "Carta Warynessy 2026" }}
 >
 
   {/* Header Hero for Menu */}
-  <section class="relative py-24 md:py-32 bg-matte-black overflow-hidden">
+  <section class="relative pt-32 pb-24 md:pt-48 md:pb-32 bg-matte-black overflow-hidden">
      <div class="absolute inset-0 bg-cover bg-center opacity-30" style={`background-image: url('${heroImage}')`}></div>
      <div class="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/80 to-transparent"></div>
      <Container class="relative z-10 text-center animate-fade-up">
@@ -196,13 +197,21 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
   <Section class="bg-matte-black min-h-screen py-12 md:py-16">
     <Container>
 
-      {/* Allergen Filter Bar - Compact */}
+      {/* Allergen Filter Bar - Horizontal Compact Scroll */}
       {allAlergenos.length > 0 && (
-        <div class="mb-12 animate-fade-up">
-          <div class="flex flex-col items-center text-center gap-6">
-            <span class="text-primary text-sm uppercase tracking-[0.2em] font-black border-b border-primary/20 pb-2">Filtrar sin:</span>
+        <div class="mb-8 animate-fade-up">
+          <div class="flex flex-col gap-4">
+            <div class="flex items-center justify-between px-4 md:px-0">
+               <span class="text-primary text-xs uppercase tracking-[0.2em] font-black">Filtrar platos sin:</span>
+               <button
+                 id="clear-filters"
+                 class="hidden text-primary text-[10px] uppercase tracking-widest font-black border-b border-primary/30 hover:border-primary transition-colors"
+               >
+                 Limpiar filtros
+               </button>
+            </div>
             
-            <div class="flex flex-wrap justify-center gap-4 max-w-5xl">
+            <div class="flex overflow-x-auto pb-4 gap-3 no-scrollbar px-4 md:px-0" id="allergen-nav">
               {allAlergenos.map((alergeno: any) => {
                 const imgUrl = typeof alergeno.imagen === 'object' && alergeno.imagen?.url
                   ? (alergeno.imagen.url.startsWith('/') ? `${PAYLOAD_URL}${alergeno.imagen.url}` : alergeno.imagen.url)
@@ -210,26 +219,21 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
 
                 return (
                   <button
-                    class="allergen-filter-btn group flex flex-col items-center gap-2 p-2 rounded-2xl border border-white/5 text-white/50 hover:border-primary/50 hover:text-white transition-all text-sm font-bold tracking-tight w-24"
+                    class="allergen-filter-btn shrink-0 group flex items-center gap-3 px-4 py-2 rounded-full border border-white/10 text-white/50 hover:border-primary/50 hover:text-white transition-all text-xs font-bold"
                     data-alergeno-id={alergeno.id}
                   >
-                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-full bg-white/5 flex items-center justify-center p-3 group-hover:bg-primary/20 transition-colors border border-white/10">
-                      {imgUrl && (
-                        <img src={imgUrl} alt="" class="w-full h-full object-contain group-hover:scale-110 transition-transform opacity-70 group-hover:opacity-100" />
+                    <div class="w-6 h-6 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      {imgUrl ? (
+                        <img src={imgUrl} alt="" class="w-full h-full object-contain opacity-60 group-hover:opacity-100" />
+                      ) : (
+                        <span class="text-[10px]">{alergeno.codigo}</span>
                       )}
                     </div>
-                    <span class="text-center leading-tight lowercase italic h-8 flex items-center">{alergeno.nombre}</span>
+                    <span class="whitespace-nowrap">{alergeno.nombre}</span>
                   </button>
                 );
               })}
             </div>
-
-            <button
-              id="clear-filters"
-              class="hidden px-6 py-2 bg-white/5 hover:bg-white/10 text-primary text-xs font-black uppercase tracking-widest rounded-full transition-colors border border-primary/20"
-            >
-              Mostrar todo
-            </button>
           </div>
         </div>
       )}
@@ -381,11 +385,11 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
             if (activeFilters.has(id)) {
               activeFilters.delete(id);
               btn.classList.remove('active', 'bg-primary', 'text-white', 'border-primary');
-              btn.classList.add('text-white/40', 'border-white/5');
+              btn.classList.add('text-white/50', 'border-white/10');
             } else {
               activeFilters.add(id);
               btn.classList.add('active', 'bg-primary', 'text-white', 'border-primary');
-              btn.classList.remove('text-white/40', 'border-white/5');
+              btn.classList.remove('text-white/50', 'border-white/10');
             }
 
             updateVisibility();
@@ -397,7 +401,7 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
           activeFilters.clear();
           filterBtns.forEach(btn => {
             btn.classList.remove('active', 'bg-primary', 'text-white', 'border-primary');
-            btn.classList.add('text-white/40', 'border-white/5');
+            btn.classList.add('text-white/50', 'border-white/10');
           });
           updateVisibility();
         };
@@ -485,5 +489,15 @@ const heroImage = (rawHeroImage.startsWith('/') && !rawHeroImage.startsWith('htt
 
     });
   </script>
+  
+  <style is:global>
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
 
 </MainLayout>

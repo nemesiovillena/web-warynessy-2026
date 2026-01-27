@@ -1,0 +1,61 @@
+---
+interface Props {
+  measurementId: string;
+}
+
+const { measurementId } = Astro.props;
+---
+
+<!-- Google Analytics 4 - Solo se carga si el usuario acepta cookies analíticas -->
+<script define:vars={{ measurementId }}>
+  function initGA4() {
+    // Verificar consentimiento de cookies analíticas
+    const cookieConsent = localStorage.getItem('cookie-consent');
+
+    if (!cookieConsent) return;
+
+    try {
+      const consent = JSON.parse(cookieConsent);
+
+      // Solo cargar GA4 si el usuario aceptó cookies analíticas
+      if (!consent.analytics) return;
+
+      // Verificar si ya está cargado
+      if (window.gtag) return;
+
+      // Cargar script de gtag.js
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+      document.head.appendChild(script);
+
+      // Inicializar gtag
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function() {
+        window.dataLayer.push(arguments);
+      };
+      window.gtag('js', new Date());
+      window.gtag('config', measurementId, {
+        anonymize_ip: true,
+        cookie_flags: 'SameSite=None;Secure'
+      });
+
+      console.log('[GA4] Analytics inicializado');
+    } catch (e) {
+      console.error('[GA4] Error al inicializar:', e);
+    }
+  }
+
+  // Inicializar en carga de página (compatible con View Transitions)
+  document.addEventListener('astro:page-load', initGA4);
+
+  // Escuchar cambios en el consentimiento de cookies
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'cookie-consent') {
+      initGA4();
+    }
+  });
+
+  // También escuchar evento personalizado de actualización de cookies
+  window.addEventListener('cookie-consent-updated', initGA4);
+</script>

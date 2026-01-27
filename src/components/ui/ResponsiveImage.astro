@@ -8,25 +8,18 @@ interface Props {
   lazy?: boolean;
 }
 
-const { src, alt, class: className = '', sizes = "100vw", aspectRatio, lazy = true } = Astro.props;
+import { getOptimizedImageUrl } from '../../lib/cdn';
 
-// Simple helper to generate dummy placeholder if no src (development)
-const BUNNY_URL = import.meta.env.BUNNY_CDN_URL || process.env.BUNNY_CDN_URL;
-const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
+const { 
+  src, 
+  alt, 
+  class: className = '', 
+  sizes = "100vw", 
+  aspectRatio, 
+  lazy = true 
+} = Astro.props;
 
-let imageSrc = src || '/images/placeholder.jpg';
-
-// Si la imagen es de Payload (empieza por /api/media o es relativa)
-if (imageSrc.startsWith('/api/media') || (imageSrc.startsWith('/media/') && !imageSrc.startsWith('http'))) {
-  if (BUNNY_URL) {
-    // En producción con Bunny CDN
-    const cleanPath = imageSrc.replace('/api/media/', '/media/');
-    imageSrc = `${BUNNY_URL}${cleanPath}`;
-  } else {
-    // En desarrollo local, apuntamos directamente al servidor de Payload
-    imageSrc = `${PAYLOAD_URL}${imageSrc}`;
-  }
-}
+const imageSrc = getOptimizedImageUrl(src);
 ---
 
 <div class:list={["overflow-hidden bg-white/5", className]} style={aspectRatio ? `aspect-ratio: ${aspectRatio};` : ''}>
@@ -34,6 +27,7 @@ if (imageSrc.startsWith('/api/media') || (imageSrc.startsWith('/media/') && !ima
     src={imageSrc}
     alt={alt}
     loading={lazy ? "lazy" : "eager"}
+    decoding="async"
     class="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
   />
 </div>

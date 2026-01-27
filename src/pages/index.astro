@@ -58,7 +58,7 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
           {homepage?.heroSubtitle || "Una experiencia gastronómica única en el corazón de Alicante."}
         </p>
         <div class="mt-4 flex items-center gap-8">
-          <Button href="/reservas" variant="primary" size="lg" class="group">
+          <Button href="/reservas" variant="primary" size="lg" class="group" trackEvent="reservation_click" trackCategory="hero">
             Reserva Mesa
             <span class="material-symbols-outlined ml-2 transition-transform group-hover:translate-x-1">arrow_right_alt</span>
           </Button>
@@ -136,7 +136,7 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
         </div>
 
         <div class="mt-12">
-          <Button href="/reservas" variant="primary" size="lg" class="group">
+          <Button href="/reservas" variant="primary" size="lg" class="group" trackEvent="reservation_click" trackCategory="horarios">
             Ir a Reservas
             <span class="material-symbols-outlined ml-2 transition-transform group-hover:translate-x-1">calendar_month</span>
           </Button>
@@ -154,7 +154,7 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
           Sorprende a tus seres queridos con una experiencia sensorial inolvidable en nuestro restaurante.
         </p>
       </div>
-      <Button href="/experiencias" variant="white" size="lg" class="text-accent-red hover:bg-black hover:text-white group">
+      <Button href="/experiencias" variant="white" size="lg" class="text-accent-red hover:bg-black hover:text-white group" trackEvent="gift_card_click" trackCategory="promo">
         Comprar Tarjeta Regalo
         <span class="material-symbols-outlined ml-2 transition-transform group-hover:translate-x-1">arrow_right_alt</span>
       </Button>
@@ -172,7 +172,7 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
           <h2 class="text-4xl md:text-6xl font-serif font-bold text-white leading-tight">Nuestros Espacios</h2>
           <p class="text-white/70 text-xl font-light mt-4">Atmósferas únicas diseñadas para elevar cada momento.</p>
         </div>
-        <Button href="/espacios" variant="outline" class="border-white/20 text-white hover:bg-white hover:text-black hover:border-white transition-all">
+        <Button href="/espacios" variant="outline" class="border-white/20 text-white hover:bg-white hover:text-black hover:border-white transition-all" trackEvent="view_spaces" trackCategory="navigation">
           Descubrir todos los espacios
         </Button>
       </div>
@@ -337,6 +337,8 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
           target="_blank" 
           variant="outline" 
           class="border-white text-white hover:bg-white hover:text-black"
+          trackEvent="social_click"
+          trackCategory="instagram_section"
         >
           Ver Instagram
         </Button>

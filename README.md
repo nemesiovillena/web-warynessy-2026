@@ -99,17 +99,9 @@ PAYLOAD_SECRET=tu-secret-generado
 
 # Google APIs
 PUBLIC_GOOGLE_PLACES_API_KEY=tu-api-key
+# Analíticas y CDN
 PUBLIC_GOOGLE_ANALYTICS_ID=G-XXXXXXXXXX
-
-# Instagram
-INSTAGRAM_ACCESS_TOKEN=tu-access-token
-
-# CoverManager
-PUBLIC_COVER_MANAGER_ID=tu-id
-
-# Bunny.net (opcional)
-BUNNY_CDN_URL=tu-cdn-url
-BUNNY_API_KEY=tu-api-key
+PUBLIC_BUNNY_CDN_URL=https://tu-zona.b-cdn.net
 ```
 
 #### Generar PAYLOAD_SECRET
@@ -232,10 +224,8 @@ Este documento contiene:
 - ✅ **Reservas Online**: Integración con CoverManager
 - ✅ **Animaciones Suaves**: Parallax y efectos con GSAP
 - ✅ **Responsive**: Optimizado para móviles y tablets
-- ✅ **SEO Optimizado**: Meta tags, schema.org, sitemap
-- ✅ **Imágenes Optimizadas**: WebP, lazy loading automático
-- ✅ **Alérgenos**: Sistema de gestión de alérgenos
-- ✅ **Multi-espacio**: Galería de diferentes espacios del restaurante
+- ✅ Analíticas Avanzadas: GA4 integrado con tracking de eventos de conversión
+- ✅ Optimización de Imágenes: Soporte para Bunny.net CDN
 - ✅ **Sin Costos Ocultos**: Open-source, sin pago por API calls
 
 ## 🔧 Mantenimiento

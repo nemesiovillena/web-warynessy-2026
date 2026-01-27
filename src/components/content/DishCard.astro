@@ -34,9 +34,20 @@ const imageUrl = typeof plato.imagen === 'object' && plato.imagen?.url ? plato.i
     <div class="flex flex-row items-center justify-between gap-4 w-full md:contents">
       <!-- Name -->
       <div class="flex-grow text-left flex flex-col gap-1">
-        <h3 class="font-display text-lg md:text-xl font-medium text-white">
-          {plato.nombre}
-        </h3>
+        <div class="flex items-center justify-between gap-4">
+          <h3 class="font-display text-lg md:text-xl font-medium text-white">
+            {plato.nombre}
+          </h3>
+          {plato.etiquetas && plato.etiquetas.length > 0 && (
+            <div class="flex gap-2">
+              {plato.etiquetas.map((item) => (
+                <span class="px-2 py-0.5 bg-primary/20 border border-primary/30 text-primary text-[10px] uppercase tracking-widest font-black rounded-md shadow-sm flex-shrink-0 text-center">
+                  {item.etiqueta}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
         {plato.alergenos && plato.alergenos.length > 0 && (
           <div class="flex gap-2 flex-wrap">
             {plato.alergenos.map((alergeno: any) => {

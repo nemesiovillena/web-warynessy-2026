@@ -22,8 +22,8 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
   : 'https://images.unsplash.com/photo-1534536281715-3bd66a50689b?auto=format&fit=crop&q=80';
 ---
 
-<MainLayout title={pageTitle} description={pageDescription}>
-  <section class="relative py-32 bg-matte-black overflow-hidden">
+<MainLayout title={pageTitle} description={pageDescription} noPaddingTop={true}>
+  <section class="relative pt-32 pb-24 md:pt-48 md:pb-32 bg-matte-black overflow-hidden">
      <div class="absolute inset-0 bg-cover bg-center opacity-20" style={`background-image: url('${heroImg}')`}></div>
      <div class="absolute inset-0 bg-gradient-to-t from-matte-black to-transparent"></div>
      <Container class="relative z-10 text-center animate-fade-up">
@@ -64,7 +64,7 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
               </div>
               <div>
                 <h4 class="text-white font-bold mb-1">Teléfono</h4>
-                <a href={`tel:${contact.phone}`} class="text-white/60 hover:text-primary transition-colors">{contact.phone}</a>
+                <a href={`tel:${contact.phone}`} class="text-white/60 hover:text-primary transition-colors" data-track="phone_click" data-track-category="contact_page">{contact.phone}</a>
               </div>
             </div>
 
@@ -74,7 +74,7 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
               </div>
               <div>
                 <h4 class="text-white font-bold mb-1">Email</h4>
-                <a href={`mailto:${contact.email}`} class="text-white/60 hover:text-primary transition-colors">{contact.email}</a>
+                <a href={`mailto:${contact.email}`} class="text-white/60 hover:text-primary transition-colors" data-track="email_click" data-track-category="contact_page">{contact.email}</a>
               </div>
             </div>
           </div>
@@ -175,6 +175,16 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
           if (response.ok) {
             showMessage('Mensaje enviado correctamente. Te responderemos pronto.', 'success');
             form.reset();
+            
+            // @ts-ignore
+            if (typeof window.trackContactSubmit === 'function') {
+              // @ts-ignore
+              window.trackContactSubmit(asunto);
+            } else {
+              // Fallback si no está expuesta globalmente, usamos el import si es posible
+              const { trackContactSubmit } = await import('../lib/analytics');
+              trackContactSubmit(asunto);
+            }
           } else {
             showMessage(data.error || 'Error al enviar el mensaje.', 'error');
           }
@@ -199,6 +209,94 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
       }
     });
   </script>
+
+  {/* Información adicional: Horarios, Cómo llegar, Parking */}
+  <Section class="bg-matte-black">
+    <Container>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        {/* Horarios */}
+        <div class="bg-white/5 p-8 rounded-2xl border border-white/10">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary">schedule</span>
+            </div>
+            <h3 class="text-white font-serif text-xl font-bold">Horarios</h3>
+          </div>
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between">
+              <span class="text-white/60">Lunes</span>
+              <span class="text-white">Cerrado</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-white/60">Martes - Viernes</span>
+              <span class="text-white">13:30 - 16:00</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-white/60">Viernes - Sábado</span>
+              <span class="text-white">20:30 - 23:30</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-white/60">Domingo</span>
+              <span class="text-white">13:30 - 16:00</span>
+            </div>
+            <p class="text-white/40 text-xs mt-4 pt-4 border-t border-white/10">
+              * Horarios orientativos. Pueden variar en festivos.
+            </p>
+          </div>
+        </div>
+
+        {/* Cómo llegar */}
+        <div class="bg-white/5 p-8 rounded-2xl border border-white/10">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary">directions</span>
+            </div>
+            <h3 class="text-white font-serif text-xl font-bold">Cómo llegar</h3>
+          </div>
+          <div class="space-y-4 text-sm text-white/60">
+            <div>
+              <span class="text-white font-medium block mb-1">En coche</span>
+              <p>Desde la A-31, toma la salida 195 hacia Villena centro. Nos encontramos en el casco histórico, junto a la Plaza de Santiago.</p>
+            </div>
+            <div>
+              <span class="text-white font-medium block mb-1">En tren</span>
+              <p>Estación de Villena a 10 minutos andando. Líneas Cercanías C-3 desde Alicante y Valencia.</p>
+            </div>
+            <div>
+              <span class="text-white font-medium block mb-1">En autobús</span>
+              <p>Parada de autobús en Av. Constitución, a 5 minutos del restaurante.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Parking y accesibilidad */}
+        <div class="bg-white/5 p-8 rounded-2xl border border-white/10">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary">local_parking</span>
+            </div>
+            <h3 class="text-white font-serif text-xl font-bold">Parking y Accesibilidad</h3>
+          </div>
+          <div class="space-y-4 text-sm text-white/60">
+            <div>
+              <span class="text-white font-medium block mb-1">Aparcamiento</span>
+              <p>Parking público gratuito en Plaza de Toros (5 min andando). Zona azul en calles adyacentes.</p>
+            </div>
+            <div>
+              <span class="text-white font-medium block mb-1">Accesibilidad</span>
+              <p>Acceso adaptado para personas con movilidad reducida. Baño accesible disponible.</p>
+            </div>
+            <div class="flex items-center gap-2 mt-4 pt-4 border-t border-white/10">
+              <span class="material-symbols-outlined text-primary text-lg">accessible</span>
+              <span class="text-white text-xs">Restaurante accesible</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </Container>
+  </Section>
 
   {/* Mapa */}
   <section class="h-[500px] w-full bg-zinc-900 grayscale hover:grayscale-0 transition-all duration-700">

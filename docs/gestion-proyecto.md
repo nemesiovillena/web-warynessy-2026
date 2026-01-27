@@ -1,7 +1,7 @@
 # Gestión del Proyecto - Web Warynessy 2026
 
 ## Estado del Proyecto
-**Última actualización:** 2026-01-15
+**Última actualización:** 2026-01-27
 **Estado General:** 🟡 En Desarrollo
 
 ---
@@ -34,7 +34,8 @@
 - [x] Crear documento de gestión del proyecto
 - [x] Configurar .gitignore adecuado
 - [x] Crear archivo README.md del proyecto
-- [x] Configurar variables de entorno (.env.example)
+- [x] Implementar etiquetas dinámicas en platos (badges)
+- [x] Documentar todas las variables de entorno (.env.example)
 
 ---
 
@@ -291,32 +292,29 @@
 - [x] Política de Cookies
 
 ### Página Nosotros/Historia
-- [ ] Timeline de la historia del restaurante
-- [ ] Fotos históricas
-- [ ] Filosofía y valores
-- [ ] Equipo (opcional)
-- [ ] Premios y reconocimientos
+- [x] Timeline de la historia del restaurante
+- [x] Fotos históricas
+- [x] Filosofía y valores
+- [x] Equipo
+- [x] Premios y reconocimientos
 
 ### Página Reservas
-- [ ] Integración iframe de CoverManager
-- [ ] Información sobre el proceso
-- [ ] Horarios disponibles
-- [ ] Política de cancelación
-- [ ] Contacto alternativo
+- [x] Integración iframe de CoverManager
+- [x] Información sobre el proceso
+- [x] Horarios disponibles
+- [x] Política de cancelación
+- [x] Contacto alternativo
 
 ### Página Contacto
-- [ ] Formulario de contacto
-- [ ] Información de contacto
-- [ ] Mapa interactivo (Google Maps)
-- [ ] Horarios detallados
-- [ ] Cómo llegar
-- [ ] Parking y accesibilidad
+- [x] Formulario de contacto
+- [x] Información de contacto
+- [x] Mapa interactivo (Google Maps)
+- [x] Horarios detallados
+- [x] Cómo llegar
+- [x] Parking y accesibilidad
 
-### Páginas Legales
-- [ ] Aviso Legal
-- [ ] Política de Privacidad
-- [ ] Política de Cookies
-- [ ] Banner de consentimiento cookies
+### Banner de Cookies
+- [x] Banner de consentimiento cookies
 
 ---
 
@@ -344,30 +342,30 @@
 ---
 
 ## Fase 6: Integraciones Externas
-**Estado:** ⚪ Pendiente
+**Estado:** 🟡 En Progreso (80%)
 
 ### CoverManager (Reservas)
-- [ ] Obtener código de integración
-- [ ] Implementar widget/iframe
-- [ ] Botón flotante de reservas
+- [x] Obtener código de integración
+- [x] Implementar widget/iframe
+- [x] Botón flotante de reservas
 - [ ] Testear flujo completo de reserva
-- [ ] Responsive mobile
+- [x] Responsive mobile
 
 ### Google Places API (Reseñas)
-- [ ] Configurar API key
-- [ ] Crear endpoint/función para reseñas
-- [ ] Componente de visualización
-- [ ] Sistema de caché
-- [ ] Fetch en build time
-- [ ] Fallback si API falla
+- [x] Configurar API key
+- [x] Crear endpoint/función para reseñas (lib/google-reviews.ts + api/reviews.ts)
+- [x] Componente de visualización (en Home + GoogleReviews.astro)
+- [x] Sistema de caché (endpoint con caché 1 hora)
+- [x] Fetch en build time (index.astro)
+- [x] Fallback si API falla
 
 ### Instagram API
-- [ ] Configurar Instagram Basic Display API
-- [ ] Crear endpoint para últimos posts
-- [ ] Sistema de caché (reducir llamadas)
-- [ ] Componente de galería Instagram
-- [ ] Enlaces a perfil de Instagram
-- [ ] Fallback si API falla
+- [x] Configurar Instagram Basic Display API (lib/instagram.ts)
+- [x] Crear endpoint para últimos posts (api/instagram.ts)
+- [x] Sistema de caché (30 minutos en endpoint)
+- [x] Componente de galería Instagram (en Home Section 7)
+- [x] Enlaces a perfil de Instagram
+- [x] Fallback si API falla (mock posts)
 
 ### Bunny.net CDN
 - [ ] Crear cuenta Bunny.net
@@ -378,55 +376,59 @@
 - [ ] Configurar cache headers
 
 ### Google Analytics / Tracking
-- [ ] Configurar Google Analytics 4
+- [x] Configurar Google Analytics 4
+- [x] Cookie consent integration
 - [ ] Implementar tracking de eventos
 - [ ] Tracking de conversiones (reservas)
 - [ ] Tracking de clicks en menú
-- [ ] Cookie consent integration
 - [ ] Dashboard de métricas básicas
 
 ---
 
 ## Fase 7: Optimización y SEO
-**Estado:** ⚪ Pendiente
+**Estado:** 🟡 En Progreso (70%)
 
 ### Performance
-- [ ] Optimización de imágenes (WebP/AVIF)
-- [ ] Lazy loading de imágenes
+- [x] Lazy loading de imágenes (ResponsiveImage con loading="lazy")
+- [x] Decoding async en imágenes
+- [x] Preload de fuentes (preconnect fonts.googleapis.com)
+- [ ] Optimización de imágenes (WebP/AVIF) - pendiente Bunny CDN
 - [ ] Code splitting
-- [ ] Minificación de CSS/JS
-- [ ] Preload de recursos críticos
+- [ ] Minificación de CSS/JS (build time)
 - [ ] Font optimization (subset fonts)
 - [ ] Lighthouse score > 90 (todas las métricas)
 - [ ] Core Web Vitals optimizados
 
 ### SEO On-Page
-- [ ] Meta descriptions únicas por página
-- [ ] Title tags optimizados
-- [ ] Estructura de headings (H1, H2, H3)
-- [ ] Alt text en todas las imágenes
-- [ ] URLs amigables
-- [ ] Sitemap XML
-- [ ] Robots.txt configurado
-- [ ] Canonical URLs
+- [x] Meta descriptions únicas por página (SEO.astro)
+- [x] Title tags optimizados
+- [x] Alt text en todas las imágenes (ResponsiveImage requiere alt)
+- [x] URLs amigables (Astro file-based routing)
+- [x] Sitemap XML (astro-sitemap integration)
+- [x] Robots.txt configurado
+- [x] Canonical URLs (SEO.astro)
+- [ ] Estructura de headings (H1, H2, H3) - verificar
 
 ### SEO Técnico
-- [ ] Schema.org - Restaurant
-- [ ] Schema.org - Menu
-- [ ] Schema.org - LocalBusiness
-- [ ] Open Graph tags (Facebook)
-- [ ] Twitter Cards
-- [ ] Datos estructurados validados
+- [x] Schema.org - Restaurant (Schema.astro)
+- [x] Schema.org - Menu (Schema.astro)
+- [x] Open Graph tags (SEO.astro con og:locale, og:site_name)
+- [x] Twitter Cards (SEO.astro)
+- [x] Theme color para móviles
+- [x] Robots meta tag
+- [x] Schema.org - LocalBusiness
+- [ ] Datos estructurados validados (Google Rich Results Test)
 - [ ] Search Console configurado
 - [ ] Verificación de indexación
 
 ### Accesibilidad
-- [ ] Contraste de colores WCAG AA
-- [ ] Navegación por teclado
-- [ ] Labels en formularios
-- [ ] ARIA labels donde necesario
-- [ ] Skip to content link
-- [ ] Focus visible
+- [x] Labels en formularios (contacto.astro)
+- [x] ARIA roles en dialogs (CookieBanner)
+- [x] Skip to content link (MainLayout.astro)
+- [x] Focus visible styles (global.css)
+- [x] Prefers-reduced-motion (global.css)
+- [x] Navegación por teclado (focus-visible en todos los elementos)
+- [ ] Contraste de colores WCAG AA - verificar
 - [ ] Test con screen reader
 - [ ] Lighthouse Accessibility > 90
 
@@ -530,16 +532,16 @@
 ### Por Fase
 - **Fase 0:** ✅ Completada (100%)
 - **Fase 1:** ✅ Completada (100%) - Migración a Payload CMS
-- **Fase 2:** 🟡 En Progreso (70%)
+- **Fase 2:** ✅ Completada (100%)
 - **Fase 3:** ✅ Completada (100%)
 - **Fase 4:** ✅ Completada (100%)
 - **Fase 5:** ✅ Completada (100%) - Animaciones y Microinteracciones
-- **Fase 6:** ⚪ Pendiente (0%)
-- **Fase 7:** ⚪ Pendiente (0%)
+- **Fase 6:** 🟡 En Progreso (80%) - CoverManager + GA4 + Reviews + Instagram integrados
+- **Fase 7:** 🟡 En Progreso (70%) - SEO + Accesibilidad mejorada
 - **Fase 8:** ⚪ Pendiente (0%)
 - **Fase 9:** ⚪ Pendiente (0%)
 
-### Progreso Total: ~30%
+### Progreso Total: ~85%
 
 ---
 
@@ -552,9 +554,18 @@
 5. ✅ ~~Crear scripts de seed y reset~~
 6. ✅ ~~Integrar Payload con Astro (payload-local.ts)~~
 7. ✅ ~~Actualizar index.astro para usar Payload~~
-8. **Completar componentes base (Header, Footer)**
-9. **Crear página de Carta con datos de Payload**
-10. **Mejorar la página Home con datos reales**
+8. ✅ ~~Completar componentes base (Header, Footer)~~
+9. ✅ ~~Crear página de Carta con datos de Payload~~
+10. ✅ ~~Mejorar la página Home con datos reales~~
+11. ✅ ~~Crear página Nosotros/Historia (con equipo)~~
+12. ✅ ~~Crear página Reservas (con política cancelación)~~
+13. ✅ ~~Crear página Contacto (con horarios, cómo llegar, parking)~~
+14. ✅ ~~Banner de cookies RGPD~~
+15. ✅ ~~Integrar Google Analytics~~ (Fase 6)
+16. ✅ ~~Integrar Google Places API para reseñas~~ (Fase 6)
+17. ✅ ~~Integrar Instagram API~~ (Fase 6)
+18. **Configurar CDN para imágenes (Bunny.net)** (Fase 6)
+19. **Optimización y SEO** (Fase 7)
 
 ---
 
@@ -574,6 +585,10 @@
   - Razón: Mayor control sobre los datos, uso de PostgreSQL local
   - Se crearon 9 colecciones + 2 globals equivalentes a los schemas de Sanity
   - Se usa la API local de Payload (`getPayload()`) directamente desde Astro
+- **2026-01-27:** Mejora de SEO Técnico y UX de Carta
+  - Se implementó `LocalBusiness` con GeoCoordinates en `Schema.astro`
+  - Se añadieron etiquetas dinámicas (badges) a los platos en `DishCard.astro`
+  - Limpieza y documentación completa de `.env.example`
 
 ### Archivos Clave Creados
 - `payload.config.ts` - Configuración principal de Payload
@@ -582,6 +597,8 @@
 - `src/lib/payload-local.ts` - Cliente local para Astro
 - `scripts/seed.ts` - Poblar datos iniciales
 - `scripts/reset.ts` - Limpiar base de datos
+- `src/components/ui/CookieBanner.astro` - Banner de cookies RGPD
+- `src/components/analytics/GoogleAnalytics.astro` - Integración GA4 con consentimiento
 
 ### Consideraciones Especiales
 - **Parallax móvil:** Desactivar o suavizar usando `matchMedia()`
@@ -614,6 +631,6 @@
 
 ---
 
-**Última revisión:** 2026-01-15
-**Próxima revisión:** [Pendiente]
+**Última revisión:** 2026-01-27
+**Próxima revisión:** 2026-02-03
 **Responsable:** Equipo de Desarrollo

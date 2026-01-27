@@ -8,6 +8,8 @@ interface Props {
   target?: string;
   rel?: string;
   disabled?: boolean;
+  trackEvent?: string;
+  trackCategory?: string;
 }
 
 const { 
@@ -18,7 +20,9 @@ const {
   type = 'button',
   target,
   rel,
-  disabled = false
+  disabled = false,
+  trackEvent,
+  trackCategory
 } = Astro.props;
 
 const baseStyles = "inline-flex items-center justify-center font-bold tracking-widest uppercase transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95";
@@ -47,11 +51,24 @@ const classes = [
 
 {
   href ? (
-    <a href={href} class={classes} target={target} rel={rel}>
+    <a 
+      href={href} 
+      class={classes} 
+      target={target} 
+      rel={rel}
+      data-track={trackEvent}
+      data-track-category={trackCategory}
+    >
       <slot />
     </a>
   ) : (
-    <button type={type} class={classes} disabled={disabled}>
+    <button 
+      type={type} 
+      class={classes} 
+      disabled={disabled}
+      data-track={trackEvent}
+      data-track-category={trackCategory}
+    >
       <slot />
     </button>
   )

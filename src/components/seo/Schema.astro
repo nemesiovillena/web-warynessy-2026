@@ -15,14 +15,14 @@ let schema: Record<string, any> = {
   "@context": "https://schema.org"
 };
 
-const siteUrl = "https://warynessy.com"; // TODO: Configurar PUBLIC_SITE_URL en .env
+const siteUrl = import.meta.env.PUBLIC_SITE_URL || "https://warynessy.com";
 
 if (type === 'Restaurant') {
   const contact = settings?.contact || {};
   
   schema = {
     ...schema,
-    "@type": "Restaurant",
+    "@type": ["Restaurant", "LocalBusiness"],
     "name": settings?.title || "Restaurante Warynessy",
     "image": settings?.logo?.url ? [settings.logo.url] : [],
     "description": settings?.description || "Alta cocina mediterránea",
@@ -34,10 +34,17 @@ if (type === 'Restaurant') {
       "postalCode": "03400",
       "addressCountry": "ES"
     },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 38.6333,
+      "longitude": -0.8667
+    },
     "url": siteUrl,
     "telephone": contact.phone || "",
     "servesCuisine": "Mediterránea, Contemporánea",
     "priceRange": "€€€",
+    "hasMenu": `${siteUrl}/carta`,
+    "acceptsReservations": "true",
     "openingHoursSpecification": settings?.openingHours?.map((oh: any) => ({
       "@type": "OpeningHoursSpecification",
       "dayOfWeek": oh.days,
@@ -48,7 +55,7 @@ if (type === 'Restaurant') {
 } else if (type === 'Menu') {
   schema = {
     ...schema,
-    "@type": "Menu",
+    "@type": ["Menu", "CreativeWork"],
     "name": data.name || "Nuestra Carta",
     "mainEntityOfPage": `${siteUrl}/carta`,
     "offers": {
