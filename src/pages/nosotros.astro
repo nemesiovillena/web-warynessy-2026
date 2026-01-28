@@ -170,7 +170,7 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
   <section class="py-24 bg-primary text-center">
      <Container class="animate-fade-up">
         <h2 class="text-white text-4xl md:text-5xl font-serif font-bold mb-8">¿Vienes a conocernos?</h2>
-        <Button href="/reservas" variant="white" size="lg" class="text-primary hover:bg-black hover:text-white">
+        <Button href="/reservas" variant="white" size="lg" class="text-primary hover:bg-black hover:text-white" trackEvent="reservation_click" trackCategory="nosotros_cta">
           Reserva tu experiencia
         </Button>
      </Container>

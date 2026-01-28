@@ -93,6 +93,26 @@ export const PaginaInicio: GlobalConfig = {
       },
     },
 
+    // Galería Regala Gastronomía (fondo)
+    {
+      name: 'galeriaRegalo',
+      type: 'array',
+      label: 'Galería Sección Regalo (Fondo)',
+      minRows: 4,
+      maxRows: 4,
+      fields: [
+        {
+          name: 'imagen',
+          type: 'upload',
+          relationTo: 'archivos',
+          required: true,
+        },
+      ],
+      admin: {
+        description: 'Selecciona 4 imágenes para el fondo de la sección "Regala Gastronomía"',
+      },
+    },
+
     // Espacios destacados
     {
       name: 'espaciosDestacados',

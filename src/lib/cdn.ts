@@ -31,8 +31,12 @@ export function getOptimizedImageUrl(src: string, options: CDNOptions = {}): str
         path = path.replace(PAYLOAD_URL, '');
     }
 
-    // Si no tenemos CDN, devolvemos la URL de Payload absoluta
-    if (!BUNNY_URL) {
+    // Si no tenemos CDN o estamos en local, devolvemos la URL de Payload absoluta
+    // Nota: Bunny.net no puede acceder a http://localhost, por lo que el CDN solo 
+    // debe activarse cuando el origen sea una URL pública.
+    const isLocal = PAYLOAD_URL.includes('localhost') || PAYLOAD_URL.includes('127.0.0.1');
+
+    if (!BUNNY_URL || isLocal) {
         return `${PAYLOAD_URL}${path}`;
     }
 

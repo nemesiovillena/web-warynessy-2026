@@ -1,7 +1,7 @@
 # Gestión del Proyecto - Web Warynessy 2026
 
 ## Estado del Proyecto
-**Última actualización:** 2026-01-27
+**Última actualización:** 2026-01-28
 **Estado General:** 🟡 En Desarrollo
 
 ---
@@ -282,9 +282,9 @@
 - [x] Botón de reserva
 
 ### Página Experiencias/Regala
-- [x] Hero section
-- [x] Cards de experiencias disponibles
-- [x] Botón de compra (enlace externo)
+- [x] Hero section con imagen parallax personalizada desde CMS
+- [x] Integración oficial del widget de Covermanager (Experiencias)
+- [x] Guía de compra y canje de menús regalo
 
 ### Páginas Legales
 - [x] Aviso Legal
@@ -344,12 +344,12 @@
 ## Fase 6: Integraciones Externas
 **Estado:** 🟡 En Progreso (80%)
 
-### CoverManager (Reservas)
+### CoverManager (Reservas y Experiencias)
 - [x] Obtener código de integración
-- [x] Implementar widget/iframe
-- [x] Botón flotante de reservas
-- [ ] Testear flujo completo de reserva
-- [x] Responsive mobile
+- [x] Implementar widget/iframe de Reservas
+- [x] Implementar widget/iframe de Experiencias/Menús Regalo
+- [ ] Testear flujo completo de reserva y compra
+- [x] Responsive mobile y ajuste dinámico de altura (iFrameResizer)
 
 ### Google Places API (Reseñas)
 - [x] Configurar API key
@@ -556,16 +556,16 @@
 7. ✅ ~~Actualizar index.astro para usar Payload~~
 8. ✅ ~~Completar componentes base (Header, Footer)~~
 9. ✅ ~~Crear página de Carta con datos de Payload~~
-10. ✅ ~~Mejorar la página Home con datos reales~~
+10. ✅ ~~Mejorar la página Home con datos reales e imágenes de fondo en Regala Gastronomía~~
 11. ✅ ~~Crear página Nosotros/Historia (con equipo)~~
-12. ✅ ~~Crear página Reservas (con política cancelación)~~
+12. ✅ ~~Crear página Experiencias (con integración completa de Covermanager)~~
 13. ✅ ~~Crear página Contacto (con horarios, cómo llegar, parking)~~
 14. ✅ ~~Banner de cookies RGPD~~
 15. ✅ ~~Integrar Google Analytics~~ (Fase 6)
 16. ✅ ~~Integrar Google Places API para reseñas~~ (Fase 6)
 17. ✅ ~~Integrar Instagram API~~ (Fase 6)
 18. **Configurar CDN para imágenes (Bunny.net)** (Fase 6)
-19. **Optimización y SEO** (Fase 7)
+19. **Optimización SEO y Validación de Datos Estructurados** (Fase 7)
 
 ---
 
@@ -631,6 +631,6 @@
 
 ---
 
-**Última revisión:** 2026-01-27
+**Última revisión:** 2026-01-28
 **Próxima revisión:** 2026-02-03
 **Responsable:** Equipo de Desarrollo

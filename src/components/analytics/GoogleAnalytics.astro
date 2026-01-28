@@ -46,8 +46,33 @@ const { measurementId } = Astro.props;
     }
   }
 
+  function handleTrackingClick(e) {
+    if (!window.gtag) return;
+
+    const target = e.target.closest('[data-track]');
+    if (!target) return;
+
+    const eventName = target.getAttribute('data-track');
+    const eventCategory = target.getAttribute('data-track-category') || 'general';
+
+    if (eventName) {
+      window.gtag('event', eventName, {
+        'event_category': eventCategory,
+        'event_label': target.innerText || target.getAttribute('aria-label') || '',
+        'element_id': target.id || '',
+        'page_path': window.location.pathname
+      });
+      console.log(`[GA4] Evento enviado: ${eventName} (${eventCategory})`);
+    }
+  }
+
   // Inicializar en carga de página (compatible con View Transitions)
-  document.addEventListener('astro:page-load', initGA4);
+  document.addEventListener('astro:page-load', () => {
+    initGA4();
+    // Añadir listener para eventos de tracking
+    document.removeEventListener('click', handleTrackingClick);
+    document.addEventListener('click', handleTrackingClick);
+  });
 
   // Escuchar cambios en el consentimiento de cookies
   window.addEventListener('storage', (e) => {

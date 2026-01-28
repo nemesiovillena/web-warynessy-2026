@@ -8,25 +8,22 @@ let payloadInstance: Awaited<ReturnType<typeof getPayload>> | null = null
 
 export async function getPayloadClient() {
   if (payloadInstance) {
-    // Verificamos si la colección 'menus' tiene el campo 'etiqueta'
-    const menusConfig = payloadInstance.collections['menus']?.config;
-    const hasEtiquetaField = menusConfig?.fields?.some(f => 'name' in f && f.name === 'etiqueta');
+    // Verificamos si el global 'pagina-inicio' tiene el campo 'galeriaRegalo' en sus campos
+    const homeGlobal = payloadInstance.config.globals.find(g => g.slug === 'pagina-inicio');
+    const hasGaleriaRegalo = homeGlobal?.fields?.some(f => 'name' in f && f.name === 'galeriaRegalo');
 
-    // Verificamos si el global 'configuracion-sitio' tiene el campo 'instagramConfig'
-    const siteConfig = payloadInstance.globals.config.find(g => g.slug === 'configuracion-sitio');
-    const hasInstagramConfig = siteConfig?.fields?.some(f => 'name' in f && f.name === 'instagramConfig');
+    console.log('🔍 getPayloadClient - check galeriaRegalo:', hasGaleriaRegalo);
 
-    console.log('🔍 getPayloadClient - Fields check:', { hasEtiquetaField, hasInstagramConfig });
-
-    if (!hasEtiquetaField || !hasInstagramConfig) {
-      console.log('🔄 Re-initializing Payload: New fields missing from active instance');
+    if (!hasGaleriaRegalo) {
+      console.log('🔄 Re-initializing Payload: galeriaRegalo missing from active instance');
       payloadInstance = null;
     }
   }
 
   if (!payloadInstance) {
     // Importamos la configuración dinámicamente para evitar problemas de caché en desarrollo
-    const configModule = await import('../../payload.config')
+    const configPath = `../../payload.config.ts`
+    const configModule = await import(/* @vite-ignore */ `${configPath}?v=${Date.now()}`)
     const freshConfig = configModule.default
 
     payloadInstance = await getPayload({ config: freshConfig })
