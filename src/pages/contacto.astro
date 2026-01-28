@@ -112,14 +112,20 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
               </div>
             </div>
 
-            <div class="space-y-2">
-              <label for="asunto" class="text-sm font-bold text-gray-500 uppercase tracking-widest">Asunto</label>
-              <select id="asunto" name="asunto" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors">
-                <option>Reserva Especial / Evento</option>
-                <option>Sugerencia / Feedback</option>
-                <option>Trabaja con nosotros</option>
-                <option>Otro</option>
-              </select>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label for="telefono" class="text-sm font-bold text-gray-500 uppercase tracking-widest">Teléfono</label>
+                <input id="telefono" name="telefono" type="tel" placeholder="Tu número" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors" />
+              </div>
+              <div class="space-y-2">
+                <label for="asunto" class="text-sm font-bold text-gray-500 uppercase tracking-widest">Asunto</label>
+                <select id="asunto" name="asunto" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors">
+                  <option>Reserva Especial / Evento</option>
+                  <option>Sugerencia / Feedback</option>
+                  <option>Trabaja con nosotros</option>
+                  <option>Otro</option>
+                </select>
+              </div>
             </div>
 
             <div class="space-y-2">
@@ -152,6 +158,7 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
 
         const nombre = (document.getElementById('nombre') as HTMLInputElement).value.trim();
         const email = (document.getElementById('email') as HTMLInputElement).value.trim();
+        const telefono = (document.getElementById('telefono') as HTMLInputElement).value.trim();
         const asunto = (document.getElementById('asunto') as HTMLSelectElement).value;
         const mensaje = (document.getElementById('mensaje') as HTMLTextAreaElement).value.trim();
 
@@ -167,7 +174,7 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
           const response = await fetch('/api/contact', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, email, asunto, mensaje }),
+            body: JSON.stringify({ nombre, email, telefono, asunto, mensaje }),
           });
 
           const data = await response.json();

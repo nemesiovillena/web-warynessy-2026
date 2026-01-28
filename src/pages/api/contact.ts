@@ -6,7 +6,7 @@ export const prerender = false;
 export const POST: APIRoute = async ({ request }) => {
   try {
     const data = await request.json();
-    const { nombre, email, asunto, mensaje } = data;
+    const { nombre, email, telefono, asunto, mensaje } = data;
 
     // Validación básica
     if (!nombre || !email || !mensaje) {
@@ -30,7 +30,22 @@ export const POST: APIRoute = async ({ request }) => {
     const emailFrom = import.meta.env.EMAIL_FROM || 'onboarding@resend.dev';
 
     if (!resendApiKey) {
-      console.error('RESEND_API_KEY no configurada');
+      console.warn('RESEND_API_KEY no configurada. Saltando envío de email en desarrollo.');
+
+      // En desarrollo, permitimos que el formulario "funcione" sin la API Key para pruebas de UI
+      if (import.meta.env.DEV || import.meta.env.NODE_ENV === 'development') {
+        console.log('SIMULACIÓN DE ENVÍO DE EMAIL (DESARROLLO):', {
+          to: emailTo,
+          from: emailFrom,
+          data: { nombre, email, telefono, asunto, mensaje }
+        });
+
+        return new Response(
+          JSON.stringify({ success: true, message: 'Simulación: Mensaje "enviado" correctamente (Modo Desarrollo).' }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+
       return new Response(
         JSON.stringify({ error: 'Error de configuración del servidor.' }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
@@ -57,6 +72,10 @@ export const POST: APIRoute = async ({ request }) => {
             <tr>
               <td style="padding: 8px 12px; font-weight: bold; color: #666;">Email:</td>
               <td style="padding: 8px 12px;"><a href="mailto:${email}">${email}</a></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 12px; font-weight: bold; color: #666;">Teléfono:</td>
+              <td style="padding: 8px 12px;">${telefono || 'No proporcionado'}</td>
             </tr>
             <tr>
               <td style="padding: 8px 12px; font-weight: bold; color: #666;">Asunto:</td>
