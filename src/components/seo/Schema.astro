@@ -45,12 +45,31 @@ if (type === 'Restaurant') {
     "priceRange": "€€€",
     "hasMenu": `${siteUrl}/carta`,
     "acceptsReservations": "true",
-    "openingHoursSpecification": settings?.openingHours?.map((oh: any) => ({
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": oh.days,
-      "opens": oh.closed ? "00:00" : "13:30",
-      "closes": oh.closed ? "00:00" : "23:00"
-    })) || []
+    "openingHoursSpecification": settings?.openingHours?.map((oh: any) => {
+      // Map Spanish days to Schema.org DayOfWeek
+      const dayMap: Record<string, string> = {
+        'Lunes': 'Monday',
+        'Martes': 'Tuesday',
+        'Miércoles': 'Wednesday',
+        'Jueves': 'Thursday',
+        'Viernes': 'Friday',
+        'Sábado': 'Saturday',
+        'Domingo': 'Sunday',
+        'Lunes - Domingo': 'Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday',
+        'Martes - Domingo': 'Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday',
+        'Lunes - Jueves': 'Monday, Tuesday, Wednesday, Thursday',
+        'Viernes - Sábado': 'Friday, Saturday'
+      };
+
+      const days = dayMap[oh.days] || oh.days;
+      
+      return {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": days.split(',').map((d: string) => d.trim()),
+        "opens": oh.closed ? "00:00" : (oh.hours?.split(' - ')[0] || "13:30"),
+        "closes": oh.closed ? "00:00" : (oh.hours?.split(' - ')[1] || "23:00")
+      };
+    }) || []
   };
 } else if (type === 'Menu') {
   schema = {

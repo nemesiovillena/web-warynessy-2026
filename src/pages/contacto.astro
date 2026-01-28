@@ -53,7 +53,7 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
                 <span class="material-symbols-outlined text-primary">location_on</span>
               </div>
               <div>
-                <h4 class="text-white font-bold mb-1">Ubicación</h4>
+                <h3 class="text-white font-bold mb-1">Ubicación</h3>
                 <p class="text-white/60">{contact.address}</p>
               </div>
             </div>
@@ -63,7 +63,7 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
                 <span class="material-symbols-outlined text-primary">call</span>
               </div>
               <div>
-                <h4 class="text-white font-bold mb-1">Teléfono</h4>
+                <h3 class="text-white font-bold mb-1">Teléfono</h3>
                 <a href={`tel:${contact.phone}`} class="text-white/60 hover:text-primary transition-colors" data-track="phone_click" data-track-category="contact_page">{contact.phone}</a>
               </div>
             </div>
@@ -73,7 +73,7 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
                 <span class="material-symbols-outlined text-primary">mail</span>
               </div>
               <div>
-                <h4 class="text-white font-bold mb-1">Email</h4>
+                <h3 class="text-white font-bold mb-1">Email</h3>
                 <a href={`mailto:${contact.email}`} class="text-white/60 hover:text-primary transition-colors" data-track="email_click" data-track-category="contact_page">{contact.email}</a>
               </div>
             </div>
