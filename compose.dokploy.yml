@@ -39,6 +39,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - dokploy-network
+      - default
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -95,3 +98,7 @@ volumes:
     driver: local
   warynessy_media:
     driver: local
+
+networks:
+  dokploy-network:
+    external: true
