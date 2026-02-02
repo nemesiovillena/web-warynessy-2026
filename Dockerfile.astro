@@ -30,7 +30,7 @@ WORKDIR /app
 RUN apk add --no-cache libc6-compat
 
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 astro
+  adduser --system --uid 1001 astro
 
 # Copy Astro build
 COPY --from=builder /app/dist ./dist
@@ -40,6 +40,7 @@ COPY --from=builder /app/package.json ./
 # Copy source files needed at runtime for SSR
 COPY --from=builder /app/src/lib ./src/lib
 COPY --from=builder /app/src/payload ./src/payload
+COPY --from=builder /app/payload.config.ts ./
 
 RUN chown -R astro:nodejs /app
 
