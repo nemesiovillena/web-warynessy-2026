@@ -1,11 +1,14 @@
 # Docker Compose para Dokploy
 #
 # INSTRUCCIONES DE DEPLOY EN DOKPLOY:
-# 1. Crear nuevo proyecto "Compose" en Dokploy
+# 1. Crear proyecto "Compose" en Dokploy
 # 2. Conectar el repositorio Git
 # 3. Seleccionar este archivo: compose.dokploy.yml
 # 4. Configurar las variables de entorno en el panel de Dokploy
 # 5. Deploy!
+# 6. Configurar dominios:
+#    - warynessy.eneweb.es → servicio "web" puerto 4321
+#    - admin.warynessy.eneweb.es → servicio "payload" puerto 3000
 
 services:
   # ====================================
@@ -27,9 +30,9 @@ services:
       retries: 5
 
   # ====================================
-  # Aplicación (Payload CMS + Next.js)
+  # Payload CMS (Admin + API)
   # ====================================
-  app:
+  payload:
     build:
       context: .
       dockerfile: Dockerfile
@@ -44,27 +47,17 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
+      HOSTNAME: 0.0.0.0
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       PAYLOAD_SECRET: ${PAYLOAD_SECRET}
-      PAYLOAD_PUBLIC_SERVER_URL: ${PAYLOAD_PUBLIC_SERVER_URL}
-      PUBLIC_PAYLOAD_API_URL: ${PUBLIC_PAYLOAD_API_URL}
-      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
+      PAYLOAD_PUBLIC_SERVER_URL: https://admin.warynessy.eneweb.es
+      PUBLIC_PAYLOAD_API_URL: https://admin.warynessy.eneweb.es/api
+      PUBLIC_SITE_URL: https://warynessy.eneweb.es
       PUBLIC_SITE_NAME: ${PUBLIC_SITE_NAME:-Restaurante Warynessy}
       BUNNY_CDN_URL: ${BUNNY_CDN_URL:-}
       BUNNY_STORAGE_ZONE_NAME: ${BUNNY_STORAGE_ZONE_NAME:-}
       BUNNY_API_KEY: ${BUNNY_API_KEY:-}
       BUNNY_STORAGE_PASSWORD: ${BUNNY_STORAGE_PASSWORD:-}
-      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
-      GOOGLE_PLACE_ID: ${GOOGLE_PLACE_ID:-}
-      PUBLIC_GOOGLE_ANALYTICS_ID: ${PUBLIC_GOOGLE_ANALYTICS_ID:-}
-      PUBLIC_GOOGLE_MAPS_API_KEY: ${PUBLIC_GOOGLE_MAPS_API_KEY:-}
-      INSTAGRAM_ACCESS_TOKEN: ${INSTAGRAM_ACCESS_TOKEN:-}
-      INSTAGRAM_USER_ID: ${INSTAGRAM_USER_ID:-}
-      PUBLIC_INSTAGRAM_USERNAME: ${PUBLIC_INSTAGRAM_USERNAME:-}
-      RESEND_API_KEY: ${RESEND_API_KEY:-}
-      EMAIL_FROM: ${EMAIL_FROM:-}
-      EMAIL_TO: ${EMAIL_TO:-}
-      PUBLIC_COVER_MANAGER_ID: ${PUBLIC_COVER_MANAGER_ID:-}
     expose:
       - "3000"
     volumes:
@@ -78,9 +71,56 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1536M
+          memory: 1024M
         reservations:
-          memory: 512M
+          memory: 384M
+
+  # ====================================
+  # Astro Frontend (SSR)
+  # ====================================
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.astro
+    restart: always
+    depends_on:
+      - payload
+    networks:
+      - dokploy-network
+      - default
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 4321
+      PUBLIC_PAYLOAD_API_URL: https://admin.warynessy.eneweb.es/api
+      PUBLIC_SITE_URL: https://warynessy.eneweb.es
+      PUBLIC_SITE_NAME: ${PUBLIC_SITE_NAME:-Restaurante Warynessy}
+      PUBLIC_BUNNY_CDN_URL: ${BUNNY_CDN_URL:-}
+      PUBLIC_GOOGLE_ANALYTICS_ID: ${PUBLIC_GOOGLE_ANALYTICS_ID:-}
+      PUBLIC_GOOGLE_MAPS_API_KEY: ${PUBLIC_GOOGLE_MAPS_API_KEY:-}
+      PUBLIC_INSTAGRAM_USERNAME: ${PUBLIC_INSTAGRAM_USERNAME:-}
+      PUBLIC_COVER_MANAGER_ID: ${PUBLIC_COVER_MANAGER_ID:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      EMAIL_FROM: ${EMAIL_FROM:-}
+      EMAIL_TO: ${EMAIL_TO:-}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      GOOGLE_PLACE_ID: ${GOOGLE_PLACE_ID:-}
+      INSTAGRAM_ACCESS_TOKEN: ${INSTAGRAM_ACCESS_TOKEN:-}
+      INSTAGRAM_USER_ID: ${INSTAGRAM_USER_ID:-}
+    expose:
+      - "4321"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4321/"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 256M
 
 volumes:
   warynessy_postgres_data:
