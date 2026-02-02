@@ -93,3 +93,5 @@ export default buildConfig({
     process.env.PUBLIC_SITE_URL || 'http://localhost:4321',
   ].filter(Boolean),
 })
+
+export const importMap = {}

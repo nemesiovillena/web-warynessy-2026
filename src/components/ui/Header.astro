@@ -30,7 +30,7 @@ const navLinks = [
       />
     </a>
 
-    <div class="hidden md:flex items-center gap-8">
+    <div class="hidden lg:flex items-center gap-8">
       {navLinks.map(link => (
         <a 
           href={link.href} 
@@ -47,7 +47,7 @@ const navLinks = [
     {/* Icons/Actions */}
     <div class="flex items-center gap-4">
 
-      <button id="menu-toggle" class="text-white flex items-center justify-center hover:text-primary transition-colors">
+      <button id="menu-toggle" class="text-white flex items-center justify-center hover:text-primary transition-colors lg:hidden">
         <span class="material-symbols-outlined">menu</span>
       </button>
     </div>

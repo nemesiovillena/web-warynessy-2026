@@ -190,7 +190,7 @@ export async function getPaginaBySlug(slug: string) {
     const payload = await getPayloadClient()
 
     // Verificamos si la colección existe antes de buscar
-    if (!payload.collections['paginas' as any]) {
+    if (!Object.keys(payload.collections).includes('paginas')) {
       console.warn(`⚠️ La colección "paginas" no está disponible en esta instancia de Payload.`);
       return null;
     }
