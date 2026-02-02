@@ -24,8 +24,10 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-warynessy}
     volumes:
       - warynessy_postgres_data:/var/lib/postgresql/data
+    networks:
+      - dokploy-network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-warynessy} -d $${POSTGRES_DB:-warynessy}" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-warynessy} -d ${POSTGRES_DB:-warynessy}" ]
       interval: 10s
       timeout: 10s
       retries: 10
@@ -45,12 +47,11 @@ services:
         condition: service_healthy
     networks:
       - dokploy-network
-      - default
     environment:
       NODE_ENV: production
       PORT: 3000
       HOSTNAME: 0.0.0.0
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-warynessy}:${POSTGRES_PASSWORD:-warynessy_prod_secure}@db:5432/${POSTGRES_DB:-warynessy}
       PAYLOAD_SECRET: ${PAYLOAD_SECRET}
       PAYLOAD_PUBLIC_SERVER_URL: https://admin.warynessy.eneweb.es
       PUBLIC_PAYLOAD_API_URL: https://admin.warynessy.eneweb.es/api
@@ -60,9 +61,8 @@ services:
       BUNNY_STORAGE_ZONE_NAME: ${BUNNY_STORAGE_ZONE_NAME:-}
       BUNNY_API_KEY: ${BUNNY_API_KEY:-}
       BUNNY_STORAGE_PASSWORD: ${BUNNY_STORAGE_PASSWORD:-}
-    # Dokploy maneja los puertos automáticamente, no exponer ni mapear aquí
-    # expose:
-    #   - "3000"
+    expose:
+      - "3000"
     volumes:
       - warynessy_media:/app/media
     healthcheck:
@@ -90,7 +90,6 @@ services:
       - payload
     networks:
       - dokploy-network
-      - default
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
@@ -112,9 +111,8 @@ services:
       GOOGLE_PLACE_ID: ${GOOGLE_PLACE_ID:-}
       INSTAGRAM_ACCESS_TOKEN: ${INSTAGRAM_ACCESS_TOKEN:-}
       INSTAGRAM_USER_ID: ${INSTAGRAM_USER_ID:-}
-    # Dokploy maneja los puertos automáticamente, no exponer ni mapear aquí
-    # expose:
-    #   - "4321"
+    expose:
+      - "4321"
     healthcheck:
       test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4321/" ]
       interval: 30s
