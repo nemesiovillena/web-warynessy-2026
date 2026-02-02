@@ -1,13 +1,11 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:16-alpine
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-warynessy}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-warynessy_prod_secure}
-      POSTGRES_DB: ${POSTGRES_DB:-warynessy}
+      POSTGRES_USER: "${POSTGRES_USER:-warynessy}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-warynessy_prod_secure}"
+      POSTGRES_DB: "${POSTGRES_DB:-warynessy}"
     volumes:
       - warynessy_postgres_data:/var/lib/postgresql/data
     networks:
@@ -27,16 +25,16 @@ services:
       NODE_ENV: production
       PORT: 3000
       HOSTNAME: 0.0.0.0
-      DATABASE_URL: postgresql://${POSTGRES_USER:-warynessy}:${POSTGRES_PASSWORD:-warynessy_prod_secure}@db:5432/${POSTGRES_DB:-warynessy}
-      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-warynessy}:${POSTGRES_PASSWORD:-warynessy_prod_secure}@db:5432/${POSTGRES_DB:-warynessy}"
+      PAYLOAD_SECRET: "${PAYLOAD_SECRET}"
       PAYLOAD_PUBLIC_SERVER_URL: https://admin.warynessy.eneweb.es
       PUBLIC_PAYLOAD_API_URL: https://admin.warynessy.eneweb.es/api
       PUBLIC_SITE_URL: https://warynessy.eneweb.es
-      PUBLIC_SITE_NAME: ${PUBLIC_SITE_NAME:-Restaurante Warynessy}
-      BUNNY_CDN_URL: ${BUNNY_CDN_URL:-}
-      BUNNY_STORAGE_ZONE_NAME: ${BUNNY_STORAGE_ZONE_NAME:-}
-      BUNNY_API_KEY: ${BUNNY_API_KEY:-}
-      BUNNY_STORAGE_PASSWORD: ${BUNNY_STORAGE_PASSWORD:-}
+      PUBLIC_SITE_NAME: "${PUBLIC_SITE_NAME:-Restaurante Warynessy}"
+      BUNNY_CDN_URL: "${BUNNY_CDN_URL:-}"
+      BUNNY_STORAGE_ZONE_NAME: "${BUNNY_STORAGE_ZONE_NAME:-}"
+      BUNNY_API_KEY: "${BUNNY_API_KEY:-}"
+      BUNNY_STORAGE_PASSWORD: "${BUNNY_STORAGE_PASSWORD:-}"
     networks:
       - dokploy-network
     expose:
@@ -55,23 +53,23 @@ services:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: 4321
-      DATABASE_URL: postgresql://${POSTGRES_USER:-warynessy}:${POSTGRES_PASSWORD:-warynessy_prod_secure}@db:5432/${POSTGRES_DB:-warynessy}
-      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-warynessy}:${POSTGRES_PASSWORD:-warynessy_prod_secure}@db:5432/${POSTGRES_DB:-warynessy}"
+      PAYLOAD_SECRET: "${PAYLOAD_SECRET}"
       PUBLIC_PAYLOAD_API_URL: https://admin.warynessy.eneweb.es/api
       PUBLIC_SITE_URL: https://warynessy.eneweb.es
-      PUBLIC_SITE_NAME: ${PUBLIC_SITE_NAME:-Restaurante Warynessy}
-      PUBLIC_BUNNY_CDN_URL: ${BUNNY_CDN_URL:-}
-      PUBLIC_GOOGLE_ANALYTICS_ID: ${PUBLIC_GOOGLE_ANALYTICS_ID:-}
-      PUBLIC_GOOGLE_MAPS_API_KEY: ${PUBLIC_GOOGLE_MAPS_API_KEY:-}
-      PUBLIC_INSTAGRAM_USERNAME: ${PUBLIC_INSTAGRAM_USERNAME:-}
-      PUBLIC_COVER_MANAGER_ID: ${PUBLIC_COVER_MANAGER_ID:-}
-      RESEND_API_KEY: ${RESEND_API_KEY:-}
-      EMAIL_FROM: ${EMAIL_FROM:-}
-      EMAIL_TO: ${EMAIL_TO:-}
-      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
-      GOOGLE_PLACE_ID: ${GOOGLE_PLACE_ID:-}
-      INSTAGRAM_ACCESS_TOKEN: ${INSTAGRAM_ACCESS_TOKEN:-}
-      INSTAGRAM_USER_ID: ${INSTAGRAM_USER_ID:-}
+      PUBLIC_SITE_NAME: "${PUBLIC_SITE_NAME:-Restaurante Warynessy}"
+      PUBLIC_BUNNY_CDN_URL: "${BUNNY_CDN_URL:-}"
+      PUBLIC_GOOGLE_ANALYTICS_ID: "${PUBLIC_GOOGLE_ANALYTICS_ID:-}"
+      PUBLIC_GOOGLE_MAPS_API_KEY: "${PUBLIC_GOOGLE_MAPS_API_KEY:-}"
+      PUBLIC_INSTAGRAM_USERNAME: "${PUBLIC_INSTAGRAM_USERNAME:-}"
+      PUBLIC_COVER_MANAGER_ID: "${PUBLIC_COVER_MANAGER_ID:-}"
+      RESEND_API_KEY: "${RESEND_API_KEY:-}"
+      EMAIL_FROM: "${EMAIL_FROM:-}"
+      EMAIL_TO: "${EMAIL_TO:-}"
+      GOOGLE_API_KEY: "${GOOGLE_API_KEY:-}"
+      GOOGLE_PLACE_ID: "${GOOGLE_PLACE_ID:-}"
+      INSTAGRAM_ACCESS_TOKEN: "${INSTAGRAM_ACCESS_TOKEN:-}"
+      INSTAGRAM_USER_ID: "${INSTAGRAM_USER_ID:-}"
     networks:
       - dokploy-network
     expose:
