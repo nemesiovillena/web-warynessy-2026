@@ -44,12 +44,21 @@ services:
       - default
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.warynessy-app.rule=Host(`warynessy.eneweb.es`)"
-      - "traefik.http.routers.warynessy-app.entrypoints=websecure"
-      - "traefik.http.routers.warynessy-app.tls=true"
-      - "traefik.http.routers.warynessy-app.tls.certresolver=letsencrypt"
-      - "traefik.http.services.warynessy-app.loadbalancer.server.port=3000"
+      # HTTP router
+      - "traefik.http.routers.warynessy-http.rule=Host(`warynessy.eneweb.es`)"
+      - "traefik.http.routers.warynessy-http.entrypoints=web"
+      - "traefik.http.routers.warynessy-http.middlewares=redirect-to-https"
+      # HTTPS router
+      - "traefik.http.routers.warynessy-https.rule=Host(`warynessy.eneweb.es`)"
+      - "traefik.http.routers.warynessy-https.entrypoints=websecure"
+      - "traefik.http.routers.warynessy-https.tls=true"
+      - "traefik.http.routers.warynessy-https.tls.certresolver=letsencrypt"
+      # Service
+      - "traefik.http.services.warynessy-service.loadbalancer.server.port=3000"
+      # Network
       - "traefik.docker.network=dokploy-network"
+      # Redirect middleware
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
     environment:
       NODE_ENV: production
       PORT: 3000
