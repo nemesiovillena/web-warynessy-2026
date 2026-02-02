@@ -1,20 +1,6 @@
-# Docker Compose para Dokploy
-#
-# INSTRUCCIONES DE DEPLOY EN DOKPLOY:
-# 1. Crear proyecto "Compose" en Dokploy
-# 2. Conectar el repositorio Git
-# 3. Seleccionar este archivo: compose.dokploy.yml
-# 4. Configurar las variables de entorno en el panel de Dokploy
-# 5. Deploy!
-# 6. Configurar dominios:
-#    - warynessy.eneweb.es → puerto interno 4321 del servicio "web" (CONFIGURAR EN DOKPLOY UI)
-#    - admin.warynessy.eneweb.es → puerto interno 3000 del servicio "payload" (CONFIGURAR EN DOKPLOY UI)
-#    - NO USAR docker-compose.yml (ese es para dev local), USAR ESTE: compose.dokploy.yml
+# Docker Compose para Dokploy (Versión Simplificada)
 
 services:
-  # ====================================
-  # PostgreSQL Database
-  # ====================================
   db:
     image: postgres:16-alpine
     restart: always
@@ -24,18 +10,13 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-warynessy}
     volumes:
       - warynessy_postgres_data:/var/lib/postgresql/data
-    networks:
-      - dokploy-network
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-warynessy} -d ${POSTGRES_DB:-warynessy}" ]
       interval: 10s
       timeout: 10s
-      retries: 10
-      start_period: 30s
+      retries: 5
+      start_period: 20s
 
-  # ====================================
-  # Payload CMS (Admin + API)
-  # ====================================
   payload:
     build:
       context: .
@@ -45,8 +26,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    networks:
-      - dokploy-network
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -65,31 +44,15 @@ services:
       - "3000"
     volumes:
       - warynessy_media:/app/media
-    healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/admin" ]
-      interval: 30s
-      timeout: 10s
-      start_period: 90s
-      retries: 3
-    deploy:
-      resources:
-        limits:
-          memory: 1024M
-        reservations:
-          memory: 384M
 
-  # ====================================
-  # Astro Frontend (SSR)
-  # ====================================
   web:
     build:
       context: .
       dockerfile: Dockerfile.astro
     restart: always
     depends_on:
-      - payload
-    networks:
-      - dokploy-network
+      payload:
+        condition: service_started
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
@@ -113,25 +76,7 @@ services:
       INSTAGRAM_USER_ID: ${INSTAGRAM_USER_ID:-}
     expose:
       - "4321"
-    healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4321/" ]
-      interval: 30s
-      timeout: 10s
-      start_period: 60s
-      retries: 3
-    deploy:
-      resources:
-        limits:
-          memory: 768M
-        reservations:
-          memory: 256M
 
 volumes:
   warynessy_postgres_data:
-    driver: local
   warynessy_media:
-    driver: local
-
-networks:
-  dokploy-network:
-    external: true
