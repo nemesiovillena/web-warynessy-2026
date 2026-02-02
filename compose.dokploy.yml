@@ -7,8 +7,9 @@
 # 4. Configurar las variables de entorno en el panel de Dokploy
 # 5. Deploy!
 # 6. Configurar dominios:
-#    - warynessy.eneweb.es → servicio "web" puerto 4321
-#    - admin.warynessy.eneweb.es → servicio "payload" puerto 3000
+#    - warynessy.eneweb.es → puerto interno 4321 del servicio "web" (CONFIGURAR EN DOKPLOY UI)
+#    - admin.warynessy.eneweb.es → puerto interno 3000 del servicio "payload" (CONFIGURAR EN DOKPLOY UI)
+#    - NO USAR docker-compose.yml (ese es para dev local), USAR ESTE: compose.dokploy.yml
 
 services:
   # ====================================
@@ -24,7 +25,7 @@ services:
     volumes:
       - warynessy_postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -58,12 +59,13 @@ services:
       BUNNY_STORAGE_ZONE_NAME: ${BUNNY_STORAGE_ZONE_NAME:-}
       BUNNY_API_KEY: ${BUNNY_API_KEY:-}
       BUNNY_STORAGE_PASSWORD: ${BUNNY_STORAGE_PASSWORD:-}
-    expose:
-      - "3000"
+    # Dokploy maneja los puertos automáticamente, no exponer ni mapear aquí
+    # expose:
+    #   - "3000"
     volumes:
       - warynessy_media:/app/media
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/admin"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/admin" ]
       interval: 30s
       timeout: 10s
       start_period: 90s
@@ -107,10 +109,11 @@ services:
       GOOGLE_PLACE_ID: ${GOOGLE_PLACE_ID:-}
       INSTAGRAM_ACCESS_TOKEN: ${INSTAGRAM_ACCESS_TOKEN:-}
       INSTAGRAM_USER_ID: ${INSTAGRAM_USER_ID:-}
-    expose:
-      - "4321"
+    # Dokploy maneja los puertos automáticamente, no exponer ni mapear aquí
+    # expose:
+    #   - "4321"
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4321/"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4321/" ]
       interval: 30s
       timeout: 10s
       start_period: 60s
