@@ -44,5 +44,8 @@
     "@types/node": "^25.0.8",
     "@types/react": "^19.2.8",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "file-type": "18.7.0"
   }
 }
