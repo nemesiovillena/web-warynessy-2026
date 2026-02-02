@@ -26,7 +26,7 @@ COPY . .
 # Set production environment for build
 ENV NODE_ENV=production
 
-# Build both Astro and Payload
+# Build both Astro and Next.js/Payload
 RUN npm run build
 
 # ========================================
@@ -42,24 +42,25 @@ RUN apk add --no-cache libc6-compat
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 payload
 
-# Copy built assets and necessary files
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/.next ./.next
+# Copy standalone build from Next.js
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./
+
+# Copy Payload config and source files needed at runtime
 COPY --from=builder /app/payload.config.ts ./
-COPY --from=builder /app/server.ts ./
-COPY --from=builder /app/src ./src
-COPY --from=builder /app/next.config.mjs ./
-COPY --from=builder /app/tsconfig.json ./
+COPY --from=builder /app/src/payload ./src/payload
+
+# Copy Astro dist for SSR (if needed later)
+COPY --from=builder /app/dist ./dist
 
 # Create media directory with correct permissions
-RUN mkdir -p /app/media && chown -R payload:nodejs /app/media
+RUN mkdir -p /app/media && chown -R payload:nodejs /app
 
 # Set environment
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 
 # Switch to non-root user
 USER payload
@@ -68,11 +69,11 @@ USER payload
 EXPOSE 3000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/admin || exit 1
 
-# Start the application
-CMD ["npx", "tsx", "server.ts"]
+# Start Next.js standalone server
+CMD ["node", "server.js"]
 
 # ========================================
 # Stage 4: Development Runtime
