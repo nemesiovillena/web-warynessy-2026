@@ -42,6 +42,14 @@ services:
     networks:
       - dokploy-network
       - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.warynessy-app.rule=Host(`warynessy.eneweb.es`)"
+      - "traefik.http.routers.warynessy-app.entrypoints=websecure"
+      - "traefik.http.routers.warynessy-app.tls=true"
+      - "traefik.http.routers.warynessy-app.tls.certresolver=letsencrypt"
+      - "traefik.http.services.warynessy-app.loadbalancer.server.port=3000"
+      - "traefik.docker.network=dokploy-network"
     environment:
       NODE_ENV: production
       PORT: 3000
