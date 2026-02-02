@@ -71,8 +71,9 @@ services:
       EMAIL_TO: ${EMAIL_TO:-}
       # --- CoverManager ---
       PUBLIC_COVER_MANAGER_ID: ${PUBLIC_COVER_MANAGER_ID:-}
-    ports:
-      - "3000:3000"
+    # No exponer puertos - Traefik de Dokploy maneja el routing
+    expose:
+      - "3000"
     volumes:
       # Persistir media uploads (si no usas CDN exclusivamente)
       - warynessy_media:/app/media
