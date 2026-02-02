@@ -1,4 +1,4 @@
-# Docker Compose para Dokploy (Versión Simplificada)
+version: '3.8'
 
 services:
   db:
@@ -10,12 +10,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-warynessy}
     volumes:
       - warynessy_postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-warynessy} -d ${POSTGRES_DB:-warynessy}" ]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-      start_period: 20s
+    # Quitamos healthcheck temporalmente para debuggear
+    expose:
+      - "5432"
 
   payload:
     build:
@@ -24,8 +21,7 @@ services:
       target: production
     restart: always
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -51,8 +47,7 @@ services:
       dockerfile: Dockerfile.astro
     restart: always
     depends_on:
-      payload:
-        condition: service_started
+      - payload
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
