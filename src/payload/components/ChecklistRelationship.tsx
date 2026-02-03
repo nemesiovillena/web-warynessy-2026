@@ -1,30 +1,39 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { useField, useConfig, FieldLabel } from '@payloadcms/ui'
 
 export const ChecklistRelationship: React.FC<any> = (props) => {
-    // En Payload 3.0, las propiedades pueden venir en la raíz o dentro de 'field'
-    const { path, label } = props
+    const { path, label, admin } = props
     const fieldObj = props.field || {}
     const fieldRelationTo = props.relationTo || fieldObj.relationTo || 'alergenos'
-    const relationTo = Array.isArray(fieldRelationTo) ? fieldRelationTo[0] : fieldRelationTo
+    const relationTo = useMemo(() => Array.isArray(fieldRelationTo) ? fieldRelationTo[0] : fieldRelationTo, [fieldRelationTo])
 
     const { value, setValue } = useField<string[] | { id: string }[]>({ path })
     const [options, setOptions] = useState<{ id: string; nombre: string }[]>([])
     const [isLoading, setIsLoading] = useState(true)
+    const [mounted, setMounted] = useState(false)
     const { config } = useConfig()
 
+    // Hydration fix
     useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    useEffect(() => {
+        if (!mounted) return
+
         const fetchOptions = async () => {
             if (!relationTo || typeof relationTo !== 'string') {
-                console.error('[Checklist] relationTo no válido:', relationTo)
-                setIsLoading(false)
+                console.warn('[Checklist] Esperando relationTo válido...')
                 return
             }
 
+            setIsLoading(true)
             try {
-                // Prioridad: API URL relativa para evitar problemas de CORS o dominios
+                // Obtenemos el origin actual para peticiones relativas seguras
+                const origin = window.location.origin
                 const endpoints = [
+                    `${origin}/api/${relationTo}?limit=100&depth=0`,
                     `/api/${relationTo}?limit=100&depth=0`,
                     `${config.serverURL || ''}/api/${relationTo}?limit=100&depth=0`
                 ]
@@ -33,7 +42,6 @@ export const ChecklistRelationship: React.FC<any> = (props) => {
                 for (const url of endpoints) {
                     if (success) break;
                     try {
-                        console.log(`[Checklist] Intentando cargar desde: ${url}`)
                         const response = await fetch(url, {
                             headers: { 'Accept': 'application/json' }
                         })
@@ -47,17 +55,22 @@ export const ChecklistRelationship: React.FC<any> = (props) => {
                             success = true
                         }
                     } catch (e) {
-                        console.warn(`[Checklist] Fallo en ${url}:`, e)
+                        // Silently try next endpoint
                     }
                 }
+
+                if (!success) {
+                    console.error('[Checklist] No se pudo cargar desde ningún endpoint')
+                }
             } catch (error) {
-                console.error('[Checklist] Error general:', error)
+                console.error('[Checklist] Error inesperado:', error)
             } finally {
                 setIsLoading(false)
             }
         }
+
         fetchOptions()
-    }, [relationTo, config.serverURL])
+    }, [relationTo, config.serverURL, mounted])
 
     const handleChange = (id: string) => {
         const currentItems = value || []
@@ -73,7 +86,11 @@ export const ChecklistRelationship: React.FC<any> = (props) => {
         setValue(newIds)
     }
 
-    const selectedIds = (value || []).map((val: any) => (typeof val === 'object' ? val.id : val))
+    const selectedIds = useMemo(() =>
+        (value || []).map((val: any) => (typeof val === 'object' ? val.id : val)),
+        [value])
+
+    if (!mounted) return null
 
     return (
         <div className="field-type relationship" style={{
@@ -85,9 +102,9 @@ export const ChecklistRelationship: React.FC<any> = (props) => {
         }}>
             <div style={{ marginBottom: '15px' }}>
                 <FieldLabel label={label as any} />
-                {props.admin?.description && (
+                {admin?.description && (
                     <p style={{ margin: '4px 0 0 0', fontSize: '12px', opacity: 0.6 }}>
-                        {typeof props.admin.description === 'string' ? props.admin.description : ''}
+                        {typeof admin.description === 'string' ? admin.description : ''}
                     </p>
                 )}
             </div>
@@ -103,7 +120,17 @@ export const ChecklistRelationship: React.FC<any> = (props) => {
                 }}
             >
                 {isLoading && <p style={{ fontSize: '13px', opacity: 0.6 }}>Cargando alérgenos...</p>}
-                {!isLoading && options.length === 0 && <p style={{ fontSize: '13px', opacity: 0.6 }}>No se encontraron opciones.</p>}
+                {!isLoading && options.length === 0 && (
+                    <div style={{ gridColumn: '1 / -1' }}>
+                        <p style={{ fontSize: '13px', opacity: 0.6 }}>No se encontraron opciones.</p>
+                        <button
+                            onClick={() => window.location.reload()}
+                            style={{ fontSize: '11px', color: 'var(--theme-primary-500)', cursor: 'pointer', background: 'none', border: 'none', padding: 0, marginTop: '5px', textDecoration: 'underline' }}
+                        >
+                            Reintentar carga
+                        </button>
+                    </div>
+                )}
 
                 {options.map((opt) => (
                     <label
