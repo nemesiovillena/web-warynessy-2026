@@ -3,8 +3,12 @@
  * Transforma URLs de Payload a URLs optimizadas de Bunny.net
  */
 
-const BUNNY_URL = (import.meta.env.PUBLIC_BUNNY_CDN_URL || '').replace(/\/$/, "");
-const PAYLOAD_URL = (import.meta.env.PUBLIC_PAYLOAD_API_URL?.replace('/api', '') || 'http://localhost:3000').replace(/\/$/, "");
+// Helper para obtener variables de entorno de forma segura tanto en build-time como runtime
+function getEnv(key: string, defaultValue: string = ''): string {
+    if (typeof process !== 'undefined' && process.env[key]) return process.env[key] as string;
+    if (import.meta.env[key]) return import.meta.env[key] as string;
+    return defaultValue;
+}
 
 interface CDNOptions {
     width?: number;
@@ -19,13 +23,21 @@ interface CDNOptions {
 export function getOptimizedImageUrl(src: string, options: CDNOptions = {}): string {
     if (!src) return '/images/placeholder.jpg';
 
+    const BUNNY_URL = getEnv('PUBLIC_BUNNY_CDN_URL').replace(/\/$/, "");
+    const PAYLOAD_URL = (getEnv('PAYLOAD_PUBLIC_SERVER_URL') || getEnv('PUBLIC_PAYLOAD_API_URL', 'http://localhost:3000').replace('/api', '')).replace(/\/$/, "");
+
     // Normalizar src si viene como path relativo
     let path = src;
 
-    // Si viene de localhost (típico cuando no se configura PAYLOAD_PUBLIC_SERVER_URL)
-    // o viene con la URL de la API configurada
-    if (path.includes('localhost:3000') || path.startsWith(PAYLOAD_URL)) {
-        path = path.replace(/http:\/\/localhost:3000/, '').replace(PAYLOAD_URL, '');
+    // Si viene de localhost o de la URL del servidor configurada
+    if (path.includes('localhost:3000') || (PAYLOAD_URL && path.includes(PAYLOAD_URL))) {
+        path = path.split('localhost:3000').pop() as string;
+        path = path.split(PAYLOAD_URL).pop() as string;
+    }
+
+    // Limpiar paths de la API de Payload si existen
+    if (path.includes('/api/archivos/file/')) {
+        path = '/' + path.split('/api/archivos/file/')[1];
     }
 
     // Si sigue siendo una URL absoluta externa (S3, etc), no hacemos nada
