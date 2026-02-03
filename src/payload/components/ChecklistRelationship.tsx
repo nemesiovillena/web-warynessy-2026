@@ -3,65 +3,61 @@ import React, { useEffect, useState } from 'react'
 import { useField, useConfig, FieldLabel } from '@payloadcms/ui'
 
 export const ChecklistRelationship: React.FC<any> = (props) => {
-    // En Payload 3.0, las propiedades del campo suelen estar dentro de 'field'
+    // En Payload 3.0, las propiedades pueden venir en la raíz o dentro de 'field'
     const { path, label } = props
-    const fieldRelationTo = props.relationTo || props.field?.relationTo || 'alergenos'
+    const fieldObj = props.field || {}
+    const fieldRelationTo = props.relationTo || fieldObj.relationTo || 'alergenos'
     const relationTo = Array.isArray(fieldRelationTo) ? fieldRelationTo[0] : fieldRelationTo
 
     const { value, setValue } = useField<string[] | { id: string }[]>({ path })
     const [options, setOptions] = useState<{ id: string; nombre: string }[]>([])
+    const [isLoading, setIsLoading] = useState(true)
     const { config } = useConfig()
-
-    console.log('[Checklist] Props recibidas:', { path, label, relationTo, value })
-
-    // En Payload 3.0 (Next.js), el serverURL puede venir de la config o ser relativo
-    const serverURL = config.serverURL || ''
 
     useEffect(() => {
         const fetchOptions = async () => {
             if (!relationTo || typeof relationTo !== 'string') {
-                console.error('[Checklist] relationTo is missing or not a string:', relationTo)
+                console.error('[Checklist] relationTo no válido:', relationTo)
+                setIsLoading(false)
                 return
             }
 
             try {
-                // En el navegador, preferimos usar el origin actual para evitar problemas de puerto/host
-                const origin = typeof window !== 'undefined' ? window.location.origin : (serverURL || '')
-                const endpoint = `${origin}/api/${relationTo}?limit=100&depth=0`
+                // Prioridad: API URL relativa para evitar problemas de CORS o dominios
+                const endpoints = [
+                    `/api/${relationTo}?limit=100&depth=0`,
+                    `${config.serverURL || ''}/api/${relationTo}?limit=100&depth=0`
+                ]
 
-                console.log(`[Checklist] Intentando cargar desde: ${endpoint}`)
+                let success = false
+                for (const url of endpoints) {
+                    if (success) break;
+                    try {
+                        console.log(`[Checklist] Intentando cargar desde: ${url}`)
+                        const response = await fetch(url, {
+                            headers: { 'Accept': 'application/json' }
+                        })
 
-                const response = await fetch(endpoint, {
-                    headers: {
-                        'Accept': 'application/json',
-                    }
-                })
-
-                if (response.ok) {
-                    const data = await response.json()
-                    const sortedDocs = (data.docs || []).sort((a: any, b: any) =>
-                        a.nombre?.localeCompare(b.nombre, 'es', { sensitivity: 'base' })
-                    )
-                    console.log(`[Checklist] Éxito: ${sortedDocs.length} elementos encontrados para "${relationTo}"`)
-                    setOptions(sortedDocs)
-                } else {
-                    console.error(`[Checklist] Error API (${response.status}):`, await response.text())
-                    // Intento desesperado: ruta relativa pura
-                    const relResp = await fetch(`/api/${relationTo}?limit=100`)
-                    if (relResp.ok) {
-                        const relData = await relResp.json()
-                        const sortedRelDocs = (relData.docs || []).sort((a: any, b: any) =>
-                            a.nombre?.localeCompare(b.nombre, 'es', { sensitivity: 'base' })
-                        )
-                        setOptions(sortedRelDocs)
+                        if (response.ok) {
+                            const data = await response.json()
+                            const sortedDocs = (data.docs || []).sort((a: any, b: any) =>
+                                a.nombre?.localeCompare(b.nombre, 'es', { sensitivity: 'base' })
+                            )
+                            setOptions(sortedDocs)
+                            success = true
+                        }
+                    } catch (e) {
+                        console.warn(`[Checklist] Fallo en ${url}:`, e)
                     }
                 }
             } catch (error) {
-                console.error('[Checklist] Error de red:', error)
+                console.error('[Checklist] Error general:', error)
+            } finally {
+                setIsLoading(false)
             }
         }
         fetchOptions()
-    }, [relationTo, serverURL])
+    }, [relationTo, config.serverURL])
 
     const handleChange = (id: string) => {
         const currentItems = value || []
@@ -80,50 +76,68 @@ export const ChecklistRelationship: React.FC<any> = (props) => {
     const selectedIds = (value || []).map((val: any) => (typeof val === 'object' ? val.id : val))
 
     return (
-        <div className="field-type relationship" style={{ marginBottom: '20px', border: '1px solid var(--theme-border-color)', padding: '15px', borderRadius: '4px' }}>
-            <FieldLabel label={label as any} />
+        <div className="field-type relationship" style={{
+            marginBottom: '25px',
+            border: '1px solid var(--theme-elevation-150)',
+            padding: '20px',
+            borderRadius: '8px',
+            backgroundColor: 'var(--theme-elevation-50)'
+        }}>
+            <div style={{ marginBottom: '15px' }}>
+                <FieldLabel label={label as any} />
+                {props.admin?.description && (
+                    <p style={{ margin: '4px 0 0 0', fontSize: '12px', opacity: 0.6 }}>
+                        {typeof props.admin.description === 'string' ? props.admin.description : ''}
+                    </p>
+                )}
+            </div>
+
             <div
                 style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-                    gap: '12px',
-                    marginTop: '10px'
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+                    gap: '10px',
+                    maxHeight: '300px',
+                    overflowY: 'auto',
+                    padding: '4px'
                 }}
             >
-                {options.length === 0 && <p style={{ fontSize: '13px', opacity: 0.6 }}>Cargando opciones...</p>}
+                {isLoading && <p style={{ fontSize: '13px', opacity: 0.6 }}>Cargando alérgenos...</p>}
+                {!isLoading && options.length === 0 && <p style={{ fontSize: '13px', opacity: 0.6 }}>No se encontraron opciones.</p>}
+
                 {options.map((opt) => (
                     <label
                         key={opt.id}
                         style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '8px',
+                            gap: '10px',
                             cursor: 'pointer',
                             fontSize: '13px',
-                            padding: '4px 8px',
-                            background: selectedIds.includes(opt.id) ? 'var(--theme-bg-active)' : 'transparent',
-                            borderRadius: '4px'
+                            padding: '8px 12px',
+                            background: selectedIds.includes(opt.id) ? 'var(--theme-elevation-200)' : 'var(--theme-elevation-100)',
+                            borderRadius: '6px',
+                            transition: 'all 0.2s ease',
+                            border: selectedIds.includes(opt.id) ? '1px solid var(--theme-primary-500)' : '1px solid transparent'
                         }}
                     >
                         <input
                             type="checkbox"
                             checked={selectedIds.includes(opt.id)}
                             onChange={() => handleChange(opt.id)}
-                            style={{ cursor: 'pointer' }}
+                            style={{
+                                cursor: 'pointer',
+                                width: '16px',
+                                height: '16px',
+                                accentColor: 'var(--theme-primary-500)'
+                            }}
                         />
-                        {opt.nombre}
+                        <span style={{ fontWeight: selectedIds.includes(opt.id) ? '600' : '400' }}>
+                            {opt.nombre}
+                        </span>
                     </label>
                 ))}
             </div>
-            {props.admin?.description && (
-                <div style={{ marginTop: '10px', fontSize: '12px', opacity: 0.5, fontStyle: 'italic' }}>
-                    {typeof props.admin.description === 'string'
-                        ? props.admin.description
-                        : typeof props.admin.description === 'object' && props.admin.description !== null
-                            ? (props.admin.description as any)?.es || (props.admin.description as any)?.en || ''
-                            : ''}
-                </div>
-            )}
         </div>
     )
 }
