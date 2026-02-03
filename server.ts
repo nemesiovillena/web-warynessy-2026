@@ -80,10 +80,11 @@ async function start() {
   app.use('/_astro', express.static(path.join(__dirname, 'dist/client/_astro')))
   app.use(express.static(path.join(__dirname, 'dist/client'), { index: false }))
 
-  // Rutas de Payload/Next.js (admin y API)
-  app.use('/admin', (req, res) => nextHandler(req, res))
-  app.use('/api', (req, res) => nextHandler(req, res))
-  app.use('/_next', (req, res) => nextHandler(req, res))
+  // Rutas de Payload/Next.js (admin, api, _next)
+  // Usamos regex para que coincida con el prefijo pero se mantenga la URL completa
+  app.all(/^\/(admin|api|_next)($|\/.*)/, (req, res) => {
+    return nextHandler(req, res)
+  })
 
   // Importar handler de Astro SSR dinámicamente
   const { handler: astroHandler } = await import('./dist/server/entry.mjs')

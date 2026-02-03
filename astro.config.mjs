@@ -8,7 +8,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   output: 'server',
   adapter: node({
-    mode: 'standalone'
+    mode: 'middleware'
   }),
   vite: {
     plugins: [tailwindcss()],
