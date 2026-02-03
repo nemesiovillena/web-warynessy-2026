@@ -22,14 +22,19 @@ export async function getPayloadClient() {
   }
 
   if (!payloadInstance) {
-    // Diagnóstico de rutas en producción
+    // Diagnóstico y resolución de rutas en producción
     const cwd = process.cwd()
-    const configPath = path.resolve(cwd, 'payload.config.ts')
+    let configPath = path.resolve(cwd, 'payload.config.ts')
+
+    // REFUERZO: En producción Docker, siempre debe estar en /app
+    if (process.env.NODE_ENV === 'production' && !configPath.startsWith('/app')) {
+      configPath = '/app/payload.config.ts'
+    }
 
     console.log('-------------------------------------------')
-    console.log('🚀 INITIALIZING PAYLOAD LOCAL API')
-    console.log('📂 Current Working Directory:', cwd)
-    console.log('📄 Resolved Config Path:', configPath)
+    console.log('🚀 INITIALIZING PAYLOAD LOCAL API (v4)')
+    console.log('📂 CWD:', cwd)
+    console.log('📄 Final Config Path:', configPath)
     console.log('-------------------------------------------')
 
     // Importamos la configuración dinámicamente usando la ruta absoluta
