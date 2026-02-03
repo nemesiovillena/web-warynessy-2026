@@ -46,11 +46,11 @@ RUN chown -R astro:nodejs /app
 
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
-ENV PORT=4321
+ENV PORT=3000
 
 USER astro
 
-EXPOSE 4321
+EXPOSE 3000
 
 # No HEALTHCHECK - let Dokploy/Traefik handle routing
 
