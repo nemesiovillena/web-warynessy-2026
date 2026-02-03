@@ -3,8 +3,8 @@
  * Transforma URLs de Payload a URLs optimizadas de Bunny.net
  */
 
-const BUNNY_URL = import.meta.env.PUBLIC_BUNNY_CDN_URL || '';
-const PAYLOAD_URL = import.meta.env.PUBLIC_PAYLOAD_API_URL?.replace('/api', '') || 'http://localhost:3000';
+const BUNNY_URL = (import.meta.env.PUBLIC_BUNNY_CDN_URL || '').replace(/\/$/, "");
+const PAYLOAD_URL = (import.meta.env.PUBLIC_PAYLOAD_API_URL?.replace('/api', '') || 'http://localhost:3000').replace(/\/$/, "");
 
 interface CDNOptions {
     width?: number;
@@ -19,30 +19,33 @@ interface CDNOptions {
 export function getOptimizedImageUrl(src: string, options: CDNOptions = {}): string {
     if (!src) return '/images/placeholder.jpg';
 
-    // Si ya es una URL absoluta externa, no hacemos nada
-    if (src.startsWith('http') && !src.includes(PAYLOAD_URL)) {
-        return src;
-    }
-
-    // Detectar si es una imagen de Payload
-    // Formatos típicos: /media/imagen.jpg o http://localhost:3000/media/imagen.jpg
+    // Normalizar src si viene como path relativo
     let path = src;
-    if (path.startsWith(PAYLOAD_URL)) {
-        path = path.replace(PAYLOAD_URL, '');
+
+    // Si viene de localhost (típico cuando no se configura PAYLOAD_PUBLIC_SERVER_URL)
+    // o viene con la URL de la API configurada
+    if (path.includes('localhost:3000') || path.startsWith(PAYLOAD_URL)) {
+        path = path.replace(/http:\/\/localhost:3000/, '').replace(PAYLOAD_URL, '');
     }
 
-    // Si no tenemos CDN o estamos en local, devolvemos la URL de Payload absoluta
-    // Nota: Bunny.net no puede acceder a http://localhost, por lo que el CDN solo 
-    // debe activarse cuando el origen sea una URL pública.
-    const isLocal = PAYLOAD_URL.includes('localhost') || PAYLOAD_URL.includes('127.0.0.1');
+    // Si sigue siendo una URL absoluta externa (S3, etc), no hacemos nada
+    if (path.startsWith('http')) {
+        return path;
+    }
 
-    if (!BUNNY_URL || isLocal) {
+    // Asegurarnos de que el path empieza por /
+    if (!path.startsWith('/')) path = '/' + path;
+
+    // Si estamos en desarrollo puro (localhost) y NO tenemos CDN, devolvemos al server local
+    const isLocalDev = typeof window !== 'undefined'
+        ? window.location.hostname === 'localhost'
+        : process.env.NODE_ENV !== 'production';
+
+    if (!BUNNY_URL || (isLocalDev && !path.includes('/media/'))) {
         return `${PAYLOAD_URL}${path}`;
     }
 
-    // Si tenemos CDN, construimos la URL de Bunny.net
-    // Las transformaciones de Bunny son vía query params o path
-    // Usaremos query params por simplicidad si el Pull Zone lo soporta
+    // Construir URL de Bunny.net
     const searchParams = new URLSearchParams();
     if (options.width) searchParams.append('w', options.width.toString());
     if (options.height) searchParams.append('h', options.height.toString());
