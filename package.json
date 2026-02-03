@@ -9,6 +9,7 @@
     "build": "astro build && next build",
     "build:astro": "astro build",
     "build:payload": "next build",
+    "start": "NODE_ENV=production tsx server.ts",
     "preview": "astro preview",
     "astro": "astro",
     "payload": "payload",

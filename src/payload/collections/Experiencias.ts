@@ -109,9 +109,6 @@ export const Experiencias: CollectionConfig = {
             ],
             admin: {
                 description: 'Lista de cosas que incluye la experiencia',
-                components: {
-                    RowLabel: ({ data }: any) => data?.item || 'Item',
-                },
             },
         },
         {

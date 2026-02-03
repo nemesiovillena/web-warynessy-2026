@@ -80,22 +80,25 @@ export default buildConfig({
   },
 
   // Clave secreta
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: process.env.PAYLOAD_SECRET || 'development-secret-key',
 
-  // URL del servidor
-  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
+  // Configuración de Servidor y URLs
+  // Nota: En producción Next.js detecta automáticamente la URL si no se especifica,
+  // pero forzamos el uso de variables de entorno si existen.
+  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || '',
 
-  // Configuración CORS
+  // Configuración CORS - Permitir el propio servidor y el sitio público
   cors: [
-    process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
-    process.env.PUBLIC_SITE_URL || 'http://localhost:4321',
-  ].filter(Boolean),
+    process.env.PAYLOAD_PUBLIC_SERVER_URL,
+    process.env.PUBLIC_SITE_URL,
+  ].filter(Boolean) as string[],
 
   // Configuración CSRF
   csrf: [
-    process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
-    process.env.PUBLIC_SITE_URL || 'http://localhost:4321',
-  ].filter(Boolean),
+    process.env.PAYLOAD_PUBLIC_SERVER_URL,
+    process.env.PUBLIC_SITE_URL,
+  ].filter(Boolean) as string[],
+
   plugins: [
     bunnyStorage({
       collections: {
