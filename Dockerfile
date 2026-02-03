@@ -43,8 +43,7 @@ COPY . .
 # Build both Astro and Next.js/Payload
 RUN npm run build
 
-# Compile server.ts to server.js for production
-RUN npx tsc server.ts --esModuleInterop --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck
+# Note: server.ts will be executed directly with tsx in production
 
 # ========================================
 # Stage 3: Production Runtime
@@ -76,8 +75,8 @@ COPY --from=builder /app/dist ./dist
 # Copy package.json for module resolution
 COPY --from=builder /app/package.json ./
 
-# Copy pre-compiled server.js from builder
-COPY --from=builder /app/server.js ./
+# Copy server.ts (will be executed with tsx)
+COPY --from=builder /app/server.ts ./
 
 # Create media directory with correct permissions
 RUN mkdir -p /app/public/media && chown -R payload:nodejs /app
@@ -94,7 +93,7 @@ USER payload
 EXPOSE 3000
 
 # Start unified Express server (handles Next.js + Astro)
-CMD ["node", "server.js"]
+CMD ["npx", "tsx", "server.ts"]
 
 # ========================================
 # Stage 4: Development Runtime
