@@ -37,6 +37,8 @@ export async function getPayloadClient() {
     console.log('📂 CWD:', process.cwd())
     console.log('📄 Chosen Path:', configPath)
     console.log('🔍 File exists:', fs.existsSync(configPath))
+    console.log('🔐 Secret length:', process.env.PAYLOAD_SECRET?.length || 0)
+    console.log('🗄️ DB URL present:', !!process.env.DATABASE_URL)
     console.log('-------------------------------------------')
 
     if (!fs.existsSync(configPath)) {
