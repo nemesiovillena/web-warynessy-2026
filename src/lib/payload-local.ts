@@ -23,30 +23,34 @@ export async function getPayloadClient() {
   }
 
   if (!payloadInstance) {
-    // Diagnóstico y resolución de rutas en producción
-    const cwd = process.cwd()
-    let configPath = path.resolve(cwd, 'payload.config.ts')
+    // RESOLUCIÓN FORZADA PARA PRODUCCIÓN (v6)
+    const isProd = process.env.NODE_ENV === 'production'
+    const absolutePath = '/app/payload.config.ts'
+    const localPath = path.resolve(process.cwd(), 'payload.config.ts')
 
-    // REFUERZO: En producción Docker, siempre debe estar en /app
-    if (process.env.NODE_ENV === 'production') {
-      configPath = '/app/payload.config.ts'
-    }
+    // Priorizamos la absoluta en prod para evitar dist/ resolution
+    let configPath = isProd ? absolutePath : localPath
 
     console.log('-------------------------------------------')
-    console.log('🚀 INITIALIZING PAYLOAD LOCAL API (v5)')
-    console.log('📂 CWD:', cwd)
-    console.log('📄 Final Config Path:', configPath)
+    console.log('🚀 INITIALIZING PAYLOAD LOCAL API (v6)')
+    console.log('📂 NODE_ENV:', process.env.NODE_ENV)
+    console.log('📂 CWD:', process.cwd())
+    console.log('📄 Chosen Path:', configPath)
     console.log('🔍 File exists:', fs.existsSync(configPath))
     console.log('-------------------------------------------')
 
     if (!fs.existsSync(configPath)) {
-      throw new Error(`❌ Payload config not found at: ${configPath}`)
+      if (isProd && fs.existsSync(localPath)) {
+        console.warn('⚠️ Falling back to localPath calculation:', localPath)
+        configPath = localPath
+      } else {
+        throw new Error(`❌ Payload config not found at: ${configPath}. CWD: ${process.cwd()}`)
+      }
     }
 
-    // Importamos la configuración dinámicamente usando la ruta absoluta
-    // Usamos una variable intermedia para engañar totalmente a Vite/Astro
-    const dynamicPath = `file://${configPath}?v=${Date.now()}`
-    const configModule = await import(/* @vite-ignore */ dynamicPath)
+    // Importamos usando un path dinámico total para engañar a Vite
+    const finalImportPath = `file://${configPath}?v=${Date.now()}`
+    const configModule = await import(/* @vite-ignore */ finalImportPath)
     const freshConfig = configModule.default
 
     payloadInstance = await getPayload({ config: freshConfig })

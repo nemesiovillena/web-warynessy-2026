@@ -57,5 +57,9 @@ EXPOSE 3000
 
 # No HEALTHCHECK - let Dokploy/Traefik handle routing
 
-# Use tsx to handle TypeScript imports at runtime
-CMD ["npx", "tsx", "./dist/server/entry.mjs"]
+# Diagnostics and Start
+CMD echo "--- FILE SYSTEM DIAGNOSTICS ---" && \
+  ls -l /app/payload.config.ts && \
+  ls -l /app/dist/payload.config.ts || echo "Dist config ABSENT (good)" && \
+  echo "----------------------------" && \
+  npx tsx ./dist/server/entry.mjs
