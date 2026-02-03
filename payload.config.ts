@@ -5,6 +5,7 @@ import sharp from 'sharp'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import dotenv from 'dotenv'
+import { bunnyStorage } from '@seshuk/payload-storage-bunny'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -93,6 +94,18 @@ export default buildConfig({
     process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
     process.env.PUBLIC_SITE_URL || 'http://localhost:4321',
   ].filter(Boolean),
+  plugins: [
+    bunnyStorage({
+      collections: {
+        archivos: true,
+      },
+      storage: {
+        apiKey: process.env.BUNNY_API_KEY || '',
+        zoneName: process.env.BUNNY_STORAGE_ZONE_NAME || '',
+        hostname: process.env.BUNNY_PULL_ZONE_HOSTNAME || 'warynessy.b-cdn.net',
+      },
+    }),
+  ],
 })
 
 export const importMap = {}
