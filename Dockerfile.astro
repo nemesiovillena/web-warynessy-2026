@@ -56,4 +56,5 @@ EXPOSE 3000
 
 # No HEALTHCHECK - let Dokploy/Traefik handle routing
 
-CMD ["node", "./dist/server/entry.mjs"]
+# Use tsx to handle TypeScript imports at runtime
+CMD ["npx", "tsx", "./dist/server/entry.mjs"]
