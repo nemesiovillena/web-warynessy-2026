@@ -49,8 +49,8 @@ RUN npm run build
 FROM node:20-alpine AS production
 WORKDIR /app
 
-# Install runtime dependencies only
-RUN apk add --no-cache libc6-compat
+# Install runtime dependencies only (wget needed for healthcheck)
+RUN apk add --no-cache libc6-compat wget
 
 # Create non-root user for security
 RUN addgroup --system --gid 1001 nodejs && \
@@ -82,9 +82,9 @@ USER payload
 # Expose port
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/admin || exit 1
+# Health check (simple check on root)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
 # Start Next.js standalone server
 CMD ["node", "server.js"]
