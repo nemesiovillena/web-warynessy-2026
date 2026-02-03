@@ -71,7 +71,7 @@ export const Experiences: CollectionConfig = {
       name: 'imagen',
       type: 'upload',
       label: 'Imagen Destacada',
-      relationTo: 'media',
+      relationTo: 'archivos',
       required: true,
     },
     {
@@ -110,7 +110,7 @@ export const Experiences: CollectionConfig = {
       admin: {
         description: 'Lista de cosas que incluye la experiencia',
         components: {
-          RowLabel: ({ data }) => data?.item || 'Item',
+          RowLabel: ({ data }: any) => data?.item || 'Item',
         },
       },
     },

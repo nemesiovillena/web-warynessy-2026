@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 export const Categories: CollectionConfig = {
-  slug: 'categories',
+  slug: 'categorias',
   labels: {
     singular: 'Categoría',
     plural: 'Categorías',
@@ -81,7 +81,7 @@ export const Categories: CollectionConfig = {
       name: 'imagen',
       type: 'upload',
       label: 'Imagen de la Categoría',
-      relationTo: 'media',
+      relationTo: 'archivos',
       admin: {
         description: 'Imagen representativa (opcional)',
       },

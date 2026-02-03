@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 export const Dishes: CollectionConfig = {
-  slug: 'dishes',
+  slug: 'platos',
   labels: {
     singular: 'Plato',
     plural: 'Platos',
@@ -40,13 +40,13 @@ export const Dishes: CollectionConfig = {
       name: 'imagen',
       type: 'upload',
       label: 'Imagen del Plato',
-      relationTo: 'media',
+      relationTo: 'archivos',
     },
     {
       name: 'categoria',
       type: 'relationship',
       label: 'Categoría',
-      relationTo: 'categories',
+      relationTo: 'categorias',
       required: true,
       hasMany: false,
     },
@@ -54,7 +54,7 @@ export const Dishes: CollectionConfig = {
       name: 'alergenos',
       type: 'relationship',
       label: 'Alérgenos',
-      relationTo: ['alergenos', 'allergens'] as any,
+      relationTo: 'alergenos',
       hasMany: true,
       admin: {
         description: 'Selecciona todos los alérgenos que contiene el plato',

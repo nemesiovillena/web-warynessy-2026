@@ -50,7 +50,7 @@ export const Menus: CollectionConfig = {
       name: 'imagen',
       type: 'upload',
       label: 'Imagen Promocional del Menú',
-      relationTo: 'media',
+      relationTo: 'archivos',
     },
     {
       name: 'precio',

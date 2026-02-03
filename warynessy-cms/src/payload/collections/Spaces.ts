@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 export const Spaces: CollectionConfig = {
-  slug: 'spaces',
+  slug: 'espacios',
   labels: {
     singular: 'Espacio',
     plural: 'Espacios',
