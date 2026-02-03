@@ -81,19 +81,32 @@ async function start() {
   app.use('/_astro', express.static(path.join(__dirname, 'dist/client/_astro')))
   app.use(express.static(path.join(__dirname, 'dist/client'), { index: false }))
 
+  // Endpoint de salud para Dokploy
+  app.get('/health', (req, res) => {
+    res.status(200).send('OK - Unified Server is up')
+  })
+
   // Rutas de Payload/Next.js (admin, api, _next)
-  // Usamos regex para que coincida con el prefijo pero se mantenga la URL completa
   app.all(/^\/(admin|api|_next)($|\/.*)/, (req, res) => {
     return nextHandler(req, res)
   })
 
-  // Importar handler de Astro SSR dinámicamente
-  const { handler: astroHandler } = await import('./dist/server/entry.mjs')
+  try {
+    // Importar handler de Astro SSR dinámicamente
+    const entryPath = path.join(__dirname, 'dist/server/entry.mjs')
+    console.log(`📦 Loading Astro handler from: ${entryPath}`)
+    const { handler: astroHandler } = await import(entryPath)
 
-  // Resto de rutas → Astro SSR
-  app.use((req, res, next) => {
-    astroHandler(req, res, next)
-  })
+    // Resto de rutas → Astro SSR
+    app.use((req, res, next) => {
+      astroHandler(req, res, next)
+    })
+  } catch (astroError) {
+    console.error('⚠️ Failed to load Astro handler. Web frontend might be unavailable:', (astroError as Error).message)
+    app.use((req, res) => {
+      res.status(503).send('Servicio temporalmente no disponible (Astro Error)')
+    })
+  }
 
   const server = createServer(app)
   server.listen(PORT, HOST, () => {
