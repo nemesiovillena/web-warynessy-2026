@@ -1,17 +1,5 @@
 services:
-  db:
-    image: postgres:16-alpine
-    restart: always
-    environment:
-      POSTGRES_USER: "${POSTGRES_USER:-warynessy}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-warynessy_prod_secure}"
-      POSTGRES_DB: "${POSTGRES_DB:-warynessy}"
-    volumes:
-      - warynessy_postgres_data:/var/lib/postgresql/data
-    networks:
-      - dokploy-network
-    expose:
-      - "5432"
+  # Local database service removed in favor of external database
 
   payload:
     build:
@@ -19,13 +7,12 @@ services:
       dockerfile: Dockerfile
       target: production
     restart: always
-    depends_on:
-      - db
+    # Depends on db removed as we use external DB
     environment:
       NODE_ENV: production
       PORT: 3000
       HOSTNAME: 0.0.0.0
-      DATABASE_URL: "postgresql://${POSTGRES_USER:-warynessy}:${POSTGRES_PASSWORD:-warynessy_prod_secure}@db:5432/${POSTGRES_DB:-warynessy}"
+      DATABASE_URL: "${DATABASE_URL:-postgresql://warynessy:Warynessy2026SecurePass@72.62.183.215:5436/warynessy}"
       PAYLOAD_SECRET: "${PAYLOAD_SECRET}"
       PAYLOAD_PUBLIC_SERVER_URL: https://admin.warynessy.eneweb.es
       PUBLIC_PAYLOAD_API_URL: https://admin.warynessy.eneweb.es/api
@@ -47,13 +34,12 @@ services:
       context: .
       dockerfile: Dockerfile.astro
     restart: always
-    depends_on:
-      - payload
+    # Depends on payload remains unchanged
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
-      PORT: 4321
-      DATABASE_URL: "postgresql://${POSTGRES_USER:-warynessy}:${POSTGRES_PASSWORD:-warynessy_prod_secure}@db:5432/${POSTGRES_DB:-warynessy}"
+      PORT: 3000
+      DATABASE_URL: "${DATABASE_URL:-postgresql://warynessy:Warynessy2026SecurePass@72.62.183.215:5436/warynessy}"
       PAYLOAD_SECRET: "${PAYLOAD_SECRET}"
       PUBLIC_PAYLOAD_API_URL: https://admin.warynessy.eneweb.es/api
       PUBLIC_SITE_URL: https://warynessy.eneweb.es
@@ -73,10 +59,10 @@ services:
     networks:
       - dokploy-network
     expose:
-      - "4321"
+      - "3000"
 
 volumes:
-  warynessy_postgres_data:
+  # Local database volume removed as we use external DB
   warynessy_media:
 
 
