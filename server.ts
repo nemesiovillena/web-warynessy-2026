@@ -12,6 +12,7 @@ const __dirname = path.dirname(__filename)
 
 const dev = process.env.NODE_ENV !== 'production'
 const PORT = parseInt(process.env.PORT || '3000', 10)
+const HOST = '0.0.0.0' // Importante para contenedores/Docker
 
 /**
  * HOTFIX: Asegura que la columna experiencias_id existe en la tabla de bloqueo de documentos.
@@ -95,9 +96,9 @@ async function start() {
   })
 
   const server = createServer(app)
-  server.listen(PORT, '0.0.0.0', () => {
+  server.listen(PORT, HOST, () => {
     console.log('')
-    console.log('🚀 Servidor unificado corriendo!')
+    console.log(`🚀 Servidor unificado corriendo en ${HOST}:${PORT}!`)
     console.log(`📊 Payload Admin: http://localhost:${PORT}/admin`)
     console.log(`🔌 Payload API: http://localhost:${PORT}/api`)
     console.log(`🌐 Astro Frontend: http://localhost:${PORT}/`)
