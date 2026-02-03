@@ -19,7 +19,7 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
 ---
 
 <MainLayout title={pageTitle} description={pageDescription} hideFloatingButton={true} noPaddingTop={true}>
-    <section class="relative pt-32 pb-24 md:pt-48 md:pb-32 bg-matte-black overflow-hidden">
+    <section class="relative pt-32 pb-12 md:pt-48 md:pb-16 bg-matte-black overflow-hidden">
       <div class="absolute inset-0 bg-cover bg-center opacity-30" style={`background-image: url('${heroImg}')`}></div>
       <div class="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/60 to-transparent"></div>
       <Container class="relative z-10 text-center animate-fade-up">
@@ -35,7 +35,7 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
       </Container>
    </section>
 
-   <Section class="bg-matte-black min-h-screen py-16 md:py-24">
+   <Section class="bg-matte-black min-h-screen pt-8 pb-16 md:pt-12 md:pb-24">
      <Container>
        {menus.length > 0 ? (
          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
