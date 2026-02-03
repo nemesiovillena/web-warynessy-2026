@@ -2,6 +2,7 @@
 // Usa la API local de Payload directamente (sin servidor HTTP)
 
 import { getPayload } from 'payload'
+import path from 'path'
 // La configuración se importa dinámicamente en getPayloadClient para evitar caché
 
 let payloadInstance: Awaited<ReturnType<typeof getPayload>> | null = null
@@ -21,9 +22,9 @@ export async function getPayloadClient() {
   }
 
   if (!payloadInstance) {
-    // Importamos la configuración dinámicamente para evitar problemas de caché en desarrollo
-    const configPath = `../../payload.config.ts`
-    const configModule = await import(/* @vite-ignore */ `${configPath}?v=${Date.now()}`)
+    // Importamos la configuración dinámicamente usando la ruta absoluta desde la raíz del proceso
+    const configPath = path.resolve(process.cwd(), 'payload.config.ts')
+    const configModule = await import(/* @vite-ignore */ `file://${configPath}?v=${Date.now()}`)
     const freshConfig = configModule.default
 
     payloadInstance = await getPayload({ config: freshConfig })
