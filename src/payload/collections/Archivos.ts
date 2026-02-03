@@ -13,7 +13,7 @@ export const Archivos: CollectionConfig = {
     read: () => true, // Public read access
   },
   upload: {
-    staticDir: 'media',
+    staticDir: 'public/media',
     mimeTypes: ['image/*', 'application/pdf'],
     imageSizes: [
       {

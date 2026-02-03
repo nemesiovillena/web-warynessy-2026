@@ -69,7 +69,7 @@ COPY --from=builder /app/src/payload ./src/payload
 COPY --from=builder /app/dist ./dist
 
 # Create media directory with correct permissions
-RUN mkdir -p /app/media && chown -R payload:nodejs /app
+RUN mkdir -p /app/public/media && chown -R payload:nodejs /app/public/media
 
 # Set environment
 ENV NODE_ENV=production

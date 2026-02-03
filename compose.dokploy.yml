@@ -27,7 +27,7 @@ services:
     expose:
       - "3000"
     volumes:
-      - warynessy_media:/app/media
+      - warynessy_media:/app/public/media
 
   web:
     build:
