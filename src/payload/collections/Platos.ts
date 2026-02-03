@@ -54,7 +54,7 @@ export const Platos: CollectionConfig = {
       name: 'alergenos',
       type: 'relationship',
       label: 'Alérgenos',
-      relationTo: 'alergenos',
+      relationTo: ['alergenos', 'allergens'], // Soporta ambos slugs por si acaso
       hasMany: true,
       admin: {
         description: 'Selecciona todos los alérgenos que contiene el plato',
