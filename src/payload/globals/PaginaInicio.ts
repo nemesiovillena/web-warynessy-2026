@@ -125,7 +125,18 @@ export const PaginaInicio: GlobalConfig = {
         description: 'Selecciona los espacios a mostrar en el home',
       },
     },
-
+    // Experiencias destacadas
+    {
+      name: 'experienciasDestacadas',
+      type: 'relationship',
+      label: 'Experiencias Destacadas en Home',
+      relationTo: 'experiencias',
+      hasMany: true,
+      maxRows: 3,
+      admin: {
+        description: 'Selecciona las experiencias a mostrar en el home',
+      },
+    },
 
     // SEO
     {
