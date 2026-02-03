@@ -1,5 +1,6 @@
 ---
 import { type Plato } from '../../payload-types';
+import { getOptimizedImageUrl } from '../../lib/cdn';
 
 interface Props {
   plato: Plato;
@@ -18,11 +19,10 @@ const { plato } = Astro.props;
     </h3>
     {plato.alergenos && plato.alergenos.length > 0 && (
       <div class="flex gap-2 mt-1 flex-wrap">
-        {plato.alergenos.map((alergeno: any) => {
-          const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
-          const imgUrl = typeof alergeno.imagen === 'object' && alergeno.imagen?.url
-            ? (alergeno.imagen.url.startsWith('/') ? `${PAYLOAD_URL}${alergeno.imagen.url}` : alergeno.imagen.url)
-            : null;
+            {plato.alergenos.map((alergeno: any) => {
+              const imgUrl = typeof alergeno.imagen === 'object' && alergeno.imagen?.url
+                ? getOptimizedImageUrl(alergeno.imagen.url)
+                : null;
 
           return (
             <div class="flex flex-col items-center gap-1 group/alergeno">

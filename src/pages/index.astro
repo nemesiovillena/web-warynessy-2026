@@ -8,6 +8,7 @@ import SpaceCard from '../components/content/SpaceCard.astro';
 import { getSiteSettings, getHomepage, getSpaces, getFeaturedDishes } from '../lib/payload-local';
 import { getGoogleReviews } from '../lib/google-reviews';
 import { getInstagramFeed } from '../lib/instagram';
+import { getOptimizedImageUrl } from '../lib/cdn';
 
 // Fetch data from Payload CMS (Local API)
 const siteSettings = await getSiteSettings();
@@ -42,7 +43,7 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
   <section class="relative h-screen w-full overflow-hidden group">
     <div
       class="absolute inset-0 fixed-bg"
-      style={`background-image: url('${typeof homepage?.heroImage === 'object' && homepage?.heroImage?.url ? homepage.heroImage.url : 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80'}');`}
+      style={`background-image: url('${typeof homepage?.heroImage === 'object' && homepage?.heroImage?.url ? getOptimizedImageUrl(homepage.heroImage.url) : 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80'}');`}
     >
     </div>
     <div class="absolute inset-0 hero-content-gradient"></div>

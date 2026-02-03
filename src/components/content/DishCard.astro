@@ -1,6 +1,6 @@
 ---
 import { type Plato } from '../../payload-types';
-import ResponsiveImage from '../ui/ResponsiveImage.astro';
+import { getOptimizedImageUrl } from '../../lib/cdn';
 
 interface Props {
   plato: Plato;
@@ -9,7 +9,7 @@ interface Props {
 const { plato } = Astro.props;
 
 // Helper to get image URL
-const imageUrl = typeof plato.imagen === 'object' && plato.imagen?.url ? plato.imagen.url : '';
+const imageUrl = typeof plato.imagen === 'object' && plato.imagen?.url ? getOptimizedImageUrl(plato.imagen.url) : '';
 ---
 
 <div class="dish-card group relative flex flex-col gap-4 border-b border-white/5 pb-8 mb-8 hover:bg-white/5 -mx-4 md:-mx-6 px-4 md:px-6 py-8 rounded-3xl transition-all duration-300 cursor-default"
@@ -51,9 +51,8 @@ const imageUrl = typeof plato.imagen === 'object' && plato.imagen?.url ? plato.i
         {plato.alergenos && plato.alergenos.length > 0 && (
           <div class="flex gap-2 flex-wrap">
             {plato.alergenos.map((alergeno: any) => {
-              const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
               const imgUrl = typeof alergeno.imagen === 'object' && alergeno.imagen?.url
-                ? (alergeno.imagen.url.startsWith('/') ? `${PAYLOAD_URL}${alergeno.imagen.url}` : alergeno.imagen.url)
+                ? getOptimizedImageUrl(alergeno.imagen.url)
                 : null;
 
               return (
