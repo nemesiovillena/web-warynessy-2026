@@ -82,9 +82,7 @@ USER payload
 # Expose port
 EXPOSE 3000
 
-# Health check (simple check on root)
-HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+# No HEALTHCHECK - let Dokploy/Traefik handle routing
 
 # Start Next.js standalone server
 CMD ["node", "server.js"]
