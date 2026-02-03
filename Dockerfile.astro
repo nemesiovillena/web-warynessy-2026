@@ -34,6 +34,9 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 # Copy Astro build
 COPY --from=builder /app/dist ./dist
+# Ensure dist is clean of any bundled config that could cause path issues
+RUN rm -f /app/dist/payload.config.* && rm -rf /app/dist/src
+
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
 

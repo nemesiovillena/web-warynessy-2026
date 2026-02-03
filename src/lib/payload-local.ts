@@ -3,6 +3,7 @@
 
 import { getPayload } from 'payload'
 import path from 'path'
+import fs from 'fs'
 // La configuración se importa dinámicamente en getPayloadClient para evitar caché
 
 let payloadInstance: Awaited<ReturnType<typeof getPayload>> | null = null
@@ -27,18 +28,25 @@ export async function getPayloadClient() {
     let configPath = path.resolve(cwd, 'payload.config.ts')
 
     // REFUERZO: En producción Docker, siempre debe estar en /app
-    if (process.env.NODE_ENV === 'production' && !configPath.startsWith('/app')) {
+    if (process.env.NODE_ENV === 'production') {
       configPath = '/app/payload.config.ts'
     }
 
     console.log('-------------------------------------------')
-    console.log('🚀 INITIALIZING PAYLOAD LOCAL API (v4)')
+    console.log('🚀 INITIALIZING PAYLOAD LOCAL API (v5)')
     console.log('📂 CWD:', cwd)
     console.log('📄 Final Config Path:', configPath)
+    console.log('🔍 File exists:', fs.existsSync(configPath))
     console.log('-------------------------------------------')
 
+    if (!fs.existsSync(configPath)) {
+      throw new Error(`❌ Payload config not found at: ${configPath}`)
+    }
+
     // Importamos la configuración dinámicamente usando la ruta absoluta
-    const configModule = await import(/* @vite-ignore */ `file://${configPath}?v=${Date.now()}`)
+    // Usamos una variable intermedia para engañar totalmente a Vite/Astro
+    const dynamicPath = `file://${configPath}?v=${Date.now()}`
+    const configModule = await import(/* @vite-ignore */ dynamicPath)
     const freshConfig = configModule.default
 
     payloadInstance = await getPayload({ config: freshConfig })
