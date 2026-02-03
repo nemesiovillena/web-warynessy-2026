@@ -28,40 +28,59 @@ async function runDatabaseHotfix() {
   const pool = new pg.Pool({ connectionString })
 
   try {
-    console.log('🔍 Running Database Hotfix...')
+    console.log('🔍 Running Robust Database Hotfix...')
 
-    // 1. Verificar si la columna existe en payload_locked_documents_rels
-    const checkColumnQuery = `
-      SELECT column_name 
-      FROM information_schema.columns 
-      WHERE table_name = 'payload_locked_documents_rels' 
-      AND column_name = 'experiencias_id';
-    `
-    const res = await pool.query(checkColumnQuery)
+    // Lista de tablas posibles donde Payload guarda los bloqueos (a veces usa _ o __)
+    const tablesToCheck = ['payload_locked_documents_rels', 'payload_locked_documents__rels']
 
-    if (res.rowCount === 0) {
-      console.log('➕ Column "experiencias_id" missing in "payload_locked_documents_rels". Adding it...')
+    for (const tableName of tablesToCheck) {
+      // 1. Verificar si la tabla existe
+      const tableExistsRes = await pool.query(`
+        SELECT EXISTS (
+          SELECT FROM information_schema.tables 
+          WHERE table_name = $1
+        );
+      `, [tableName])
 
-      // Añadir la columna (Payload 3 usa el tipo de ID por defecto, que aquí es number/integer)
-      await pool.query('ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "experiencias_id" integer;')
+      if (tableExistsRes.rows[0].exists) {
+        console.log(`📋 Checking table: ${tableName}`)
 
-      // Intentar añadir la FK (opcional pero recomendado)
-      try {
-        await pool.query(`
-          ALTER TABLE "payload_locked_documents_rels" 
-          ADD CONSTRAINT "payload_locked_documents_rels_experiencias_id_fk" 
-          FOREIGN KEY ("experiencias_id") REFERENCES "experiencias"("id") ON DELETE SET NULL;
-        `)
-        console.log('✅ Column and FK added successfully.')
-      } catch (fkError) {
-        console.warn('⚠️ Added column but failed to add FK (maybe "experiencias" table not created yet):', (fkError as Error).message)
+        // 2. Verificar si la columna existe
+        const checkColumnQuery = `
+          SELECT column_name 
+          FROM information_schema.columns 
+          WHERE table_name = $1 
+          AND column_name = 'experiencias_id';
+        `
+        const res = await pool.query(checkColumnQuery, [tableName])
+
+        if (res.rowCount === 0) {
+          console.log(`➕ Column "experiencias_id" missing in "${tableName}". Adding it...`)
+
+          // Añadir la columna de forma segura
+          await pool.query(`ALTER TABLE "${tableName}" ADD COLUMN IF NOT EXISTS "experiencias_id" integer;`)
+
+          // Intentar añadir la FK
+          try {
+            // Primero borrar si existe para evitar errores de duplicado
+            await pool.query(`ALTER TABLE "${tableName}" DROP CONSTRAINT IF EXISTS "${tableName}_experiencias_id_fk";`)
+
+            await pool.query(`
+              ALTER TABLE "${tableName}" 
+              ADD CONSTRAINT "${tableName}_experiencias_id_fk" 
+              FOREIGN KEY ("experiencias_id") REFERENCES "experiencias"("id") ON DELETE SET NULL;
+            `)
+            console.log(`✅ Column and FK added to ${tableName}.`)
+          } catch (fkError) {
+            console.warn(`⚠️ Added column to ${tableName} but failed to add FK:`, (fkError as Error).message)
+          }
+        } else {
+          console.log(`✅ Table "${tableName}" already has "experiencias_id".`)
+        }
       }
-    } else {
-      console.log('✅ Database schema is up to date (column "experiencias_id" exists).')
     }
   } catch (error) {
-    console.error('❌ Database Hotfix failed:', (error as Error).message)
-    // No salimos del proceso porque Payload podría intentar arreglarlo él mismo con push:true
+    console.error('❌ Robust Database Hotfix failed:', (error as Error).message)
   } finally {
     await pool.end()
   }
