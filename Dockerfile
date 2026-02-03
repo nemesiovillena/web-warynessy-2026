@@ -19,12 +19,26 @@ RUN npm ci
 FROM node:20-alpine AS builder
 WORKDIR /app
 
+# Build arguments needed for Next.js/Payload compilation
+ARG DATABASE_URL
+ARG PAYLOAD_SECRET
+ARG PAYLOAD_PUBLIC_SERVER_URL
+ARG PUBLIC_PAYLOAD_API_URL
+ARG PUBLIC_SITE_URL
+ARG PUBLIC_SITE_NAME
+
+# Set environment variables from build args
+ENV DATABASE_URL=${DATABASE_URL}
+ENV PAYLOAD_SECRET=${PAYLOAD_SECRET}
+ENV PAYLOAD_PUBLIC_SERVER_URL=${PAYLOAD_PUBLIC_SERVER_URL}
+ENV PUBLIC_PAYLOAD_API_URL=${PUBLIC_PAYLOAD_API_URL}
+ENV PUBLIC_SITE_URL=${PUBLIC_SITE_URL}
+ENV PUBLIC_SITE_NAME=${PUBLIC_SITE_NAME}
+ENV NODE_ENV=production
+
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Set production environment for build
-ENV NODE_ENV=production
 
 # Build both Astro and Next.js/Payload
 RUN npm run build
