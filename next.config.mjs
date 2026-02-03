@@ -2,8 +2,7 @@ import { withPayload } from '@payloadcms/next/withPayload'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // Standalone output for Docker deployment
-    output: 'standalone',
+    // Custom server mode - no standalone (incompatible with Express wrapper)
     experimental: {
         reactCompiler: false,
     },

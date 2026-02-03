@@ -43,33 +43,44 @@ COPY . .
 # Build both Astro and Next.js/Payload
 RUN npm run build
 
+# Compile server.ts to server.js for production
+RUN npx tsc server.ts --esModuleInterop --module NodeNext --moduleResolution NodeNext --target ES2022 --skipLibCheck
+
 # ========================================
 # Stage 3: Production Runtime
 # ========================================
 FROM node:20-alpine AS production
 WORKDIR /app
 
-# Install runtime dependencies only (wget needed for healthcheck)
+# Install runtime dependencies (wget for healthcheck, tsc deps)
 RUN apk add --no-cache libc6-compat wget
 
 # Create non-root user for security
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 payload
 
-# Copy standalone build from Next.js
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# Copy node_modules for full Next.js runtime
+COPY --from=builder /app/node_modules ./node_modules
+
+# Copy Next.js build (full build, not standalone)
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
 # Copy Payload config and source files needed at runtime
 COPY --from=builder /app/payload.config.ts ./
 COPY --from=builder /app/src/payload ./src/payload
 
-# Copy Astro dist for SSR (if needed later)
+# Copy Astro dist for SSR
 COPY --from=builder /app/dist ./dist
 
+# Copy package.json for module resolution
+COPY --from=builder /app/package.json ./
+
+# Copy pre-compiled server.js from builder
+COPY --from=builder /app/server.js ./
+
 # Create media directory with correct permissions
-RUN mkdir -p /app/public/media && chown -R payload:nodejs /app/public/media
+RUN mkdir -p /app/public/media && chown -R payload:nodejs /app
 
 # Set environment
 ENV NODE_ENV=production
@@ -82,9 +93,7 @@ USER payload
 # Expose port
 EXPOSE 3000
 
-# No HEALTHCHECK - let Dokploy/Traefik handle routing
-
-# Start Next.js standalone server
+# Start unified Express server (handles Next.js + Astro)
 CMD ["node", "server.js"]
 
 # ========================================
