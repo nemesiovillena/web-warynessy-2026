@@ -58,6 +58,9 @@ export const Dishes: CollectionConfig = {
       hasMany: true,
       admin: {
         description: 'Selecciona todos los alérgenos que contiene el plato',
+        components: {
+          Field: '@/payload/components/ChecklistRelationship',
+        },
       },
     },
     {
@@ -102,7 +105,7 @@ export const Dishes: CollectionConfig = {
       admin: {
         description: 'Ej: "Vegano", "Picante", "Recomendado del Chef", etc.',
         components: {
-          RowLabel: ({ data }) => data?.etiqueta || 'Etiqueta',
+          RowLabel: ({ data }: any) => data?.etiqueta || 'Etiqueta',
         },
       },
     },

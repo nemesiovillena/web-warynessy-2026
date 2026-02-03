@@ -1,46 +1,55 @@
 'use client'
 import React, { useEffect, useState, useMemo } from 'react'
-import { useField, useConfig, FieldLabel } from '@payloadcms/ui'
+import { useField, useConfig, FieldLabel, useDocumentInfo } from '@payloadcms/ui'
 
-export const ChecklistRelationship: React.FC<any> = (props) => {
+// Caché global para persistir las opciones entre navegaciones client-side de Next.js
+// Esto evita que el checklist desaparezca mientras se carga el API al navegar
+let globalOptionsCache: { [key: string]: any[] } = {}
+let globalInFlightRequests: { [key: string]: Promise<any[]> } = {}
+
+const ChecklistRelationshipInternal: React.FC<any> = (props) => {
     const { path, label, admin } = props
     const fieldObj = props.field || {}
     const fieldRelationTo = props.relationTo || fieldObj.relationTo || 'alergenos'
     const relationTo = useMemo(() => Array.isArray(fieldRelationTo) ? fieldRelationTo[0] : fieldRelationTo, [fieldRelationTo])
 
     const { value, setValue } = useField<string[] | { id: string }[]>({ path })
-    const [options, setOptions] = useState<{ id: string; nombre: string }[]>([])
-    const [isLoading, setIsLoading] = useState(true)
-    const [mounted, setMounted] = useState(false)
+    const [options, setOptions] = useState<{ id: string; nombre: string }[]>(globalOptionsCache[relationTo] || [])
+    const [isLoading, setIsLoading] = useState(!globalOptionsCache[relationTo])
     const { config } = useConfig()
 
-    // Hydration fix
     useEffect(() => {
-        setMounted(true)
-    }, [])
-
-    useEffect(() => {
-        if (!mounted) return
+        let isMounted = true;
 
         const fetchOptions = async () => {
-            if (!relationTo || typeof relationTo !== 'string') {
-                console.warn('[Checklist] Esperando relationTo válido...')
-                return
+            if (!relationTo || typeof relationTo !== 'string') return
+
+            // Si ya hay una petición en curso para esta colección, esperamos a esa
+            if (globalInFlightRequests[relationTo]) {
+                try {
+                    const data = await globalInFlightRequests[relationTo]
+                    if (isMounted) {
+                        setOptions(data)
+                        setIsLoading(false)
+                    }
+                    return
+                } catch (e) { }
             }
 
-            setIsLoading(true)
-            try {
-                // Obtenemos el origin actual para peticiones relativas seguras
-                const origin = window.location.origin
+            // Si no tenemos nada en caché, mostramos cargando
+            if (!globalOptionsCache[relationTo]) {
+                setIsLoading(true)
+            }
+
+            const fetchPromise = (async () => {
+                const origin = typeof window !== 'undefined' ? window.location.origin : ''
                 const endpoints = [
                     `${origin}/api/${relationTo}?limit=100&depth=0`,
                     `/api/${relationTo}?limit=100&depth=0`,
                     `${config.serverURL || ''}/api/${relationTo}?limit=100&depth=0`
                 ]
 
-                let success = false
                 for (const url of endpoints) {
-                    if (success) break;
                     try {
                         const response = await fetch(url, {
                             headers: { 'Accept': 'application/json' }
@@ -51,46 +60,45 @@ export const ChecklistRelationship: React.FC<any> = (props) => {
                             const sortedDocs = (data.docs || []).sort((a: any, b: any) =>
                                 a.nombre?.localeCompare(b.nombre, 'es', { sensitivity: 'base' })
                             )
-                            setOptions(sortedDocs)
-                            success = true
+                            globalOptionsCache[relationTo] = sortedDocs
+                            return sortedDocs
                         }
-                    } catch (e) {
-                        // Silently try next endpoint
-                    }
+                    } catch (e) { }
                 }
+                throw new Error('No se pudo cargar desde ningún endpoint')
+            })()
 
-                if (!success) {
-                    console.error('[Checklist] No se pudo cargar desde ningún endpoint')
+            globalInFlightRequests[relationTo] = fetchPromise
+
+            try {
+                const sortedDocs = await fetchPromise
+                if (isMounted) {
+                    setOptions(sortedDocs)
                 }
             } catch (error) {
-                console.error('[Checklist] Error inesperado:', error)
+                console.error('[Checklist] Error:', error)
             } finally {
-                setIsLoading(false)
+                delete globalInFlightRequests[relationTo]
+                if (isMounted) setIsLoading(false)
             }
         }
 
         fetchOptions()
-    }, [relationTo, config.serverURL, mounted])
+        return () => { isMounted = false }
+    }, [relationTo, config.serverURL])
 
     const handleChange = (id: string) => {
         const currentItems = value || []
         const currentIds = currentItems.map((val: any) => (typeof val === 'object' ? val.id : val))
-
-        let newIds: string[]
-        if (currentIds.includes(id)) {
-            newIds = currentIds.filter((cid: string) => cid !== id)
-        } else {
-            newIds = [...currentIds, id]
-        }
-
+        let newIds: string[] = currentIds.includes(id)
+            ? currentIds.filter((cid: string) => cid !== id)
+            : [...currentIds, id]
         setValue(newIds)
     }
 
     const selectedIds = useMemo(() =>
         (value || []).map((val: any) => (typeof val === 'object' ? val.id : val)),
         [value])
-
-    if (!mounted) return null
 
     return (
         <div className="field-type relationship" style={{
@@ -109,27 +117,20 @@ export const ChecklistRelationship: React.FC<any> = (props) => {
                 )}
             </div>
 
-            <div
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-                    gap: '10px',
-                    maxHeight: '300px',
-                    overflowY: 'auto',
-                    padding: '4px'
-                }}
-            >
-                {isLoading && <p style={{ fontSize: '13px', opacity: 0.6 }}>Cargando alérgenos...</p>}
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+                gap: '10px',
+                maxHeight: '300px',
+                overflowY: 'auto',
+                padding: '4px'
+            }}>
+                {isLoading && options.length === 0 && (
+                    <p style={{ fontSize: '13px', opacity: 0.6 }}>Cargando alérgenos...</p>
+                )}
+
                 {!isLoading && options.length === 0 && (
-                    <div style={{ gridColumn: '1 / -1' }}>
-                        <p style={{ fontSize: '13px', opacity: 0.6 }}>No se encontraron opciones.</p>
-                        <button
-                            onClick={() => window.location.reload()}
-                            style={{ fontSize: '11px', color: 'var(--theme-primary-500)', cursor: 'pointer', background: 'none', border: 'none', padding: 0, marginTop: '5px', textDecoration: 'underline' }}
-                        >
-                            Reintentar carga
-                        </button>
-                    </div>
+                    <p style={{ fontSize: '13px', opacity: 0.6 }}>No se encontraron alérgenos.</p>
                 )}
 
                 {options.map((opt) => (
@@ -152,12 +153,7 @@ export const ChecklistRelationship: React.FC<any> = (props) => {
                             type="checkbox"
                             checked={selectedIds.includes(opt.id)}
                             onChange={() => handleChange(opt.id)}
-                            style={{
-                                cursor: 'pointer',
-                                width: '16px',
-                                height: '16px',
-                                accentColor: 'var(--theme-primary-500)'
-                            }}
+                            style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: 'var(--theme-primary-500)' }}
                         />
                         <span style={{ fontWeight: selectedIds.includes(opt.id) ? '600' : '400' }}>
                             {opt.nombre}
@@ -168,3 +164,17 @@ export const ChecklistRelationship: React.FC<any> = (props) => {
         </div>
     )
 }
+
+export const ChecklistRelationship: React.FC<any> = (props) => {
+    const { id } = useDocumentInfo()
+
+    // El ID del documento cambia al navegar, forzamos un remount completo del componente interno
+    // para evitar arrastrar estados de un plato a otro.
+    const key = useMemo(() => {
+        return `${props.path}-${id || 'new'}`
+    }, [props.path, id])
+
+    return <ChecklistRelationshipInternal key={key} {...props} />
+}
+
+export default ChecklistRelationship
