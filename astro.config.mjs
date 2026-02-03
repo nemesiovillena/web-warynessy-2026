@@ -11,7 +11,15 @@ export default defineConfig({
     mode: 'standalone'
   }),
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    ssr: {
+      external: ['payload', 'path', 'fs']
+    },
+    build: {
+      rollupOptions: {
+        external: [/payload\.config\.ts/]
+      }
+    }
   },
   integrations: [sitemap()],
   site: 'https://warynessy.com'
