@@ -22,13 +22,22 @@ export async function getPayloadClient() {
   }
 
   if (!payloadInstance) {
-    // Importamos la configuración dinámicamente usando la ruta absoluta desde la raíz del proceso
-    const configPath = path.resolve(process.cwd(), 'payload.config.ts')
+    // Diagnóstico de rutas en producción
+    const cwd = process.cwd()
+    const configPath = path.resolve(cwd, 'payload.config.ts')
+
+    console.log('-------------------------------------------')
+    console.log('🚀 INITIALIZING PAYLOAD LOCAL API')
+    console.log('📂 Current Working Directory:', cwd)
+    console.log('📄 Resolved Config Path:', configPath)
+    console.log('-------------------------------------------')
+
+    // Importamos la configuración dinámicamente usando la ruta absoluta
     const configModule = await import(/* @vite-ignore */ `file://${configPath}?v=${Date.now()}`)
     const freshConfig = configModule.default
 
     payloadInstance = await getPayload({ config: freshConfig })
-    console.log('🚀 Payload Initialized with collections:', Object.keys(payloadInstance.collections))
+    console.log('✅ Payload Instance Ready')
   }
   return payloadInstance
 }
