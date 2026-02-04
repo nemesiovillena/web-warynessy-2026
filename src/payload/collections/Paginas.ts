@@ -60,60 +60,6 @@ export const Paginas: CollectionConfig = {
                     ],
                 },
                 {
-                    label: 'Layout Espacios',
-                    admin: {
-                        condition: (data) => data?.slug === 'espacios',
-                    },
-                    fields: [
-                        {
-                            type: 'row',
-                            fields: [
-                                {
-                                    name: 'imagenEspacio1',
-                                    type: 'upload',
-                                    label: 'Imagen 1 (Superior izquierda)',
-                                    relationTo: 'archivos',
-                                    admin: {
-                                        width: '50%',
-                                    },
-                                },
-                                {
-                                    name: 'imagenEspacio2',
-                                    type: 'upload',
-                                    label: 'Imagen 2 (Superior derecha)',
-                                    relationTo: 'archivos',
-                                    admin: {
-                                        width: '50%',
-                                    },
-                                },
-                            ],
-                        },
-                        {
-                            type: 'row',
-                            fields: [
-                                {
-                                    name: 'imagenEspacio3',
-                                    type: 'upload',
-                                    label: 'Imagen 3 (Inferior izquierda)',
-                                    relationTo: 'archivos',
-                                    admin: {
-                                        width: '50%',
-                                    },
-                                },
-                                {
-                                    name: 'imagenEspacio4',
-                                    type: 'upload',
-                                    label: 'Imagen 4 (Inferior derecha)',
-                                    relationTo: 'archivos',
-                                    admin: {
-                                        width: '50%',
-                                    },
-                                },
-                            ],
-                        },
-                    ],
-                },
-                {
                     label: 'SEO y Metadatos',
                     fields: [
                         {
