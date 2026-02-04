@@ -12,16 +12,12 @@ export default defineConfig({
   }),
   vite: {
     plugins: [tailwindcss()],
-    optimizeDeps: {
-      exclude: ['payload', 'file-type', '@payloadcms/richtext-lexical']
-    },
     ssr: {
-      external: ['payload', 'path', 'fs', 'file-type', '@payloadcms/richtext-lexical'],
-      noExternal: []
+      external: ['payload', 'path', 'fs']
     },
     build: {
       rollupOptions: {
-        external: [/payload/, /file-type/]
+        external: [/payload\.config\.ts/]
       }
     }
   },
