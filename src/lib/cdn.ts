@@ -23,7 +23,11 @@ interface CDNOptions {
 export function getOptimizedImageUrl(src: string, options: CDNOptions = {}): string {
     if (!src) return '/images/placeholder.jpg';
 
-    const BUNNY_URL = getEnv('PUBLIC_BUNNY_CDN_URL').replace(/\/$/, "");
+    let BUNNY_URL = getEnv('PUBLIC_BUNNY_CDN_URL').replace(/\/$/, "");
+    // Asegurar que tiene protocolo https://
+    if (BUNNY_URL && !BUNNY_URL.startsWith('http')) {
+        BUNNY_URL = `https://${BUNNY_URL}`;
+    }
     const PAYLOAD_URL = (getEnv('PAYLOAD_PUBLIC_SERVER_URL') || getEnv('PUBLIC_PAYLOAD_API_URL', 'http://localhost:3000').replace('/api', '')).replace(/\/$/, "");
 
     // Normalizar src si viene como path relativo
