@@ -152,10 +152,10 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
           return (
             <div class="relative h-full w-full">
               {imgUrl ? (
-                <img 
-                  src={imgUrl} 
-                  alt="Imagen regalo" 
-                  class="h-full w-full object-cover" 
+                <img
+                  src={getOptimizedImageUrl(imgUrl)}
+                  alt="Imagen regalo"
+                  class="h-full w-full object-cover"
                   loading="lazy"
                 />
               ) : (
