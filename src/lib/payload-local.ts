@@ -1,64 +1,61 @@
-// Cliente Local de Payload para Astro
-// Usa la API local de Payload directamente (sin servidor HTTP)
+// Cliente REST de Payload para Astro
+// Usa la API REST de Payload en lugar de la API local para evitar conflictos de inicialización
 
-import { getPayload } from 'payload'
-import path from 'path'
-import fs from 'fs'
-// La configuración se importa dinámicamente en getPayloadClient para evitar caché
+const API_URL = process.env.PUBLIC_PAYLOAD_API_URL || 'https://admin.warynessy.eneweb.es/api'
 
-let payloadInstance: Awaited<ReturnType<typeof getPayload>> | null = null
+interface PayloadResponse<T> {
+  docs: T[]
+  totalDocs: number
+  limit: number
+  totalPages: number
+  page: number
+  pagingCounter: number
+  hasPrevPage: boolean
+  hasNextPage: boolean
+  prevPage: number | null
+  nextPage: number | null
+}
 
-export async function getPayloadClient() {
-  if (payloadInstance) {
-    // Verificamos si el global 'pagina-inicio' tiene el campo 'galeriaRegalo' en sus campos
-    const homeGlobal = payloadInstance.config.globals.find(g => g.slug === 'pagina-inicio');
-    const hasGaleriaRegalo = homeGlobal?.fields?.some(f => 'name' in f && f.name === 'galeriaRegalo');
+async function fetchAPI<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  const url = `${API_URL}${endpoint}`
 
-    console.log('🔍 getPayloadClient - check galeriaRegalo:', hasGaleriaRegalo);
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    })
 
-    if (!hasGaleriaRegalo) {
-      console.log('🔄 Re-initializing Payload: galeriaRegalo missing from active instance');
-      payloadInstance = null;
+    if (!response.ok) {
+      console.error(`API Error: ${response.status} - ${url}`)
+      throw new Error(`API request failed: ${response.status}`)
     }
+
+    return response.json()
+  } catch (error) {
+    console.error(`Fetch error for ${url}:`, error)
+    throw error
   }
+}
 
-  if (!payloadInstance) {
-    // RESOLUCIÓN FORZADA PARA PRODUCCIÓN (v6)
-    const isProd = process.env.NODE_ENV === 'production'
-    const absolutePath = '/app/payload.config.ts'
-    const localPath = path.resolve(process.cwd(), 'payload.config.ts')
+// Helper para construir query strings de Payload
+function buildQuery(params: Record<string, any>): string {
+  const searchParams = new URLSearchParams()
 
-    // Priorizamos la absoluta en prod para evitar dist/ resolution
-    let configPath = isProd ? absolutePath : localPath
-
-    console.log('-------------------------------------------')
-    console.log('🚀 INITIALIZING PAYLOAD LOCAL API (v6)')
-    console.log('📂 NODE_ENV:', process.env.NODE_ENV)
-    console.log('📂 CWD:', process.cwd())
-    console.log('📄 Chosen Path:', configPath)
-    console.log('🔍 File exists:', fs.existsSync(configPath))
-    console.log('🔐 Secret length:', process.env.PAYLOAD_SECRET?.length || 0)
-    console.log('🗄️ DB URL present:', !!process.env.DATABASE_URL)
-    console.log('-------------------------------------------')
-
-    if (!fs.existsSync(configPath)) {
-      if (isProd && fs.existsSync(localPath)) {
-        console.warn('⚠️ Falling back to localPath calculation:', localPath)
-        configPath = localPath
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null) {
+      if (typeof value === 'object') {
+        searchParams.set(key, JSON.stringify(value))
       } else {
-        throw new Error(`❌ Payload config not found at: ${configPath}. CWD: ${process.cwd()}`)
+        searchParams.set(key, String(value))
       }
     }
-
-    // Importamos usando un path dinámico total para engañar a Vite
-    const finalImportPath = `file://${configPath}?v=${Date.now()}`
-    const configModule = await import(/* @vite-ignore */ finalImportPath)
-    const freshConfig = configModule.default
-
-    payloadInstance = await getPayload({ config: freshConfig })
-    console.log('✅ Payload Instance Ready')
   }
-  return payloadInstance
+
+  const query = searchParams.toString()
+  return query ? `?${query}` : ''
 }
 
 // ============================================
@@ -66,62 +63,37 @@ export async function getPayloadClient() {
 // ============================================
 
 export async function getPlatos(activo = true) {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'platos',
-    where: activo ? { activo: { equals: true } } : {},
-    sort: 'orden',
-    depth: 2,
-    limit: 500,
-  })
+  const where = activo ? { activo: { equals: true } } : {}
+  const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 500 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/platos${query}`)
   return result.docs
 }
 
 export async function getPlatosPorCategoria(categoriaId: string, activo = true) {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'platos',
-    where: {
-      categoria: { equals: categoriaId },
-      ...(activo ? { activo: { equals: true } } : {}),
-    },
-    sort: 'orden',
-    depth: 2,
-    limit: 100,
-  })
+  const where: any = { categoria: { equals: categoriaId } }
+  if (activo) where.activo = { equals: true }
+  const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 100 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/platos${query}`)
   return result.docs
 }
 
 export async function getCategorias(activa = true) {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'categorias',
-    where: activa ? { activa: { equals: true } } : {},
-    sort: 'orden',
-    limit: 100,
-  })
+  const where = activa ? { activa: { equals: true } } : {}
+  const query = buildQuery({ where, sort: 'orden', limit: 100 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/categorias${query}`)
   return result.docs
 }
 
 export async function getAlergenos() {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'alergenos',
-    sort: 'orden',
-    limit: 100,
-  })
+  const query = buildQuery({ sort: 'orden', limit: 100 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/alergenos${query}`)
   return result.docs
 }
 
 export async function getMenus(activo = true) {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'menus',
-    where: activo ? { activo: { equals: true } } : {},
-    sort: 'orden',
-    depth: 1,
-    limit: 100,
-  })
+  const where = activo ? { activo: { equals: true } } : {}
+  const query = buildQuery({ where, sort: 'orden', depth: 1, limit: 100 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/menus${query}`)
 
   // Refuerzo manual del orden para asegurar consistencia total
   return result.docs.sort((a: any, b: any) => {
@@ -133,45 +105,27 @@ export async function getMenus(activo = true) {
 }
 
 export async function getMenuBySlug(slug: string) {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'menus',
-    where: {
-      slug: { equals: slug },
-    },
-    limit: 1,
-    depth: 2,
-  })
+  const where = { slug: { equals: slug } }
+  const query = buildQuery({ where, limit: 1, depth: 2 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/menus${query}`)
   return result.docs[0] || null
 }
 
 export async function getActiveMenusSlugs() {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'menus',
-    where: {
-      activo: { equals: true },
-    },
-    limit: 100,
-  })
+  const where = { activo: { equals: true } }
+  const query = buildQuery({ where, limit: 100 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/menus${query}`)
   return result.docs.map((doc: any) => doc.slug)
 }
 
 export async function getEspacios(activo = true) {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'espacios',
-    where: activo ? { activo: { equals: true } } : {},
-    sort: 'orden',
-    depth: 1,
-    limit: 100,
-  })
+  const where = activo ? { activo: { equals: true } } : {}
+  const query = buildQuery({ where, sort: 'orden', depth: 1, limit: 100 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/espacios${query}`)
   return result.docs
 }
 
-
 export async function getBannersActivos(posicion?: string) {
-  const payload = await getPayloadClient()
   const now = new Date().toISOString()
 
   const where: any = {
@@ -184,13 +138,8 @@ export async function getBannersActivos(posicion?: string) {
     where.posicion = { equals: posicion }
   }
 
-  const result = await payload.find({
-    collection: 'banners',
-    where,
-    sort: '-prioridad',
-    depth: 1,
-    limit: 100,
-  })
+  const query = buildQuery({ where, sort: '-prioridad', depth: 1, limit: 100 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/banners${query}`)
   return result.docs
 }
 
@@ -199,43 +148,24 @@ export async function getBannersActivos(posicion?: string) {
 // ============================================
 
 export async function getPaginaInicio() {
-  const payload = await getPayloadClient()
-  return payload.findGlobal({
-    slug: 'pagina-inicio',
-    depth: 3,
-  })
+  const query = buildQuery({ depth: 3 })
+  return fetchAPI<any>(`/globals/pagina-inicio${query}`)
 }
 
 export async function getConfiguracionSitio() {
-  const payload = await getPayloadClient()
-  return payload.findGlobal({
-    slug: 'configuracion-sitio',
-    depth: 1,
-  })
+  const query = buildQuery({ depth: 1 })
+  return fetchAPI<any>(`/globals/configuracion-sitio${query}`)
 }
 
 export async function getPaginaBySlug(slug: string) {
   try {
-    const payload = await getPayloadClient()
-
-    // Verificamos si la colección existe antes de buscar
-    if (!Object.keys(payload.collections).includes('paginas')) {
-      console.warn(`⚠️ La colección "paginas" no está disponible en esta instancia de Payload.`);
-      return null;
-    }
-
-    const result = await payload.find({
-      collection: 'paginas',
-      where: {
-        slug: { equals: slug },
-      },
-      limit: 1,
-      depth: 1,
-    })
+    const where = { slug: { equals: slug } }
+    const query = buildQuery({ where, limit: 1, depth: 1 })
+    const result = await fetchAPI<PayloadResponse<any>>(`/paginas${query}`)
     return result.docs[0] || null
   } catch (error) {
-    console.error(`❌ Error al obtener página por slug (${slug}):`, error);
-    return null;
+    console.error(`Error al obtener pagina por slug (${slug}):`, error)
+    return null
   }
 }
 
@@ -256,17 +186,12 @@ export async function getCategoriasConPlatos() {
 }
 
 export async function getPlatosDestacados() {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'platos',
-    where: {
-      activo: { equals: true },
-      destacado: { equals: true },
-    },
-    sort: 'orden',
-    depth: 2,
-    limit: 10,
-  })
+  const where = {
+    activo: { equals: true },
+    destacado: { equals: true },
+  }
+  const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 10 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/platos${query}`)
   return result.docs
 }
 
@@ -284,4 +209,3 @@ export const getHomepage = getPaginaInicio
 export const getSiteSettings = getConfiguracionSitio
 export const getCategoriesWithDishes = getCategoriasConPlatos
 export const getFeaturedDishes = getPlatosDestacados
-
