@@ -30,8 +30,12 @@ async function runDatabaseHotfix() {
   try {
     console.log('🔍 Running Robust Database Hotfix...')
 
-    // Lista de tablas posibles donde Payload guarda los bloqueos (a veces usa _ o __)
-    const tablesToCheck = ['payload_locked_documents_rels', 'payload_locked_documents__rels']
+    // Lista de tablas de relaciones que pueden necesitar experiencias_id
+    const tablesToCheck = [
+      'payload_locked_documents_rels',
+      'payload_locked_documents__rels',
+      'pagina_inicio_rels',  // Global pagina-inicio
+    ]
 
     for (const tableName of tablesToCheck) {
       // 1. Verificar si la tabla existe
