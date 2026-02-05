@@ -60,6 +60,13 @@
     background-size: cover;
   }
 
+  /* Fix para iOS/móviles donde background-attachment: fixed no funciona */
+  @media (max-width: 1024px), (hover: none) {
+    .fixed-bg {
+      background-attachment: scroll;
+    }
+  }
+
   .hero-content-gradient {
     background: linear-gradient(to top right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 30%, transparent 70%);
   }
