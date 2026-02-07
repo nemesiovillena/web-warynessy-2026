@@ -3,6 +3,8 @@ import { defineConfig } from 'astro/config';
 import node from '@astrojs/node';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
+import { fileURLToPath } from 'url';
+import path from 'path';
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,8 +14,13 @@ export default defineConfig({
   }),
   vite: {
     plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        'file-type': path.resolve(fileURLToPath(import.meta.url), '../node_modules/file-type/index.js')
+      }
+    },
     ssr: {
-      external: ['payload', 'path', 'fs']
+      external: ['payload', 'path', 'fs', 'file-type']
     },
     build: {
       rollupOptions: {

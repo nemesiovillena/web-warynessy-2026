@@ -183,8 +183,12 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
      <div class="absolute inset-0 bg-cover bg-center opacity-30" style={`background-image: url('${heroImage}')`}></div>
      <div class="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/80 to-transparent"></div>
      <Container class="relative z-10 text-center animate-fade-up">
-        <span class="text-primary font-bold tracking-[0.3em] uppercase text-sm mb-4 block">Gastronomía</span>
-        <h1 class="text-5xl md:text-7xl font-display font-black text-white mb-6">Nuestra Carta</h1>
+        <span class="text-primary font-bold tracking-[0.3em] uppercase text-sm mb-4 block">
+          {pageData?.heroSubtitle || "Gastronomía"}
+        </span>
+        <h1 class="text-5xl md:text-7xl font-display font-black text-white mb-6">
+          {pageData?.heroTitle || "Nuestra Carta"}
+        </h1>
         <p class="text-white/50 text-base max-w-xl mx-auto">
           Cocina mediterránea con los mejores productos de mercado
         </p>
@@ -199,7 +203,7 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
         <div class="mb-8 animate-fade-up">
           <div class="flex flex-col gap-4">
             <div class="flex items-center justify-between px-4 md:px-0">
-               <span class="text-white/80 text-xs sm:text-sm font-medium">Selecciona el alérgeno que no puedes comer para que lo elimine de la carta</span>
+               <span class="text-white/80 text-xs sm:text-sm font-medium">Marca el alérgeno que no puedas consumir:</span>
                <button
                  id="clear-filters"
                  class="hidden text-white text-xs uppercase tracking-widest font-black border-b border-white/50 hover:border-primary hover:text-primary transition-colors"

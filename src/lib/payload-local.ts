@@ -22,6 +22,7 @@ async function fetchAPI<T>(endpoint: string, options: RequestInit = {}): Promise
   try {
     const response = await fetch(url, {
       ...options,
+      cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
@@ -159,9 +160,9 @@ export async function getConfiguracionSitio() {
 
 export async function getPaginaBySlug(slug: string) {
   try {
-    const where = { slug: { equals: slug } }
-    const query = buildQuery({ where, limit: 1, depth: 1 })
-    const result = await fetchAPI<PayloadResponse<any>>(`/paginas${query}`)
+    // Use direct query string format for Payload REST API
+    const url = `/paginas?where[slug][equals]=${encodeURIComponent(slug)}&limit=1&depth=1`
+    const result = await fetchAPI<PayloadResponse<any>>(url)
     return result.docs[0] || null
   } catch (error) {
     console.error(`Error al obtener pagina por slug (${slug}):`, error)
