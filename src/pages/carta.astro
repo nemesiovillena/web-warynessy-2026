@@ -199,7 +199,7 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
         <div class="mb-8 animate-fade-up">
           <div class="flex flex-col gap-4">
             <div class="flex items-center justify-between px-4 md:px-0">
-               <span class="text-primary text-xs uppercase tracking-[0.2em] font-black">Filtrar platos sin:</span>
+               <span class="text-white/80 text-xs sm:text-sm font-medium">Selecciona el alérgeno que no puedes comer para que lo elimine de la carta</span>
                <button
                  id="clear-filters"
                  class="hidden text-primary text-[10px] uppercase tracking-widest font-black border-b border-primary/30 hover:border-primary transition-colors"
@@ -216,14 +216,14 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
 
                 return (
                   <button
-                    class="allergen-filter-btn shrink-0 group flex items-center gap-3 px-4 py-2 rounded-full border border-white/10 text-white/50 hover:border-primary/50 hover:text-white transition-all text-xs font-bold"
+                    class="allergen-filter-btn shrink-0 group flex items-center gap-3 px-4 py-2.5 rounded-full border border-white/10 text-white/50 hover:border-primary/50 hover:text-white transition-all text-sm font-bold"
                     data-alergeno-id={alergeno.id}
                   >
-                    <div class="w-6 h-6 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div class="w-7 h-7 flex items-center justify-center group-hover:scale-110 transition-transform">
                       {imgUrl ? (
                         <img src={imgUrl} alt="" class="w-full h-full object-contain opacity-60 group-hover:opacity-100" />
                       ) : (
-                        <span class="text-[10px]">{alergeno.codigo}</span>
+                        <span class="text-xs">{alergeno.codigo}</span>
                       )}
                     </div>
                     <span class="whitespace-nowrap">{alergeno.nombre}</span>

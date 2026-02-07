@@ -64,7 +64,7 @@ const badgeText = menu.etiqueta && menu.etiqueta !== "null" ? menu.etiqueta : (m
     <div class="flex items-center justify-between gap-4">
       <div class="flex items-baseline gap-1 flex-shrink-0">
         <span class="text-3xl font-black text-primary font-display">{menu.precio}€</span>
-        <span class="text-xs text-white/40 uppercase tracking-widest font-bold">/ persona</span>
+        <span class="text-sm sm:text-xs text-white/40 uppercase tracking-widest font-bold">/ persona</span>
       </div>
       
       {/* Dynamic Badge */}
@@ -81,20 +81,20 @@ const badgeText = menu.etiqueta && menu.etiqueta !== "null" ? menu.etiqueta : (m
       </h3>
       
       {descriptionText && (
-        <p class="text-white/50 text-sm leading-relaxed font-medium mt-1 whitespace-pre-line">
+        <p class="text-white/50 text-base sm:text-sm leading-relaxed font-medium mt-1 whitespace-pre-line">
           {descriptionText}
         </p>
       )}
 
       <div class="flex flex-col gap-1 mt-2">
         {menu.fechasDias && (
-          <p class="text-white/60 text-sm font-bold italic">
+          <p class="text-white/60 text-base sm:text-sm font-bold italic">
             {menu.fechasDias}
           </p>
         )}
 
         {dateRange && (
-          <p class="text-white/60 text-sm font-medium" set:html={dateRange}></p>
+          <p class="text-white/60 text-base sm:text-sm font-medium" set:html={dateRange}></p>
         )}
       </div>
     </div>
