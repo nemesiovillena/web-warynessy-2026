@@ -8,8 +8,9 @@ interface Props {
 
 const { plato } = Astro.props;
 
-// Helper to get image URL
-const imageUrl = typeof plato.imagen === 'object' && plato.imagen?.url ? getOptimizedImageUrl(plato.imagen.url) : '';
+// Helper to get image URL - skip CDN for local static images
+const rawImageUrl = typeof plato.imagen === 'object' && plato.imagen?.url ? plato.imagen.url : '';
+const imageUrl = rawImageUrl.startsWith('/images/') ? rawImageUrl : (rawImageUrl ? getOptimizedImageUrl(rawImageUrl) : '');
 ---
 
 <div class="dish-card group relative flex flex-col gap-4 border-b border-white/5 pb-8 mb-8 hover:bg-white/5 -mx-4 md:-mx-6 px-4 md:px-6 py-8 rounded-3xl transition-all duration-300 cursor-default"
