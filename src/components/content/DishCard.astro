@@ -22,10 +22,10 @@ const imageUrl = rawImageUrl.startsWith('/images/') ? rawImageUrl : (rawImageUrl
     <!-- Image: Large on mobile centered, left on desktop -->
     {imageUrl && (
       <div class="w-full md:w-96 shrink-0 flex items-center justify-center md:justify-start">
-        <img 
-          src={imageUrl} 
+        <img
+          src={imageUrl}
           alt={plato.nombre}
-          class="w-[85%] md:w-full h-auto object-contain max-h-64 md:max-h-80" 
+          class="w-full h-auto object-contain max-h-80 md:max-h-80"
           loading="lazy"
         />
       </div>
