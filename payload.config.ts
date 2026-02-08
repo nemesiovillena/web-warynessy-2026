@@ -113,4 +113,6 @@ export default buildConfig({
   ],
 })
 
-export const importMap = {}
+export const importMap = {
+  '@/payload/components/ChecklistRelationship': import('./src/payload/components/ChecklistRelationship'),
+}
