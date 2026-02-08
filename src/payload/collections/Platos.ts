@@ -59,7 +59,7 @@ export const Platos: CollectionConfig = {
       admin: {
         description: 'Selecciona todos los alérgenos que contiene el plato',
         components: {
-          Field: '@/payload/components/ChecklistRelationship',
+          Field: './src/payload/components/ChecklistRelationship#ChecklistRelationship',
         },
       },
     },

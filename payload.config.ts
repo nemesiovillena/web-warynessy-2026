@@ -38,6 +38,9 @@ export default buildConfig({
     meta: {
       titleSuffix: '- Warynessy CMS',
     },
+    importMap: {
+      baseDir: path.resolve(dirname),
+    },
   },
 
   // Colecciones (tipos de documentos)
@@ -113,6 +116,4 @@ export default buildConfig({
   ],
 })
 
-export const importMap = {
-  '@/payload/components/ChecklistRelationship': import('./src/payload/components/ChecklistRelationship'),
-}
+export const importMap = {}
