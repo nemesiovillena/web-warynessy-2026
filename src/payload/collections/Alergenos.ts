@@ -71,5 +71,5 @@ export const Alergenos: CollectionConfig = {
       },
     },
   ],
-  defaultSort: 'orden',
+  defaultSort: 'nombre',
 }
