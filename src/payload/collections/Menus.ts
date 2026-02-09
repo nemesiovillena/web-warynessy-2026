@@ -70,17 +70,17 @@ export const Menus: CollectionConfig = {
     {
       name: 'descripcion_menu',
       type: 'textarea',
-      label: 'Descripción del menú',
+      label: 'Días de validez',
       admin: {
-        description: 'Breve descripción que aparecerá en la tarjeta (ej: "7 tiempos con maridaje incluido")',
+        description: 'Ej: "Este menú se ofrece de miércoles a viernes mediodía. A partir de 2 personas."',
       },
     },
     {
       name: 'fechasDias',
       type: 'text',
-      label: 'Fecha y Días de Validez',
+      label: 'Etiqueta de disponibilidad',
       admin: {
-        description: 'Ej: "Válido del 1 al 15 de Agosto, solo mediodías"',
+        description: 'Texto corto para badge (ej: "Entre semana", "Fines de semana")',
       },
     },
     {
@@ -108,9 +108,9 @@ export const Menus: CollectionConfig = {
     {
       name: 'descripcion',
       type: 'richText',
-      label: 'Composición detallada (Pestaña/Detalle)',
+      label: 'Descripción del menú (Composición)',
       admin: {
-        description: 'Lista completa de platos y detalles del menú',
+        description: 'Escribe aquí la composición completa del menú: entrantes, principales, postres, etc.',
       },
     },
     {
