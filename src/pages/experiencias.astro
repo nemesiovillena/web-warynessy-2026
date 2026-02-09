@@ -42,7 +42,7 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
            <script is:inline src="https://www.covermanager.com/js/iframeResizer.min.js"></script>
            <iframe
              src="https://www.covermanager.com/eco/buy_products/restaurante-warynessy/spanish"
-             style="width: 1px; min-width: 100%; min-height: 1000px; border: none;"
+             style="width: 1px; min-width: 100%; height: 600px; border: none;"
              id="restaurante-warynessy-experiencias"
              title="Comprar Tarjeta Regalo / Experiencias"
              allow="payment"
@@ -55,8 +55,8 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
                  iFrameResize({
                    log: false,
                    checkOrigin: false,
-                   heightCalculationMethod: 'max',
-                   interval: 32,
+                   heightCalculationMethod: 'lowestElement',
+                   tolerance: 0,
                    resizedCallback: function(data) {
                      console.log('Iframe resized to: ' + data.height);
                    }
