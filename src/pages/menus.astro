@@ -27,11 +27,23 @@ const pageTitle = pageData?.metaTitle || `Menús | ${siteSettings?.title || "War
 const pageDescription = pageData?.metaDescription || "Descubre nuestros menús degustación y opciones especiales.";
 
 // Imagen Hero desde el CMS o fallback
-const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.url 
-  ? pageData.heroImage.url 
+const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.url
+  ? pageData.heroImage.url
   : 'https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&q=80';
 
 const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
+
+// Obtener IDs de menús que están en grupos para excluirlos de la sección individual
+const menuIdsEnGrupos = new Set(
+  menusGrupo.flatMap((grupo: any) =>
+    (grupo.menus || [])
+      .filter((menu: any) => menu && typeof menu === 'object')
+      .map((menu: any) => menu.id)
+  )
+);
+
+// Filtrar menús individuales excluyendo los que están en grupos
+const menusIndividuales = menus.filter((menu: any) => !menuIdsEnGrupos.has(menu.id));
 ---
 
 <MainLayout title={pageTitle} description={pageDescription} hideFloatingButton={true} noPaddingTop={true}>
@@ -59,9 +71,9 @@ const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localho
          <div class="h-px bg-white/10 w-full"></div>
        </div>
 
-       {menus.length > 0 ? (
+       {menusIndividuales.length > 0 ? (
          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto mb-24">
-           {menus.map((menu: any) => (
+           {menusIndividuales.map((menu: any) => (
               <MenuCard menu={menu} />
            ))}
          </div>
