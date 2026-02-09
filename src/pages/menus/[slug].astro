@@ -191,19 +191,6 @@ const daysMap: Record<string, string> = {
                     </div>
                   </li>
                 )}
-                {menu.fechaInicio && menu.fechaFin && (
-                  <li class="flex gap-5">
-                    <div class="w-10 h-10 shrink-0 rounded-full bg-white/5 flex items-center justify-center text-white/40">
-                      <span class="material-symbols-outlined text-xl">calendar_month</span>
-                    </div>
-                    <div>
-                      <span class="text-white font-bold block mb-1 text-sm">Vigencia del Menú</span>
-                      <span class="text-white/40 text-xs leading-relaxed italic">
-                        Del {formatDate(menu.fechaInicio)} <br/> al {formatDate(menu.fechaFin)}
-                      </span>
-                    </div>
-                  </li>
-                )}
               </ul>
             </div>
 
