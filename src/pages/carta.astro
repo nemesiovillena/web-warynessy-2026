@@ -59,11 +59,11 @@ function getLocalImageForDish(dishName: string, categorySlug: string): string | 
   return null;
 }
 
-// Add dishes to each category
+// Add dishes to each category (only active dishes)
 const categoriesWithDishes = allCategories.map((cat: any) => ({
   ...cat,
   platos: allDishes.filter((dish: any) =>
-     dish.categoria === cat.id || dish.categoria?.id === cat.id
+     (dish.categoria === cat.id || dish.categoria?.id === cat.id) && dish.activo !== false
   )
 }));
 

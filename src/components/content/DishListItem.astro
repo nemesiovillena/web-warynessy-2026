@@ -14,9 +14,21 @@ const { plato } = Astro.props;
   data-alergenos={plato.alergenos?.map((a: any) => typeof a === 'object' ? a.id : a).join(',')}
 >
   <div class="flex-1 pr-4">
-    <h3 class="font-display text-base font-medium text-white transition-colors">
-      {plato.nombre}
-    </h3>
+    <div class="flex items-center gap-2 flex-wrap">
+      <h3 class="font-display text-base font-medium text-white transition-colors">
+        {plato.nombre}
+      </h3>
+      {plato.destacado && (
+        <span class="px-2 py-0.5 bg-primary/20 border border-primary/30 text-primary text-[9px] uppercase tracking-widest font-black rounded-md">
+          ⭐ Recomendado
+        </span>
+      )}
+      {plato.etiquetas && plato.etiquetas.length > 0 && plato.etiquetas.map((item: any) => (
+        <span class="px-2 py-0.5 bg-white/10 border border-white/20 text-white/70 text-[9px] uppercase tracking-widest font-bold rounded-md">
+          {item.etiqueta}
+        </span>
+      ))}
+    </div>
     {plato.alergenos && plato.alergenos.length > 0 && (
       <div class="flex gap-2 mt-1 flex-wrap">
             {plato.alergenos.map((alergeno: any) => {
