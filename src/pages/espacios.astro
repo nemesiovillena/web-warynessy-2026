@@ -61,10 +61,10 @@ const splitImages = [
       <section class="pt-24 pb-12 px-8 md:px-16 animate-fade-up">
          <span class="text-primary font-bold tracking-[0.3em] uppercase text-xs mb-4 block">Nuestros Ambientes</span>
          <h1 class="text-5xl md:text-7xl font-display font-black text-warynessy-black dark:text-white mb-6 uppercase tracking-tighter">
-           Espacios <span class="text-primary italic font-serif lowercase tracking-normal">únicos</span>
+           {pageData?.heroTitle || 'Espacios únicos'}
          </h1>
          <p class="text-gray-600 dark:text-gray-400 text-lg font-light leading-relaxed max-w-xl">
-            Cada rincón de Warynessy ha sido diseñado para crear la atmósfera perfecta. Descubre donde la gastronomía se encuentra con el confort en un entorno incomparable.
+            {pageData?.heroSubtitle || 'Cada rincón de Warynessy ha sido diseñado para crear la atmósfera perfecta. Descubre donde la gastronomía se encuentra con el confort en un entorno incomparable.'}
          </p>
          <div class="mt-8 h-px w-24 bg-primary/30"></div>
       </section>
