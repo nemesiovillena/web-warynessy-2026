@@ -19,6 +19,7 @@ dotenv.config({
 import { Alergenos } from './src/payload/collections/Alergenos'
 import { Categorias } from './src/payload/collections/Categorias'
 import { Platos } from './src/payload/collections/Platos'
+import { MenusGrupo } from './src/payload/collections/MenusGrupo'
 import { Menus } from './src/payload/collections/Menus'
 import { Espacios } from './src/payload/collections/Espacios'
 import { Banners } from './src/payload/collections/Banners'
@@ -52,6 +53,7 @@ export default buildConfig({
     Banners,
     Paginas,
     Experiencias,
+    MenusGrupo,
   ],
 
   // Globals (singletons)
