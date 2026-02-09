@@ -231,22 +231,16 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
             <h3 class="text-white font-serif text-xl font-bold">Horarios</h3>
           </div>
           <div class="space-y-3 text-sm">
-            <div class="flex justify-between">
-              <span class="text-white/60">Lunes</span>
-              <span class="text-white">Cerrado</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-white/60">Martes - Viernes</span>
-              <span class="text-white">13:30 - 16:00</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-white/60">Viernes - Sábado</span>
-              <span class="text-white">20:30 - 23:30</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-white/60">Domingo</span>
-              <span class="text-white">13:30 - 16:00</span>
-            </div>
+            {siteSettings?.openingHours && siteSettings.openingHours.length > 0 ? (
+              siteSettings.openingHours.map((item: any) => (
+                <div class="flex justify-between">
+                  <span class="text-white/60">{item.days}</span>
+                  <span class="text-white">{item.closed ? 'Cerrado' : item.hours}</span>
+                </div>
+              ))
+            ) : (
+              <p class="text-white/40">Consulta nuestros horarios llamando al restaurante</p>
+            )}
             <p class="text-white/40 text-xs mt-4 pt-4 border-t border-white/10">
               * Horarios orientativos. Pueden variar en festivos.
             </p>

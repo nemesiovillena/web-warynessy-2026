@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
+import { getSiteSettings } from '../../lib/payload-local';
 
 export const prerender = false;
 
@@ -25,8 +26,11 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    // Obtener email destino desde Configuración del sitio
+    const siteSettings = await getSiteSettings();
+
     const resendApiKey = import.meta.env.RESEND_API_KEY;
-    const emailTo = import.meta.env.EMAIL_TO || 'contacto@warynessy.com';
+    const emailTo = siteSettings?.contact?.email || import.meta.env.EMAIL_TO || 'contacto@warynessy.com';
     const emailFrom = import.meta.env.EMAIL_FROM || 'onboarding@resend.dev';
 
     if (!resendApiKey) {
