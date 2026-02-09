@@ -66,6 +66,11 @@ const splitImages = [
          <p class="text-gray-600 dark:text-gray-400 text-lg font-light leading-relaxed max-w-xl">
             {pageData?.heroSubtitle || 'Cada rincón de Warynessy ha sido diseñado para crear la atmósfera perfecta. Descubre donde la gastronomía se encuentra con el confort en un entorno incomparable.'}
          </p>
+         {pageData?.descripcionEspacios && (
+           <div class="mt-6">
+             <RichText content={pageData.descripcionEspacios} class="text-gray-600 dark:text-gray-400 text-base leading-relaxed" />
+           </div>
+         )}
          <div class="mt-8 h-px w-24 bg-primary/30"></div>
       </section>
 

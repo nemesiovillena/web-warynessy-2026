@@ -66,6 +66,14 @@ export const Paginas: CollectionConfig = {
                     },
                     fields: [
                         {
+                            name: 'descripcionEspacios',
+                            type: 'richText',
+                            label: 'Descripción',
+                            admin: {
+                                description: 'Texto descriptivo que aparecerá en la página de Espacios',
+                            },
+                        },
+                        {
                             type: 'row',
                             fields: [
                                 {
