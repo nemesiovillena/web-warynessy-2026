@@ -126,17 +126,6 @@ const daysMap: Record<string, string> = {
             </div>
           )}
 
-          {menu.fechaInicio && menu.fechaFin && (
-            <div class="bg-white/5 backdrop-blur-sm px-4 py-2.5 rounded-xl border border-white/5 flex items-center gap-3">
-              <span class="material-symbols-outlined text-primary/60 text-lg">calendar_month</span>
-              <div>
-                <span class="text-white/30 text-[9px] uppercase tracking-widest font-black block leading-none mb-0.5">Vigencia</span>
-                <span class="text-white/80 font-bold text-[10px]">
-                  {formatDate(menu.fechaInicio)} - {formatDate(menu.fechaFin)}
-                </span>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </Container>
@@ -199,19 +188,6 @@ const daysMap: Record<string, string> = {
                     <div>
                       <span class="text-white font-bold block mb-1">Días de validez</span>
                       <span class="text-white/50 text-sm leading-relaxed">{menu.fechasDias}</span>
-                    </div>
-                  </li>
-                )}
-                {menu.fechaInicio && menu.fechaFin && (
-                  <li class="flex gap-5">
-                    <div class="w-10 h-10 shrink-0 rounded-full bg-white/5 flex items-center justify-center text-white/40">
-                      <span class="material-symbols-outlined text-xl">calendar_month</span>
-                    </div>
-                    <div>
-                      <span class="text-white font-bold block mb-1 text-sm">Vigencia del Menú</span>
-                      <span class="text-white/40 text-xs leading-relaxed italic">
-                        Del {formatDate(menu.fechaInicio)} <br/> al {formatDate(menu.fechaFin)}
-                      </span>
                     </div>
                   </li>
                 )}
