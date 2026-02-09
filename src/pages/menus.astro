@@ -66,9 +66,9 @@ const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localho
              {menusGrupo.map((grupo: any) => (
                <div class="bg-surface-dark/50 border border-white/5 rounded-[2.5rem] overflow-hidden group hover:border-primary/30 transition-all duration-500 shadow-2xl">
                  <div class="relative h-64 overflow-hidden">
-                    {grupo.imagenPortada && (
+                    {grupo.imagenPortada && typeof grupo.imagenPortada === 'object' && grupo.imagenPortada.url && (
                       <img 
-                        src={typeof grupo.imagenPortada === 'object' ? (grupo.imagenPortada.url.startsWith('/') ? `${PAYLOAD_URL}${grupo.imagenPortada.url}` : grupo.imagenPortada.url) : ''} 
+                        src={grupo.imagenPortada.url.startsWith('/') ? `${PAYLOAD_URL}${grupo.imagenPortada.url}` : grupo.imagenPortada.url} 
                         alt={grupo.nombre}
                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
@@ -88,19 +88,21 @@ const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localho
                    
                    <div class="space-y-4">
                       {grupo.menus?.map((menu: any) => (
-                        <a 
-                          href={`/menus/${menu.slug}`} 
-                          class="flex items-center justify-between p-5 bg-white/5 rounded-2xl border border-white/5 hover:bg-primary/10 hover:border-primary/20 transition-all group/item"
-                        >
-                          <div class="flex items-center gap-4">
-                            <span class="material-symbols-outlined text-primary text-xl">restaurant_menu</span>
-                            <span class="text-white font-bold tracking-tight">{menu.nombre}</span>
-                          </div>
-                          <div class="flex items-center gap-4">
-                            <span class="text-primary font-black font-display">{menu.precio}€</span>
-                            <span class="material-symbols-outlined text-white/20 group-hover/item:text-primary group-hover/item:translate-x-1 transition-all">chevron_right</span>
-                          </div>
-                        </a>
+                        menu && typeof menu === 'object' && menu.slug ? (
+                          <a 
+                            href={`/menus/${menu.slug}`} 
+                            class="flex items-center justify-between p-5 bg-white/5 rounded-2xl border border-white/5 hover:bg-primary/10 hover:border-primary/20 transition-all group/item"
+                          >
+                            <div class="flex items-center gap-4">
+                              <span class="material-symbols-outlined text-primary text-xl">restaurant_menu</span>
+                              <span class="text-white font-bold tracking-tight">{menu.nombre}</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                              <span class="text-primary font-black font-display">{menu.precio}€</span>
+                              <span class="material-symbols-outlined text-white/20 group-hover/item:text-primary group-hover/item:translate-x-1 transition-all">chevron_right</span>
+                            </div>
+                          </a>
+                        ) : null
                       ))}
                    </div>
                  </div>
