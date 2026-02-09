@@ -87,7 +87,7 @@ const daysMap: Record<string, string> = {
           {menu.nombre}
         </h1>
         
-        <div class="flex flex-wrap items-center gap-6 md:gap-12">
+        <div class="flex flex-wrap items-center gap-6 md:gap-12 mb-8">
            <div class="flex items-baseline gap-2">
              <span class="text-4xl md:text-5xl font-black text-primary font-display">{menu.precio}€</span>
              <span class="text-xs md:text-sm text-white/40 uppercase tracking-widest font-bold">/ persona</span>
@@ -102,6 +102,30 @@ const daysMap: Record<string, string> = {
                </div>
              </div>
            )}
+        </div>
+
+        {/* Disponibilidad Móvil (solo visible en pantallas pequeñas) */}
+        <div class="lg:hidden flex flex-wrap gap-4 animate-fade-up animate-delay-200">
+          {menu.fechasDias && (
+            <div class="bg-white/5 backdrop-blur-sm px-4 py-2.5 rounded-xl border border-white/5 flex items-center gap-3">
+              <span class="material-symbols-outlined text-primary/60 text-lg">event_available</span>
+              <div>
+                <span class="text-white/30 text-[9px] uppercase tracking-widest font-black block leading-none mb-0.5">Disponibilidad</span>
+                <span class="text-white/80 font-bold text-xs">{menu.fechasDias}</span>
+              </div>
+            </div>
+          )}
+          {menu.fechaInicio && menu.fechaFin && (
+            <div class="bg-white/5 backdrop-blur-sm px-4 py-2.5 rounded-xl border border-white/5 flex items-center gap-3">
+              <span class="material-symbols-outlined text-primary/60 text-lg">calendar_month</span>
+              <div>
+                <span class="text-white/30 text-[9px] uppercase tracking-widest font-black block leading-none mb-0.5">Vigencia</span>
+                <span class="text-white/80 font-bold text-[10px]">
+                  {formatDate(menu.fechaInicio)} - {formatDate(menu.fechaFin)}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </Container>
