@@ -92,13 +92,54 @@ async function runDatabaseHotfix() {
     }
 
     // ========================================
-    // 2. Fix relation columns in other tables
+    // 2. Crear tabla paginas si no existe
+    // ========================================
+    const paginasExists = await pool.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables
+        WHERE table_name = 'paginas'
+      );
+    `)
+
+    if (!paginasExists.rows[0].exists) {
+      console.log('➕ Creating paginas table...')
+      await pool.query(`
+        CREATE TABLE "paginas" (
+          "id" serial PRIMARY KEY,
+          "titulo_interno" varchar NOT NULL,
+          "slug" varchar NOT NULL UNIQUE,
+          "hero_image_id" integer,
+          "hero_title" varchar,
+          "hero_subtitle" varchar,
+          "descripcion_espacios" jsonb,
+          "imagen_espacio1_id" integer,
+          "imagen_espacio2_id" integer,
+          "imagen_espacio3_id" integer,
+          "imagen_espacio4_id" integer,
+          "meta_title" varchar,
+          "meta_description" varchar,
+          "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+          "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
+        );
+      `)
+      console.log('✅ paginas table created.')
+
+      // Crear índices
+      await pool.query(`CREATE INDEX IF NOT EXISTS "paginas_slug_idx" ON "paginas" USING btree ("slug");`)
+      await pool.query(`CREATE INDEX IF NOT EXISTS "paginas_hero_image_idx" ON "paginas" USING btree ("hero_image_id");`)
+      await pool.query(`CREATE INDEX IF NOT EXISTS "paginas_created_at_idx" ON "paginas" USING btree ("created_at");`)
+      console.log('✅ paginas indexes created.')
+    }
+
+    // ========================================
+    // 3. Fix relation columns in other tables
     // ========================================
 
     // Lista de pares [nombre_columna, referencia_tabla]
     const relationsToFix = [
       ['experiencias_id', 'experiencias'],
       ['menus_grupo_id', 'menus_grupo'],
+      ['paginas_id', 'paginas'],
     ]
 
     const tablesToCheck = [
