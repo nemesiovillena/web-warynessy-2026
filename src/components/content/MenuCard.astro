@@ -26,6 +26,7 @@ function extractText(richText: any): string {
 }
 
 const descriptionText = menu.descripcion_menu || '';
+const descriptionHtml = descriptionText.replace(/\n/g, '<br>');
 
 // Date formatting
 const formatDate = (dateString: string, includeYear: boolean = true) => {
@@ -81,9 +82,7 @@ const badgeText = menu.etiqueta && menu.etiqueta !== "null" ? menu.etiqueta : (m
       </h3>
       
       {descriptionText && (
-        <p class="text-white/50 text-base sm:text-sm leading-relaxed font-medium mt-1 whitespace-pre-line">
-          {descriptionText}
-        </p>
+        <p class="text-white/50 text-base sm:text-sm leading-relaxed font-medium mt-1" set:html={descriptionHtml} />
       )}
 
       <div class="flex flex-col gap-1 mt-2">
