@@ -106,16 +106,16 @@ export async function getMenus(activo = true) {
 }
 
 export async function getMenuBySlug(slug: string) {
-  const where = { slug: { equals: slug } }
-  const query = buildQuery({ where, limit: 1, depth: 2 })
-  const result = await fetchAPI<PayloadResponse<any>>(`/menus${query}`)
+  // Use direct query string format for Payload REST API
+  const url = `/menus?where[slug][equals]=${encodeURIComponent(slug)}&limit=1&depth=2`
+  const result = await fetchAPI<PayloadResponse<any>>(url)
   return result.docs[0] || null
 }
 
 export async function getActiveMenusSlugs() {
-  const where = { activo: { equals: true } }
-  const query = buildQuery({ where, limit: 100 })
-  const result = await fetchAPI<PayloadResponse<any>>(`/menus${query}`)
+  // Use direct query string format for Payload REST API
+  const url = `/menus?where[activo][equals]=true&limit=100`
+  const result = await fetchAPI<PayloadResponse<any>>(url)
   return result.docs.map((doc: any) => doc.slug)
 }
 
