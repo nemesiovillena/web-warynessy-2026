@@ -128,9 +128,11 @@ export async function getEspacios(activo = true) {
 
 export async function getMenusGrupo(activo = true) {
   try {
-    const where = activo ? { activo: { equals: true } } : {}
-    const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 100 })
-    const result = await fetchAPI<PayloadResponse<any>>(`/menus-grupo${query}`)
+    // Use direct query string format for Payload REST API
+    const url = activo
+      ? `/menus-grupo?where[activo][equals]=true&sort=orden&depth=2&limit=100`
+      : `/menus-grupo?sort=orden&depth=2&limit=100`
+    const result = await fetchAPI<PayloadResponse<any>>(url)
 
     if (!result || !result.docs) return []
 
