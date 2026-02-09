@@ -30,15 +30,19 @@ async function runDatabaseHotfix() {
   try {
     console.log('🔍 Running Robust Database Hotfix...')
 
-    // Lista de tablas de relaciones que pueden necesitar experiencias_id
+    // Lista de pares [nombre_columna, referencia_tabla]
+    const relationsToFix = [
+      ['experiencias_id', 'experiencias'],
+      ['menus_grupo_id', 'menus_grupo'],
+    ]
+
     const tablesToCheck = [
       'payload_locked_documents_rels',
       'payload_locked_documents__rels',
-      'pagina_inicio_rels',  // Global pagina-inicio
+      'pagina_inicio_rels',
     ]
 
     for (const tableName of tablesToCheck) {
-      // 1. Verificar si la tabla existe
       const tableExistsRes = await pool.query(`
         SELECT EXISTS (
           SELECT FROM information_schema.tables 
@@ -49,37 +53,43 @@ async function runDatabaseHotfix() {
       if (tableExistsRes.rows[0].exists) {
         console.log(`📋 Checking table: ${tableName}`)
 
-        // 2. Verificar si la columna existe
-        const checkColumnQuery = `
-          SELECT column_name 
-          FROM information_schema.columns 
-          WHERE table_name = $1 
-          AND column_name = 'experiencias_id';
-        `
-        const res = await pool.query(checkColumnQuery, [tableName])
+        for (const [colName, refTable] of relationsToFix) {
+          const checkColumnQuery = `
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name = $1 
+            AND column_name = $2;
+          `
+          const res = await pool.query(checkColumnQuery, [tableName, colName])
 
-        if (res.rowCount === 0) {
-          console.log(`➕ Column "experiencias_id" missing in "${tableName}". Adding it...`)
+          if (res.rowCount === 0) {
+            console.log(`➕ Column "${colName}" missing in "${tableName}". Adding it...`)
 
-          // Añadir la columna de forma segura
-          await pool.query(`ALTER TABLE "${tableName}" ADD COLUMN IF NOT EXISTS "experiencias_id" integer;`)
+            // Añadir la columna
+            await pool.query(`ALTER TABLE "${tableName}" ADD COLUMN IF NOT EXISTS "${colName}" integer;`)
 
-          // Intentar añadir la FK
-          try {
-            // Primero borrar si existe para evitar errores de duplicado
-            await pool.query(`ALTER TABLE "${tableName}" DROP CONSTRAINT IF EXISTS "${tableName}_experiencias_id_fk";`)
+            // Intentar añadir la FK si la tabla de referencia existe
+            try {
+              const refTableExistsRes = await pool.query(`
+                SELECT EXISTS (
+                  SELECT FROM information_schema.tables 
+                  WHERE table_name = $1
+                );
+              `, [refTable])
 
-            await pool.query(`
-              ALTER TABLE "${tableName}" 
-              ADD CONSTRAINT "${tableName}_experiencias_id_fk" 
-              FOREIGN KEY ("experiencias_id") REFERENCES "experiencias"("id") ON DELETE SET NULL;
-            `)
-            console.log(`✅ Column and FK added to ${tableName}.`)
-          } catch (fkError) {
-            console.warn(`⚠️ Added column to ${tableName} but failed to add FK:`, (fkError as Error).message)
+              if (refTableExistsRes.rows[0].exists) {
+                await pool.query(`ALTER TABLE "${tableName}" DROP CONSTRAINT IF EXISTS "${tableName}_${colName}_fk";`)
+                await pool.query(`
+                  ALTER TABLE "${tableName}" 
+                  ADD CONSTRAINT "${tableName}_${colName}_fk" 
+                  FOREIGN KEY ("${colName}") REFERENCES "${refTable}"("id") ON DELETE SET NULL;
+                `)
+                console.log(`✅ FK added for ${colName} in ${tableName}.`)
+              }
+            } catch (fkError) {
+              console.warn(`⚠️ Failed to add FK for ${colName} in ${tableName}:`, (fkError as Error).message)
+            }
           }
-        } else {
-          console.log(`✅ Table "${tableName}" already has "experiencias_id".`)
         }
       }
     }
@@ -97,7 +107,12 @@ async function start() {
 
   // Inicializar Next.js para Payload CMS
   const nextApp = next({ dev, dir: process.cwd() })
-  await nextApp.prepare()
+  try {
+    await nextApp.prepare()
+  } catch (err) {
+    console.error('❌ Critical error during Next.js app.prepare():', err)
+    process.exit(1)
+  }
   const nextHandler = nextApp.getRequestHandler()
 
   // Servir archivos estáticos del cliente Astro
