@@ -5,6 +5,11 @@ import Container from '../components/ui/Container.astro';
 import MenuCard from '../components/content/MenuCard.astro';
 import { getSiteSettings, getMenus, getPaginaBySlug } from '../lib/payload-local';
 
+// Disable caching to always show fresh content from CMS
+Astro.response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+Astro.response.headers.set('Pragma', 'no-cache');
+Astro.response.headers.set('Expires', '0');
+
 const siteSettings = await getSiteSettings();
 const menus = await getMenus();
 const pageData = await getPaginaBySlug('menus');

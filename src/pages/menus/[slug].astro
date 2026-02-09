@@ -13,6 +13,11 @@ export async function getStaticPaths() {
   return slugs.map(slug => ({ params: { slug } }));
 }
 
+// Disable caching to always show fresh content from CMS
+Astro.response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+Astro.response.headers.set('Pragma', 'no-cache');
+Astro.response.headers.set('Expires', '0');
+
 const { slug } = Astro.params;
 if (!slug) return Astro.redirect('/menus');
 
