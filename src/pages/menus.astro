@@ -10,10 +10,19 @@ Astro.response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate
 Astro.response.headers.set('Pragma', 'no-cache');
 Astro.response.headers.set('Expires', '0');
 
-const siteSettings = await getSiteSettings();
-const menus = await getMenus();
-const menusGrupo = await getMenusGrupo();
-const pageData = await getPaginaBySlug('menus');
+let siteSettings, menus = [], menusGrupo = [], pageData;
+
+try {
+  [siteSettings, menus, menusGrupo, pageData] = await Promise.all([
+    getSiteSettings(),
+    getMenus(),
+    getMenusGrupo(),
+    getPaginaBySlug('menus')
+  ]);
+} catch (error) {
+  console.error("Error al cargar datos en menus.astro:", error);
+  // Fallbacks ya inicializados arriba
+}
 
 const pageTitle = pageData?.metaTitle || `Menús | ${siteSettings?.title || "Warynessy"}`;
 const pageDescription = pageData?.metaDescription || "Descubre nuestros menús degustación y opciones especiales.";

@@ -127,15 +127,22 @@ export async function getEspacios(activo = true) {
 }
 
 export async function getMenusGrupo(activo = true) {
-  const where = activo ? { activo: { equals: true } } : {}
-  const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 100 })
-  const result = await fetchAPI<PayloadResponse<any>>(`/menus-grupo${query}`)
+  try {
+    const where = activo ? { activo: { equals: true } } : {}
+    const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 100 })
+    const result = await fetchAPI<PayloadResponse<any>>(`/menus-grupo${query}`)
 
-  return result.docs.sort((a: any, b: any) => {
-    const ordenA = typeof a.orden === 'number' ? a.orden : 999
-    const ordenB = typeof b.orden === 'number' ? b.orden : 999
-    return ordenA - ordenB
-  })
+    if (!result || !result.docs) return []
+
+    return result.docs.sort((a: any, b: any) => {
+      const ordenA = typeof a.orden === 'number' ? a.orden : 999
+      const ordenB = typeof b.orden === 'number' ? b.orden : 999
+      return ordenA - ordenB
+    })
+  } catch (error) {
+    console.error('Error fetching menus-grupo:', error)
+    return []
+  }
 }
 
 export async function getBannersActivos(posicion?: string) {
