@@ -30,6 +30,71 @@ async function runDatabaseHotfix() {
   try {
     console.log('🔍 Running Robust Database Hotfix...')
 
+    // ========================================
+    // 1. Crear tabla menus_grupo si no existe
+    // ========================================
+    const menusGrupoExists = await pool.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables
+        WHERE table_name = 'menus_grupo'
+      );
+    `)
+
+    if (!menusGrupoExists.rows[0].exists) {
+      console.log('➕ Creating menus_grupo table...')
+      await pool.query(`
+        CREATE TABLE "menus_grupo" (
+          "id" serial PRIMARY KEY,
+          "nombre" varchar NOT NULL,
+          "descripcion" varchar,
+          "imagen_portada_id" integer,
+          "orden" numeric DEFAULT 0,
+          "activo" boolean DEFAULT true,
+          "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+          "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
+        );
+      `)
+      console.log('✅ menus_grupo table created.')
+
+      // Crear índices
+      await pool.query(`CREATE INDEX IF NOT EXISTS "menus_grupo_imagen_portada_idx" ON "menus_grupo" USING btree ("imagen_portada_id");`)
+      await pool.query(`CREATE INDEX IF NOT EXISTS "menus_grupo_orden_idx" ON "menus_grupo" USING btree ("orden");`)
+      await pool.query(`CREATE INDEX IF NOT EXISTS "menus_grupo_created_at_idx" ON "menus_grupo" USING btree ("created_at");`)
+      console.log('✅ menus_grupo indexes created.')
+    }
+
+    // Crear tabla de relación menus_grupo_rels si no existe
+    const menusGrupoRelsExists = await pool.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables
+        WHERE table_name = 'menus_grupo_rels'
+      );
+    `)
+
+    if (!menusGrupoRelsExists.rows[0].exists) {
+      console.log('➕ Creating menus_grupo_rels table...')
+      await pool.query(`
+        CREATE TABLE "menus_grupo_rels" (
+          "id" serial PRIMARY KEY,
+          "order" integer,
+          "parent_id" integer NOT NULL,
+          "path" varchar NOT NULL,
+          "menus_id" integer
+        );
+      `)
+
+      // Crear índices
+      await pool.query(`CREATE INDEX IF NOT EXISTS "menus_grupo_rels_order_idx" ON "menus_grupo_rels" USING btree ("order");`)
+      await pool.query(`CREATE INDEX IF NOT EXISTS "menus_grupo_rels_parent_idx" ON "menus_grupo_rels" USING btree ("parent_id");`)
+      await pool.query(`CREATE INDEX IF NOT EXISTS "menus_grupo_rels_path_idx" ON "menus_grupo_rels" USING btree ("path");`)
+      await pool.query(`CREATE INDEX IF NOT EXISTS "menus_grupo_rels_menus_id_idx" ON "menus_grupo_rels" USING btree ("menus_id");`)
+      console.log('✅ menus_grupo_rels table and indexes created.')
+    }
+
+    // ========================================
+    // 2. Fix relation columns in other tables
+    // ========================================
+
     // Lista de pares [nombre_columna, referencia_tabla]
     const relationsToFix = [
       ['experiencias_id', 'experiencias'],
