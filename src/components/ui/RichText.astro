@@ -14,6 +14,10 @@ function renderContent(nodes: any[]): string {
 
   return nodes
     .map((node) => {
+      if (node.type === "linebreak") {
+        return "<br>";
+      }
+
       if (node.type === "text") {
         let text = node.text;
         if (node.format & 1) text = `<strong>${text}</strong>`; // Bold
