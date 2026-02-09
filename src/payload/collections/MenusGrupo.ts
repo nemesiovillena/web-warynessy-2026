@@ -13,6 +13,9 @@ export const MenusGrupo: CollectionConfig = {
     },
     access: {
         read: () => true,
+        create: () => true,
+        update: () => true,
+        delete: () => true,
     },
     fields: [
         {
@@ -47,7 +50,6 @@ export const MenusGrupo: CollectionConfig = {
             label: 'Menús Incluidos',
             relationTo: 'menus',
             hasMany: true,
-            required: true,
             admin: {
                 description: 'Selecciona los menús individuales que forman parte de este grupo.',
             },
