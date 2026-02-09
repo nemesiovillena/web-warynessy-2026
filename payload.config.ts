@@ -53,7 +53,7 @@ export default buildConfig({
     Banners,
     Paginas,
     Experiencias,
-    MenusGrupo,
+    // MenusGrupo,
   ],
 
   // Globals (singletons)
