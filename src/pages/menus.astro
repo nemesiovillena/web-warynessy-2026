@@ -113,7 +113,7 @@ const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localho
 
        {/* Sección de Menús Individuales */}
        <div class="flex items-center gap-6 mb-12">
-         <h2 class="text-3xl md:text-4xl font-display font-black text-white uppercase tracking-tight shrink-0">Menús Degustación</h2>
+         <h2 class="text-3xl md:text-4xl font-display font-black text-white uppercase tracking-tight shrink-0">{pageData?.heroTitle || 'Menús Degustación'}</h2>
          <div class="h-px bg-white/10 w-full"></div>
        </div>
 
