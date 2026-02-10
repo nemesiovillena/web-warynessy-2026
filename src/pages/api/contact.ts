@@ -29,7 +29,7 @@ export const POST: APIRoute = async ({ request }) => {
     // Obtener email destino desde Configuración del sitio
     const siteSettings = await getSiteSettings();
 
-    const resendApiKey = import.meta.env.RESEND_API_KEY;
+    const resendApiKey = process.env.RESEND_API_KEY;
     const emailTo = siteSettings?.contact?.email;
 
     if (!emailTo) {
@@ -39,13 +39,13 @@ export const POST: APIRoute = async ({ request }) => {
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
-    const emailFrom = import.meta.env.EMAIL_FROM || 'onboarding@resend.dev';
+    const emailFrom = process.env.EMAIL_FROM || 'onboarding@resend.dev';
 
     if (!resendApiKey) {
       console.warn('RESEND_API_KEY no configurada. Saltando envío de email en desarrollo.');
 
       // En desarrollo, permitimos que el formulario "funcione" sin la API Key para pruebas de UI
-      if (import.meta.env.DEV || import.meta.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development') {
         console.log('SIMULACIÓN DE ENVÍO DE EMAIL (DESARROLLO):', {
           to: emailTo,
           from: emailFrom,
