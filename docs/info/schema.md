@@ -48,7 +48,7 @@ const menuSchema = {
     { 
       name: "fechas_dias", 
       type: "string", 
-      title: "Fecha y Días de validez", 
+      title: "Fecha e Información", 
       description: "ej: Válido del 1 al 15 de Agosto, solo mediodías."
     },
     { 

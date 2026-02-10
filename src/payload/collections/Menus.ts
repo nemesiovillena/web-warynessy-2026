@@ -70,7 +70,7 @@ export const Menus: CollectionConfig = {
     {
       name: 'descripcion_menu',
       type: 'textarea',
-      label: 'Días de validez',
+      label: 'Información',
       admin: {
         description: 'Ej: "Este menú se ofrece de miércoles a viernes mediodía. A partir de 2 personas."',
       },
