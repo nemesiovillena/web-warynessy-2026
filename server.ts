@@ -111,7 +111,6 @@ async function runDatabaseHotfix() {
           "hero_image_id" integer,
           "hero_title" varchar,
           "hero_subtitle" varchar,
-          "descripcion_espacios" jsonb,
           "imagen_espacio1_id" integer,
           "imagen_espacio2_id" integer,
           "imagen_espacio3_id" integer,
