@@ -104,22 +104,22 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="space-y-2">
                 <label for="nombre" class="text-sm font-bold text-gray-500 uppercase tracking-widest">Nombre</label>
-                <input id="nombre" name="nombre" type="text" required placeholder="Tu nombre" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors" />
+                <input id="nombre" name="nombre" type="text" required placeholder="Tu nombre" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-primary transition-colors" />
               </div>
               <div class="space-y-2">
                 <label for="email" class="text-sm font-bold text-gray-500 uppercase tracking-widest">Email</label>
-                <input id="email" name="email" type="email" required placeholder="tu@email.com" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors" />
+                <input id="email" name="email" type="email" required placeholder="tu@email.com" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-primary transition-colors" />
               </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="space-y-2">
                 <label for="telefono" class="text-sm font-bold text-gray-500 uppercase tracking-widest">Teléfono</label>
-                <input id="telefono" name="telefono" type="tel" placeholder="Tu número" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors" />
+                <input id="telefono" name="telefono" type="tel" placeholder="Tu número" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-primary transition-colors" />
               </div>
               <div class="space-y-2">
                 <label for="asunto" class="text-sm font-bold text-gray-500 uppercase tracking-widest">Asunto</label>
-                <select id="asunto" name="asunto" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors">
+                <select id="asunto" name="asunto" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-primary transition-colors">
                   <option>Reserva Especial / Evento</option>
                   <option>Sugerencia / Feedback</option>
                   <option>Trabaja con nosotros</option>
@@ -130,7 +130,7 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
 
             <div class="space-y-2">
               <label for="mensaje" class="text-sm font-bold text-gray-500 uppercase tracking-widest">Mensaje</label>
-              <textarea id="mensaje" name="mensaje" rows="4" required placeholder="¿En qué podemos ayudarte?" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition-colors resize-none"></textarea>
+              <textarea id="mensaje" name="mensaje" rows="4" required placeholder="¿En qué podemos ayudarte?" class="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-3 text-gray-900 focus:outline-none focus:border-primary transition-colors resize-none"></textarea>
             </div>
 
             <button type="submit" id="submit-btn" class="w-full bg-primary text-white font-bold py-4 px-8 rounded-lg hover:bg-primary/90 transition-colors text-center uppercase tracking-wider">

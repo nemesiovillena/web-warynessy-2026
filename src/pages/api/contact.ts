@@ -30,7 +30,15 @@ export const POST: APIRoute = async ({ request }) => {
     const siteSettings = await getSiteSettings();
 
     const resendApiKey = import.meta.env.RESEND_API_KEY;
-    const emailTo = siteSettings?.contact?.email || import.meta.env.EMAIL_TO || 'contacto@warynessy.com';
+    const emailTo = siteSettings?.contact?.email;
+
+    if (!emailTo) {
+      console.error('Email de contacto no configurado en el CMS.');
+      return new Response(
+        JSON.stringify({ error: 'Error de configuración: email de destino no configurado.' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
     const emailFrom = import.meta.env.EMAIL_FROM || 'onboarding@resend.dev';
 
     if (!resendApiKey) {
