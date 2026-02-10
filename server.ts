@@ -230,7 +230,13 @@ async function start() {
   })
 
   // Rutas de Payload/Next.js (admin, api, _next)
-  app.all(/^\/(admin|api|_next)($|\/.*)/, (req, res) => {
+  // Excluir endpoints de Astro: /api/contact, /api/instagram, /api/reviews
+  app.all(/^\/(admin|_next)($|\/.*)/, (req, res) => {
+    return nextHandler(req, res)
+  })
+
+  // API de Payload (excluyendo endpoints de Astro)
+  app.all(/^\/api\/(?!contact|instagram|reviews).*/, (req, res) => {
     return nextHandler(req, res)
   })
 
