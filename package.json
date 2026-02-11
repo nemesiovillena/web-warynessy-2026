@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@astrojs/node": "^9.5.2",
+    "@rollup/rollup-linux-x64-musl": "^4.34.6",
     "@astrojs/sitemap": "^3.6.1",
     "@payloadcms/db-postgres": "3.74.0",
     "@payloadcms/next": "3.74.0",

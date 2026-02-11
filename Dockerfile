@@ -26,7 +26,6 @@ COPY . .
 # Set environment variables for build (values will be overridden in runtime if needed)
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV ROLLUP_SKIP_NATIVE=1
 ENV DATABASE_URL=postgresql://user:pass@localhost:5432/db
 ENV PAYLOAD_SECRET=temp-secret-for-build-only
 ENV PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3000
