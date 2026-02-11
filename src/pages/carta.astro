@@ -240,6 +240,9 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
       )}
 
       {/* Category Navigation - Tabs Style */}
+      <div class="md:hidden px-4 mb-2">
+         <span class="text-white/80 text-xs font-medium italic">Deslizar las pestañas</span>
+      </div>
       <nav class="mb-12 sticky top-24 z-30 bg-matte-black/90 backdrop-blur-md py-4 -mx-4 px-4 md:mx-0 md:px-0 border-b border-white/10 md:border-none md:bg-transparent md:static overflow-x-auto">
         <div class="flex flex-nowrap md:flex-wrap justify-start md:justify-center gap-3 min-w-max md:min-w-0 px-2 md:px-0" id="category-nav">
           {sortedMainCategories.map((mainCat, index) => (
@@ -274,12 +277,27 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
               <div class="h-1 w-20 bg-primary/30 rounded-full mt-1"></div>
             </div>
 
+            {/* Sub-navigation for categories with multiple sub-items (like Wines) */}
+            {mainCat.subcategories.length > 1 && (
+              <div class="mb-8 flex overflow-x-auto pb-4 gap-2 no-scrollbar pr-4 sticky top-40 md:top-20 z-20 bg-matte-black/80 backdrop-blur-sm -mx-4 px-4 md:mx-0 md:px-0">
+                {mainCat.subcategories.map((subcat) => subcat.subcategoryName && (
+                  <button 
+                    class="subcategory-go-to px-4 py-1.5 rounded-full border border-white/5 bg-white/5 text-white/50 text-xs font-bold uppercase tracking-wider hover:border-primary/30 hover:text-white transition-all whitespace-nowrap"
+                    data-target={`${mainCat.slug}-${subcat.slug}`}
+                  >
+                    {subcat.subcategoryName}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {/* Subcategories and dishes */}
             {mainCat.subcategories.map((subcat) => {
               const isVisualCategory = ['vinos', 'espumosos-y-vinos-dulces', 'vermut-y-cervezas'].includes(mainCat.slug);
+              const subcatId = `${mainCat.slug}-${subcat.slug}`;
               
               return (
-              <div class="mb-12 last:mb-0">
+              <div class="mb-12 last:mb-0 scroll-mt-48 md:scroll-mt-32" id={subcatId}>
                 {/* Subcategory header */}
                 {subcat.subcategoryName && (
                   <div class="mb-6">
@@ -409,6 +427,20 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
 
         clearBtn?.addEventListener('click', clearAll);
         clearBtnMsg?.addEventListener('click', clearAll);
+
+        // Subcategory Go To (Smooth Scroll)
+        document.addEventListener('click', (e) => {
+          const btn = (e.target as HTMLElement).closest('.subcategory-go-to');
+          if (btn) {
+            const targetId = btn.getAttribute('data-target');
+            if (targetId) {
+              const targetEl = document.getElementById(targetId);
+              if (targetEl) {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }
+          }
+        });
       }
 
       function switchCategory(slug: string, shouldScroll = false) {
