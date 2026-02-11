@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@astrojs/node": "^9.5.2",
-    "@rollup/rollup-linux-x64-musl": "^4.34.6",
     "@astrojs/sitemap": "^3.6.1",
     "@payloadcms/db-postgres": "3.74.0",
     "@payloadcms/next": "3.74.0",
@@ -48,6 +47,10 @@
     "@types/node": "^25.0.8",
     "@types/react": "^19.2.8",
     "typescript": "^5.9.3"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-musl": "^4.34.6",
+    "lightningcss": "^1.29.1"
   },
   "overrides": {
     "file-type": "18.7.0"
