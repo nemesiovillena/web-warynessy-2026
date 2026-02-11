@@ -10,8 +10,8 @@ RUN apk add --no-cache libc6-compat
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install all dependencies (silence deprecated transitive packages warnings)
-RUN npm ci --prefer-offline --no-audit --no-fund
+# Install all dependencies (use npm install instead of ci to ensure optional deps are installed)
+RUN npm install --prefer-offline --no-audit --no-fund
 
 # ========================================
 # Stage 2: Builder
@@ -19,27 +19,19 @@ RUN npm ci --prefer-offline --no-audit --no-fund
 FROM node:22-alpine AS builder
 WORKDIR /app
 
-# Build arguments needed for Next.js/Payload compilation
-ARG DATABASE_URL
-ARG PAYLOAD_SECRET
-ARG PAYLOAD_PUBLIC_SERVER_URL
-ARG PUBLIC_PAYLOAD_API_URL
-ARG PUBLIC_SITE_URL
-ARG PUBLIC_SITE_NAME
-
-# Set environment variables from build args
-ENV DATABASE_URL=${DATABASE_URL}
-ENV PAYLOAD_SECRET=${PAYLOAD_SECRET}
-ENV PAYLOAD_PUBLIC_SERVER_URL=${PAYLOAD_PUBLIC_SERVER_URL}
-ENV PUBLIC_PAYLOAD_API_URL=${PUBLIC_PAYLOAD_API_URL}
-ENV PUBLIC_SITE_URL=${PUBLIC_SITE_URL}
-ENV PUBLIC_SITE_NAME=${PUBLIC_SITE_NAME}
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# Set environment variables for build (values will be overridden in runtime if needed)
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV DATABASE_URL=postgresql://user:pass@localhost:5432/db
+ENV PAYLOAD_SECRET=temp-secret-for-build-only
+ENV PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3000
+ENV PUBLIC_PAYLOAD_API_URL=http://localhost:3000/api
+ENV PUBLIC_SITE_URL=http://localhost:3000
+ENV PUBLIC_SITE_NAME=Warynessy
 
 # Build both Astro and Next.js/Payload
 RUN npm run build
@@ -52,7 +44,7 @@ RUN npm run build
 FROM node:22-alpine AS production
 WORKDIR /app
 
-# Install runtime dependencies (wget for healthcheck, tsc deps)
+# Install runtime dependencies (wget for healthcheck)
 RUN apk add --no-cache libc6-compat wget
 
 # Create non-root user for security
@@ -82,7 +74,7 @@ COPY --from=builder /app/server.ts ./
 # Create media directory with correct permissions
 RUN mkdir -p /app/public/media && chown -R payload:nodejs /app
 
-# Set environment
+# Set environment (will be overridden by Dokploy env vars)
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
