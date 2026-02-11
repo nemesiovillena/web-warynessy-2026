@@ -202,8 +202,8 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
       {allAlergenos.length > 0 && (
         <div class="mb-8 animate-fade-up">
           <div class="flex flex-col gap-4">
-            <div class="flex items-center justify-between px-4 md:px-0">
-               <span class="text-white/80 text-xs sm:text-sm font-medium">Marca el alérgeno que no puedas consumir:</span>
+            <div class="flex items-center justify-between px-4 md:px-0 md:hidden">
+               <span class="text-white/80 text-xs font-medium italic">Marca el alérgeno que no puedas consumir:</span>
                <button
                  id="clear-filters"
                  class="hidden text-white text-xs uppercase tracking-widest font-black border-b border-white/50 hover:border-primary hover:text-primary transition-colors"
