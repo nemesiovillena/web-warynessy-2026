@@ -1,7 +1,7 @@
 # ========================================
 # Stage 1: Dependencies
 # ========================================
-FROM node:20-alpine AS deps
+FROM node:22-alpine AS deps
 WORKDIR /app
 
 # Install dependencies needed for native modules
@@ -10,13 +10,13 @@ RUN apk add --no-cache libc6-compat
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install all dependencies
-RUN npm ci
+# Install all dependencies (silence deprecated transitive packages warnings)
+RUN npm ci --prefer-offline --no-audit --no-fund
 
 # ========================================
 # Stage 2: Builder
 # ========================================
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /app
 
 # Build arguments needed for Next.js/Payload compilation
@@ -35,6 +35,7 @@ ENV PUBLIC_PAYLOAD_API_URL=${PUBLIC_PAYLOAD_API_URL}
 ENV PUBLIC_SITE_URL=${PUBLIC_SITE_URL}
 ENV PUBLIC_SITE_NAME=${PUBLIC_SITE_NAME}
 ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
@@ -48,7 +49,7 @@ RUN npm run build
 # ========================================
 # Stage 3: Production Runtime
 # ========================================
-FROM node:20-alpine AS production
+FROM node:22-alpine AS production
 WORKDIR /app
 
 # Install runtime dependencies (wget for healthcheck, tsc deps)
@@ -83,6 +84,7 @@ RUN mkdir -p /app/public/media && chown -R payload:nodejs /app
 
 # Set environment
 ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
@@ -98,7 +100,7 @@ CMD ["npx", "tsx", "server.ts"]
 # ========================================
 # Stage 4: Development Runtime
 # ========================================
-FROM node:20-alpine AS development
+FROM node:22-alpine AS development
 WORKDIR /app
 
 # Install dependencies needed for native modules
@@ -113,6 +115,7 @@ COPY . .
 
 # Set development environment
 ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # Expose ports (Astro: 4321, Payload: 3000)
 EXPOSE 3000 4321
