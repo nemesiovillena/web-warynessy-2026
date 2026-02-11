@@ -4,8 +4,8 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 
-# Install dependencies needed for native modules (sharp)
-RUN apk add --no-cache libc6-compat python3 make g++
+# Install dependencies needed for native modules
+RUN apk add --no-cache libc6-compat
 
 # Copy package files
 COPY package.json package-lock.json ./

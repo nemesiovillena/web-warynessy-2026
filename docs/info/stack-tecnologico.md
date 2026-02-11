@@ -25,15 +25,15 @@ Sliders/Carruseles: Swiper.js. Para los apartados de "Salón principal, zona bar
 3. Backend / CMS (El Dashboard del Administrador)
 Necesitas gestionar menús, carta, banners y textos sin tocar código.
 
-CMS (Gestor de Contenido): Strapi (opción self-hosted) o Sanity.io (SaaS).
+CMS (Gestor de Contenido): Payload CMS (3.x).
 
-Recomendación: Sanity.io.
+Recomendación: Payload CMS.
 
-¿Por qué? Su "Sanity Studio" es un dashboard totalmente personalizable. Puedes crear campos específicos para "Alérgenos", "Precio", "Tipo de Menú", "Visibilidad del Banner", etc.
+¿Por qué? Es un Headless CMS basado en Next.js y TypeScript que se integra perfectamente con nuestra base de datos PostgreSQL local. Ofrece un control total sobre los datos, el esquema y es extremadamente rápido para desarrollo y producción.
 
-Arquitectura de Datos: Al ser arquitecto de datos, te encantará. Defines esquemas estrictos (ej: Un plato tiene que tener precio y categoría).
+Arquitectura de Datos: Al ser arquitecto de datos, te encantará. Defines esquemas estrictos (ej: Un plato tiene que tener precio y categoría) mediante código TypeScript.
 
-Media: Las imágenes se optimizan automáticamente (formato WebP/AVIF) a través del CDN del CMS.
+Media: Las imágenes se gestionan localmente o mediante integraciones de almacenamiento en la nube, con optimización automática.
 
 4. Integraciones (Third-party)
 Reservas: Integración de CoverManager (normalmente mediante Widget/Iframe o botón flotante que abre su modal).
