@@ -10,8 +10,11 @@ RUN apk add --no-cache libc6-compat
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install all dependencies (use npm install instead of ci to ensure optional deps are installed)
-RUN npm install --prefer-offline --no-audit --no-fund
+# Install all dependencies with optional dependencies
+RUN npm install --prefer-offline --no-audit --no-fund --include=optional
+
+# Explicitly install Rollup's Alpine Linux native module
+RUN npm install --no-save @rollup/rollup-linux-x64-musl
 
 # ========================================
 # Stage 2: Builder
