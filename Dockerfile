@@ -10,11 +10,8 @@ RUN apk add --no-cache libc6-compat
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install all dependencies with optional dependencies
-RUN npm install --prefer-offline --no-audit --no-fund --include=optional
-
-# Explicitly install Rollup's Alpine Linux native module
-RUN npm install --no-save @rollup/rollup-linux-x64-musl
+# Install all dependencies
+RUN npm install --prefer-offline --no-audit --no-fund
 
 # ========================================
 # Stage 2: Builder
@@ -29,6 +26,7 @@ COPY . .
 # Set environment variables for build (values will be overridden in runtime if needed)
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV ROLLUP_SKIP_NATIVE=1
 ENV DATABASE_URL=postgresql://user:pass@localhost:5432/db
 ENV PAYLOAD_SECRET=temp-secret-for-build-only
 ENV PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3000
