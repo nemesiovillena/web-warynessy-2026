@@ -49,7 +49,9 @@
     "typescript": "^5.9.3"
   },
   "optionalDependencies": {
+    "@img/sharp-libvips-linuxmusl-x64": "^1.1.0",
     "@img/sharp-linuxmusl-x64": "^0.34.5",
+    "@next/swc-linux-x64-musl": "15.4.10",
     "@rollup/rollup-linux-x64-musl": "^4.34.6",
     "@tailwindcss/oxide-linux-x64-musl": "^4.1.18",
     "lightningcss": "^1.29.1",
