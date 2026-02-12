@@ -428,16 +428,34 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
         clearBtn?.addEventListener('click', clearAll);
         clearBtnMsg?.addEventListener('click', clearAll);
 
-        // Subcategory Go To (Smooth Scroll)
+        // Subcategory Go To (Robust scroll with layout-shift correction)
+        function scrollToSubcategory(targetId: string) {
+          const targetEl = document.getElementById(targetId);
+          if (!targetEl) return;
+
+          // Scroll instantly first to avoid smooth-scroll vs layout-shift conflict
+          targetEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+
+          // Retry after short delays to correct for images loading and shifting layout
+          const retryDelays = [150, 400, 800];
+          retryDelays.forEach(delay => {
+            setTimeout(() => {
+              const rect = targetEl.getBoundingClientRect();
+              const scrollMargin = parseFloat(getComputedStyle(targetEl).scrollMarginTop) || 0;
+              // If the element is NOT at the expected position (accounting for scroll-margin), correct
+              if (Math.abs(rect.top - scrollMargin) > 10) {
+                targetEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+              }
+            }, delay);
+          });
+        }
+
         document.addEventListener('click', (e) => {
           const btn = (e.target as HTMLElement).closest('.subcategory-go-to');
           if (btn) {
             const targetId = btn.getAttribute('data-target');
             if (targetId) {
-              const targetEl = document.getElementById(targetId);
-              if (targetEl) {
-                targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }
+              scrollToSubcategory(targetId);
             }
           }
         });
