@@ -88,10 +88,12 @@ const daysMap: Record<string, string> = {
         </h1>
         
         <div class="flex flex-wrap items-center gap-6 md:gap-12 mb-8">
-           <div class="flex items-baseline gap-2">
-             <span class="text-4xl md:text-5xl font-black text-primary font-display">{menu.precio}€</span>
-             <span class="text-xs md:text-sm text-white/40 uppercase tracking-widest font-bold">/ persona</span>
-           </div>
+           {menu.precio && Number(menu.precio) > 0 && (
+             <div class="flex items-baseline gap-2">
+               <span class="text-4xl md:text-5xl font-black text-primary font-display">{menu.precio} €</span>
+               <span class="text-xs md:text-sm text-white/40 uppercase tracking-widest font-bold">/ persona</span>
+             </div>
+           )}
            
            {menu.horario && (
              <div class="bg-white/5 backdrop-blur-md px-5 py-2.5 rounded-xl border border-white/10 flex items-center gap-3">

@@ -90,12 +90,14 @@ const imageUrl = rawImageUrl.startsWith('/images/') ? rawImageUrl : (rawImageUrl
         )}
       </div>
 
-      <!-- Price -->
-      <div class="shrink-0">
-        <span class="inline-block px-4 py-2 bg-white/5 text-white font-medium text-sm md:text-base rounded-md whitespace-nowrap">
-          {plato.precio}
-        </span>
-      </div>
+      {/* Price */}
+      {plato.precio && plato.precio !== '0' && (
+        <div class="shrink-0">
+          <span class="inline-block px-4 py-2 bg-white/5 text-white font-medium text-sm md:text-base rounded-md whitespace-nowrap">
+            {plato.precio} €
+          </span>
+        </div>
+      )}
     </div>
   </div>
 

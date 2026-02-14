@@ -127,7 +127,9 @@ const menusIndividuales = menus.filter((menu: any) => !menuIdsEnGrupos.has(menu.
                               <span class="text-white font-bold tracking-tight">{menu.nombre}</span>
                             </div>
                             <div class="flex items-center gap-4">
-                              <span class="text-primary font-black font-display">{menu.precio}€</span>
+                              {menu.precio && Number(menu.precio) > 0 && (
+                                <span class="text-primary font-black font-display">{menu.precio} €</span>
+                              )}
                               <span class="material-symbols-outlined text-white/20 group-hover/item:text-primary group-hover/item:translate-x-1 transition-all">chevron_right</span>
                             </div>
                           </a>

@@ -63,10 +63,12 @@ const badgeText = menu.etiqueta && menu.etiqueta !== "null" ? menu.etiqueta : (m
   {/* Content Section */}
   <div class="p-8 pt-4 flex flex-col gap-4">
     <div class="flex items-center justify-between gap-4">
-      <div class="flex items-baseline gap-1 flex-shrink-0">
-        <span class="text-3xl font-black text-primary font-display">{menu.precio}€</span>
-        <span class="text-sm sm:text-xs text-white/40 uppercase tracking-widest font-bold">/ persona</span>
-      </div>
+      {menu.precio && Number(menu.precio) > 0 && (
+        <div class="flex items-baseline gap-1 flex-shrink-0">
+          <span class="text-3xl font-black text-primary font-display">{menu.precio} €</span>
+          <span class="text-sm sm:text-xs text-white/40 uppercase tracking-widest font-bold">/ persona</span>
+        </div>
+      )}
       
       {/* Dynamic Badge */}
       {badgeText && (
