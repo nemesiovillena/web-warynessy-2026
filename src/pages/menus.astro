@@ -95,13 +95,18 @@ const menusIndividuales = menus.filter((menu: any) => !menuIdsEnGrupos.has(menu.
              {menusGrupo.map((grupo: any) => (
                <div class="bg-surface-dark/50 border border-white/5 rounded-[2.5rem] overflow-hidden group hover:border-primary/30 transition-all duration-500 shadow-2xl">
                  <div class="relative h-64 overflow-hidden">
-                    {grupo.imagenPortada && typeof grupo.imagenPortada === 'object' && grupo.imagenPortada.url && (
-                      <img
-                        src={getOptimizedImageUrl(grupo.imagenPortada.url)}
-                        alt={grupo.nombre}
-                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                    )}
+                    {(() => {
+                      // Fallback: si no tiene imagenPortada propia, usar la imagen del primer menú
+                      const imgUrl = grupo.imagenPortada?.url
+                        || grupo.menus?.find((m: any) => m && typeof m === 'object' && m.imagen?.url)?.imagen?.url;
+                      return imgUrl ? (
+                        <img
+                          src={getOptimizedImageUrl(imgUrl)}
+                          alt={grupo.nombre}
+                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      ) : null;
+                    })()}
                     <div class="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/40 to-transparent"></div>
                     <div class="absolute bottom-6 left-8">
                        <h3 class="text-3xl font-display font-black text-white tracking-tight">{grupo.nombre}</h3>
