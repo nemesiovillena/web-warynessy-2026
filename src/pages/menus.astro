@@ -4,6 +4,7 @@ import Section from '../components/ui/Section.astro';
 import Container from '../components/ui/Container.astro';
 import MenuCard from '../components/content/MenuCard.astro';
 import { getSiteSettings, getMenus, getPaginaBySlug, getMenusGrupo } from '../lib/payload-local';
+import { getOptimizedImageUrl } from '../lib/cdn';
 
 // Disable caching to always show fresh content from CMS
 Astro.response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -31,7 +32,6 @@ const heroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.
   ? pageData.heroImage.url
   : 'https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&q=80';
 
-const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
 
 // Obtener IDs de menús que están en grupos para excluirlos de la sección individual
 const menuIdsEnGrupos = new Set(
@@ -97,7 +97,7 @@ const menusIndividuales = menus.filter((menu: any) => !menuIdsEnGrupos.has(menu.
                  <div class="relative h-64 overflow-hidden">
                     {grupo.imagenPortada && typeof grupo.imagenPortada === 'object' && grupo.imagenPortada.url && (
                       <img
-                        src={grupo.imagenPortada.url.startsWith('/') ? `${PAYLOAD_URL}${grupo.imagenPortada.url}` : grupo.imagenPortada.url}
+                        src={getOptimizedImageUrl(grupo.imagenPortada.url)}
                         alt={grupo.nombre}
                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
