@@ -31,10 +31,12 @@ export const Platos: CollectionConfig = {
     },
     {
       name: 'precio',
-      type: 'number',
-      label: 'Precio (€)',
+      type: 'text',
+      label: 'Precio',
       required: true,
-      min: 0,
+      admin: {
+        description: 'Ej: "12,50 €", "60€ Kg.", "Consultar"',
+      },
     },
     {
       name: 'imagen',
