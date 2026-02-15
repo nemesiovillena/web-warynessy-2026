@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { createAutoTranslateHook } from '../hooks/auto-translate'
 
 export const Platos: CollectionConfig = {
   slug: 'platos',
@@ -14,17 +15,24 @@ export const Platos: CollectionConfig = {
   access: {
     read: () => true, // Public read access
   },
+  hooks: {
+    afterChange: [
+      createAutoTranslateHook(['nombre', 'descripcion', 'precio']),
+    ],
+  },
   fields: [
     {
       name: 'nombre',
       type: 'text',
       label: 'Nombre del Plato',
       required: true,
+      localized: true,
     },
     {
       name: 'descripcion',
       type: 'textarea',
       label: 'Descripción / Ingredientes',
+      localized: true,
       admin: {
         description: 'Descripción del plato e ingredientes principales',
       },
@@ -34,6 +42,7 @@ export const Platos: CollectionConfig = {
       type: 'text',
       label: 'Precio',
       required: true,
+      localized: true,
       admin: {
         description: 'Ej: "12,50 €", "60€ Kg.", "Consultar"',
       },
@@ -99,6 +108,7 @@ export const Platos: CollectionConfig = {
           name: 'etiqueta',
           type: 'text',
           required: true,
+          localized: true,
         },
       ],
       admin: {

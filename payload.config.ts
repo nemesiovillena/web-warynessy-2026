@@ -33,6 +33,13 @@ import { PaginaInicio } from './src/payload/globals/PaginaInicio'
 import { ConfiguracionSitio } from './src/payload/globals/ConfiguracionSitio'
 
 export default buildConfig({
+  // Configuración de localización
+  localization: {
+    locales: ['es', 'en', 'fr', 'de'],
+    defaultLocale: 'es',
+    fallback: true,
+  },
+
   // Configuración del panel de administración
   admin: {
     user: Usuarios.slug,

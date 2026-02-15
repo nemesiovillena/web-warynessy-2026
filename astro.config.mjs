@@ -29,5 +29,12 @@ export default defineConfig({
     }
   },
   integrations: [sitemap()],
+  i18n: {
+    defaultLocale: 'es',
+    locales: ['es', 'en', 'fr', 'de'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   site: 'https://warynessy.com'
 });

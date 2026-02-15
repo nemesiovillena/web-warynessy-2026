@@ -4,8 +4,10 @@ import Section from '../components/ui/Section.astro';
 import Container from '../components/ui/Container.astro';
 import { getSiteSettings, getPaginaBySlug } from '../lib/payload-local';
 
-const siteSettings = await getSiteSettings();
-const pageData = await getPaginaBySlug('reservas');
+const locale = Astro.currentLocale;
+
+const siteSettings = await getSiteSettings(locale);
+const pageData = await getPaginaBySlug('reservas', locale);
 
 const pageTitle = pageData?.metaTitle || `Reservas | ${siteSettings?.title || "Warynessy"}`;
 const pageDescription = pageData?.metaDescription || "Reserva tu mesa en Warynessy de forma rápida y sencilla.";

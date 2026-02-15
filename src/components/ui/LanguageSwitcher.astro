@@ -1,0 +1,49 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+
+const currentLocale = Astro.currentLocale || 'es';
+
+const languages = [
+  { code: 'es', label: 'Español', flag: '🇪🇸' },
+  { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'fr', label: 'Français', flag: '🇫🇷' },
+  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
+];
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={["relative inline-block text-left group", className]}>
+  <button type="button" class="inline-flex justify-center items-center w-full px-3 py-2 text-sm font-medium text-gray-700 bg-white/10 rounded-md hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 transition-colors" id="language-menu-button" aria-expanded="true" aria-haspopup="true">
+    <span class="mr-2 text-lg">{languages.find(l => l.code === currentLocale)?.flag}</span>
+    <span class="uppercase text-white">{currentLocale}</span>
+    <svg class="-mr-1 ml-2 h-5 w-5 text-gray-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+    </svg>
+  </button>
+
+  <div class="origin-top-right absolute right-0 mt-2 w-36 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform" role="menu" aria-orientation="vertical" aria-labelledby="language-menu-button" tabindex="-1">
+    <div class="py-1" role="none">
+      {languages.map((lang) => (
+        <a
+          href={getRelativeLocaleUrl(lang.code, Astro.url.pathname.replace(/^\/(es|en|fr|de)/, '').replace(/\/$/, '') || '/')} 
+          class:list={[
+            "flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900",
+            currentLocale === lang.code ? "bg-gray-50 font-bold" : ""
+          ]}
+          role="menuitem"
+          tabindex="-1"
+          id={`menu-item-${lang.code}`}
+        >
+          <span class="mr-3 text-lg">{lang.flag}</span>
+          {lang.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script>
+  // Script para manejar el comportamiento en móvil si el hover no funciona bien
+  // Opcionalmente, podríamos añadir click toggle logic aquí si fuera necesario
+</script>

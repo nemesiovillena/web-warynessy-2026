@@ -7,9 +7,11 @@ import Button from '../components/ui/Button.astro';
 import RichText from '../components/ui/RichText.astro';
 import { getSiteSettings, getSpaces, getPaginaBySlug } from '../lib/payload-local';
 
-const siteSettings = await getSiteSettings();
-const pageData = await getPaginaBySlug('espacios');
-const spaces = await getSpaces();
+const locale = Astro.currentLocale;
+
+const siteSettings = await getSiteSettings(locale);
+const pageData = await getPaginaBySlug('espacios', locale);
+const spaces = await getSpaces(locale);
 
 const pageTitle = pageData?.metaTitle || `Espacios | ${siteSettings?.title || "Restaurante Warynessy"}`;
 const pageDescription = pageData?.metaDescription || "Descubre los espacios únicos y exclusivos de Restaurante Warynessy. Salones diseñados para experiencias gastronómicas memorables.";

@@ -13,12 +13,14 @@ Astro.response.headers.set('Expires', '0');
 
 let siteSettings, menus = [], menusGrupo = [], pageData;
 
+const locale = Astro.currentLocale;
+
 try {
   [siteSettings, menus, menusGrupo, pageData] = await Promise.all([
-    getSiteSettings(),
-    getMenus(),
-    getMenusGrupo(),
-    getPaginaBySlug('menus')
+    getSiteSettings(locale),
+    getMenus(true, locale),
+    getMenusGrupo(true, locale),
+    getPaginaBySlug('menus', locale)
   ]);
 } catch (error) {
   console.error("Error al cargar datos en menus.astro:", error);

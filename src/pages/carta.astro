@@ -9,12 +9,14 @@ import { getOptimizedImageUrl } from '../lib/cdn';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const siteSettings = await getSiteSettings();
-const allCategories = await getCategorias();
-const allDishes = await getPlatos();
+const locale = Astro.currentLocale;
+
+const siteSettings = await getSiteSettings(locale);
+const allCategories = await getCategorias(true, locale);
+const allDishes = await getPlatos(true, locale);
 const allAlergenos = await getAlergenos();
 
-const pageData = await getPaginaBySlug('carta');
+const pageData = await getPaginaBySlug('carta', locale);
 
 // Image mapping logic
 const imagesBaseDir = path.resolve('public/images/carta');

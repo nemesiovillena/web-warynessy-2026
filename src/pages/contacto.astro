@@ -4,8 +4,10 @@ import Section from '../components/ui/Section.astro';
 import Container from '../components/ui/Container.astro';
 import { getSiteSettings, getPaginaBySlug } from '../lib/payload-local';
 
-const siteSettings = await getSiteSettings();
-const pageData = await getPaginaBySlug('contacto');
+const locale = Astro.currentLocale;
+
+const siteSettings = await getSiteSettings(locale);
+const pageData = await getPaginaBySlug('contacto', locale);
 
 const pageTitle = pageData?.metaTitle || `Contacto | ${siteSettings?.title || "Warynessy"}`;
 const pageDescription = pageData?.metaDescription || "Contacta con nosotros para reservas o consultas.";

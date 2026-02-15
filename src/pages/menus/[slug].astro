@@ -21,10 +21,12 @@ Astro.response.headers.set('Expires', '0');
 const { slug } = Astro.params;
 if (!slug) return Astro.redirect('/menus');
 
-const menu = await getMenuBySlug(slug);
+const locale = Astro.currentLocale;
+
+const menu = await getMenuBySlug(slug, locale);
 if (!menu) return Astro.redirect('/menus');
 
-const siteSettings = await getSiteSettings();
+const siteSettings = await getSiteSettings(locale);
 
 const pageTitle = `${menu.nombre} | ${siteSettings?.title || "Warynessy"}`;
 const pageDescription = menu.descripcion_menu || undefined;

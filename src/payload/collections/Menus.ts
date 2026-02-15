@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { createAutoTranslateHook } from '../hooks/auto-translate'
 
 export const Menus: CollectionConfig = {
   slug: 'menus',
@@ -14,12 +15,18 @@ export const Menus: CollectionConfig = {
   access: {
     read: () => true, // Public read access
   },
+  hooks: {
+    afterChange: [
+      createAutoTranslateHook(['nombre', 'etiqueta', 'descripcion_menu', 'fechasDias']),
+    ],
+  },
   fields: [
     {
       name: 'nombre',
       type: 'text',
       label: 'Nombre del Menú',
       required: true,
+      localized: true,
       admin: {
         description: 'Ej: Menú del Día, Menú Degustación, Menú San Valentín, etc.',
       },
@@ -28,6 +35,7 @@ export const Menus: CollectionConfig = {
       name: 'etiqueta',
       type: 'text',
       label: 'Etiqueta (Badge)',
+      localized: true,
       admin: {
         description: 'Pequeño texto decorativo (ej: "Popular", "Exclusivo", "Nuevo")',
       },
@@ -40,7 +48,7 @@ export const Menus: CollectionConfig = {
       unique: true,
       hooks: {
         beforeValidate: [
-          ({ value, data }) => {
+          ({ value, data }: { value?: string; data?: any }) => {
             if (!value && data?.nombre) {
               return data.nombre
                 .toLowerCase()
@@ -71,6 +79,7 @@ export const Menus: CollectionConfig = {
       name: 'descripcion_menu',
       type: 'textarea',
       label: 'Información',
+      localized: true,
       admin: {
         description: 'Ej: "Este menú se ofrece de miércoles a viernes mediodía. A partir de 2 personas."',
       },
@@ -79,6 +88,7 @@ export const Menus: CollectionConfig = {
       name: 'fechasDias',
       type: 'text',
       label: 'Etiqueta de disponibilidad',
+      localized: true,
       admin: {
         description: 'Texto corto para badge (ej: "Entre semana", "Fines de semana")',
       },
@@ -109,6 +119,7 @@ export const Menus: CollectionConfig = {
       name: 'descripcion',
       type: 'richText',
       label: 'Descripción del menú (Composición)',
+      localized: true,
       admin: {
         description: 'Escribe aquí la composición completa del menú: entrantes, principales, postres, etc.',
       },

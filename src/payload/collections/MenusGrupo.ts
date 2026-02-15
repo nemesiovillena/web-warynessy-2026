@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { createAutoTranslateHook } from '../hooks/auto-translate'
 
 export const MenusGrupo: CollectionConfig = {
     slug: 'menus-grupo',
@@ -17,12 +18,18 @@ export const MenusGrupo: CollectionConfig = {
         update: () => true,
         delete: () => true,
     },
+    hooks: {
+        afterChange: [
+            createAutoTranslateHook(['nombre', 'descripcion']),
+        ],
+    },
     fields: [
         {
             name: 'nombre',
             type: 'text',
             label: 'Nombre del Grupo de Menús',
             required: true,
+            localized: true,
             admin: {
                 description: 'Ej: Menús de Empresa, Menús de Celebración, etc.',
             },
@@ -31,6 +38,7 @@ export const MenusGrupo: CollectionConfig = {
             name: 'descripcion',
             type: 'textarea',
             label: 'Descripción del Grupo',
+            localized: true,
             admin: {
                 description: 'Breve introducción para este conjunto de menús.',
             },

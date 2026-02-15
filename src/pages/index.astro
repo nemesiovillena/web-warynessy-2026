@@ -11,10 +11,11 @@ import { getInstagramFeed } from '../lib/instagram';
 import { getOptimizedImageUrl } from '../lib/cdn';
 
 // Fetch data from Payload CMS (Local API)
-const siteSettings = await getSiteSettings();
-const homepage = await getHomepage();
-const spaces = await getSpaces();
-const featuredDishes = await getFeaturedDishes();
+const locale = Astro.currentLocale;
+const siteSettings = await getSiteSettings(locale);
+const homepage = await getHomepage(locale);
+const spaces = await getSpaces(locale);
+const featuredDishes = await getFeaturedDishes(locale);
 const rawOpiniones = await getGoogleReviews();
 const instagramConfig = siteSettings?.instagramConfig;
 
