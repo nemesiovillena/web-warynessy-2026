@@ -6,8 +6,9 @@ import Button from '../components/ui/Button.astro';
 import ResponsiveImage from '../components/ui/ResponsiveImage.astro';
 import { getSiteSettings, getPaginaBySlug } from '../lib/payload-local';
 
-const siteSettings = await getSiteSettings();
-const pageData = await getPaginaBySlug('nosotros');
+const locale = Astro.currentLocale;
+const siteSettings = await getSiteSettings(locale);
+const pageData = await getPaginaBySlug('nosotros', locale);
 
 const pageTitle = pageData?.metaTitle || `Nosotros | ${siteSettings?.title || "Warynessy"}`;
 const pageDescription = pageData?.metaDescription || undefined;

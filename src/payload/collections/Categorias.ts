@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { createAutoTranslateHook } from '../hooks/auto-translate'
 
 export const Categorias: CollectionConfig = {
   slug: 'categorias',
@@ -87,5 +88,8 @@ export const Categorias: CollectionConfig = {
       },
     },
   ],
+  hooks: {
+    afterChange: [createAutoTranslateHook(['nombre', 'descripcion'])],
+  },
   defaultSort: 'orden',
 }

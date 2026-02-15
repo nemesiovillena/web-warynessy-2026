@@ -3,7 +3,8 @@ import { getSiteSettings } from '../../lib/payload-local';
 import Button from './Button.astro';
 
 // Query to fetch global site settings
-const settings = await getSiteSettings();
+const locale = Astro.currentLocale;
+const settings = await getSiteSettings(locale);
 
 const currentYear = new Date().getFullYear();
 const { hideFloatingButton = false } = Astro.props;

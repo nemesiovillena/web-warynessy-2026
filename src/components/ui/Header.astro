@@ -4,8 +4,8 @@ import LanguageSwitcher from './LanguageSwitcher.astro';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 
 // Fetch site settings for logo and title
-const siteSettings = await getSiteSettings();
 const currentLocale = Astro.currentLocale || 'es';
+const siteSettings = await getSiteSettings(currentLocale);
 
 const navLinks = [
   // { name: "Nosotros", href: "/nosotros" },

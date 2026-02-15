@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { createAutoTranslateHook } from '../hooks/auto-translate'
 
 export const Espacios: CollectionConfig = {
   slug: 'espacios',
@@ -117,5 +118,8 @@ export const Espacios: CollectionConfig = {
       },
     },
   ],
+  hooks: {
+    afterChange: [createAutoTranslateHook(['nombre'])],
+  },
   defaultSort: 'orden',
 }

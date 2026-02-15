@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { createAutoTranslateHook } from '../hooks/auto-translate'
 
 export const Alergenos: CollectionConfig = {
   slug: 'alergenos',
@@ -71,5 +72,8 @@ export const Alergenos: CollectionConfig = {
       },
     },
   ],
+  hooks: {
+    afterChange: [createAutoTranslateHook(['nombre', 'descripcion'])],
+  },
   defaultSort: 'nombre',
 }

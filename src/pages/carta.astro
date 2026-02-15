@@ -14,7 +14,7 @@ const locale = Astro.currentLocale;
 const siteSettings = await getSiteSettings(locale);
 const allCategories = await getCategorias(true, locale);
 const allDishes = await getPlatos(true, locale);
-const allAlergenos = await getAlergenos();
+const allAlergenos = await getAlergenos(locale);
 
 const pageData = await getPaginaBySlug('carta', locale);
 

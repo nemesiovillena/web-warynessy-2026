@@ -1,7 +1,10 @@
 // Cliente REST de Payload para Astro
 // Usa la API REST de Payload en lugar de la API local para evitar conflictos de inicialización
 
-const API_URL = process.env.PUBLIC_PAYLOAD_API_URL || 'https://admin.warynessy.eneweb.es/api'
+const API_URL = import.meta.env.PUBLIC_PAYLOAD_API_URL || process.env.PUBLIC_PAYLOAD_API_URL || 'https://admin.warynessy.eneweb.es/api'
+console.log('--------------------------------------------------')
+console.log('🔧 [DEBUG] Payload API URL:', API_URL)
+console.log('--------------------------------------------------')
 
 interface PayloadResponse<T> {
   docs: T[]
@@ -91,8 +94,10 @@ export async function getCategorias(activa = true, locale?: string) {
   return result.docs
 }
 
-export async function getAlergenos() {
-  const query = buildQuery({ sort: 'orden', limit: 100 })
+export async function getAlergenos(locale?: string) {
+  const params: any = { sort: 'orden', limit: 100 }
+  if (locale) params.locale = locale
+  const query = buildQuery(params)
   const result = await fetchAPI<PayloadResponse<any>>(`/alergenos${query}`)
   return result.docs
 }
@@ -128,9 +133,11 @@ export async function getActiveMenusSlugs() {
   return result.docs.map((doc: any) => doc.slug)
 }
 
-export async function getEspacios(activo = true) {
+export async function getEspacios(activo = true, locale?: string) {
   const where = activo ? { activo: { equals: true } } : {}
-  const query = buildQuery({ where, sort: 'orden', depth: 1, limit: 100 })
+  const params: any = { where, sort: 'orden', depth: 1, limit: 100 }
+  if (locale) params.locale = locale
+  const query = buildQuery(params)
   const result = await fetchAPI<PayloadResponse<any>>(`/espacios${query}`)
   return result.docs
 }
