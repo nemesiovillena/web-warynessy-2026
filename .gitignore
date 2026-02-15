@@ -45,6 +45,11 @@ coverage/
 *.temp
 .cache/
 
+# Test/debug files
+debug-categories.js
+test-google-api.ts
+find-place-id.ts
+
 # OS
 Thumbs.db
 .AppleDouble
