@@ -7,10 +7,19 @@ interface Props {
 	type?: string;
 }
 
+const currentLocale = Astro.currentLocale || 'es';
+
+const descriptions: Record<string, string> = {
+	es: "Restaurante Warynessy - Alta cocina en un ambiente exclusivo en Villena. Disfruta de nuestra gastronomía única, espacios elegantes y experiencias inolvidables.",
+	en: "Warynessy Restaurant - Fine dining in an exclusive setting in Villena. Enjoy our unique gastronomy, elegant spaces, and unforgettable experiences.",
+	fr: "Restaurant Warynessy - Haute cuisine dans un cadre exclusif à Villena. Profitez de notre gastronomie unique, espaces élégants et expériences inoubliables.",
+	de: "Warynessy Restaurant - Feine Küche in exklusiver Atmosphäre in Villena. Genießen Sie unsere einzigartige Gastronomie, elegante Räume und unvergessliche Erlebnisse."
+};
+
 const {
 	title,
-	description = "Restaurante Warynessy - Alta cocina en un ambiente exclusivo en Villena. Disfruta de nuestra gastronomía única, espacios elegantes y experiencias inolvidables.",
-	image = "/images/og-default.jpg", 
+	description = descriptions[currentLocale],
+	image = "/images/og-default.jpg",
 	url = Astro.url,
 	type = "website"
 } = Astro.props;
@@ -18,6 +27,15 @@ const {
 const siteTitle = `${title} | Restaurante Warynessy`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const socialImageURL = new URL(image, Astro.url);
+
+const locales: Record<string, string> = {
+	es: 'es_ES',
+	en: 'en_GB',
+	fr: 'fr_FR',
+	de: 'de_DE'
+};
+
+const ogLocale = locales[currentLocale];
 ---
 
 <!-- Global Metadata -->
@@ -42,8 +60,14 @@ const socialImageURL = new URL(image, Astro.url);
 <meta property="og:title" content={siteTitle} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={socialImageURL} />
-<meta property="og:locale" content="es_ES" />
+<meta property="og:locale" content={ogLocale} />
 <meta property="og:site_name" content="Restaurante Warynessy" />
+
+<!-- Hreflang tags for SEO -->
+{Object.entries(locales).map(([code, fullLocale]) => (
+  <link rel="alternate" hreflang={fullLocale} href={new URL(`/${code}${Astro.url.pathname.replace(/^\/(es|en|fr|de)/, '') || '/'}`, Astro.site).href} />
+))}
+<link rel="alternate" hreflang="x-default" href={new URL(`/es${Astro.url.pathname.replace(/^\/(es|en|fr|de)/, '') || '/'}`, Astro.site).href} />
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />
