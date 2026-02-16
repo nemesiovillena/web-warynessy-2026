@@ -16,7 +16,7 @@ const { hideFloatingButton = false } = Astro.props;
 
       {/* Columna 1: Logos certificaciones (Sicted, Ruta del Vino) */}
       <div class="flex flex-col items-center gap-6">
-        {settings?.footerLogos?.filter((l: any) => l.alt.toLowerCase().includes('sicted') || l.alt.toLowerCase().includes('ruta')).map((logo: any) => {
+        {settings?.footerLogos?.filter((l: any) => l.alt?.toLowerCase().includes('sicted') || l.alt?.toLowerCase().includes('ruta')).map((logo: any) => {
           const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
           const imgUrl = typeof logo.logo === 'object' && logo.logo?.url 
             ? (logo.logo.url.startsWith('/') ? `${PAYLOAD_URL}${logo.logo.url}` : logo.logo.url)
@@ -70,7 +70,7 @@ const { hideFloatingButton = false } = Astro.props;
       {/* Columna 3: L'Exquisit + Instagram */}
       <div class="flex flex-col items-center gap-6">
         {/* Logo L'Exquisit */}
-        {settings?.footerLogos?.filter((l: any) => l.alt.toLowerCase().includes('exquisit')).map((logo: any) => {
+        {settings?.footerLogos?.filter((l: any) => l.alt?.toLowerCase().includes('exquisit')).map((logo: any) => {
           const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
           const imgUrl = typeof logo.logo === 'object' && logo.logo?.url 
             ? (logo.logo.url.startsWith('/') ? `${PAYLOAD_URL}${logo.logo.url}` : logo.logo.url)

@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { createAutoTranslateHook } from '../hooks/auto-translate'
 
 export const Paginas: CollectionConfig = {
     slug: 'paginas',
@@ -17,12 +18,18 @@ export const Paginas: CollectionConfig = {
         update: () => true,
         delete: () => true,
     },
+    hooks: {
+        afterChange: [
+            createAutoTranslateHook(['tituloInterno', 'heroTitle', 'heroSubtitle', 'metaTitle', 'metaDescription']),
+        ],
+    },
     fields: [
         {
             name: 'tituloInterno',
             type: 'text',
             label: 'Nombre Interno (Admin)',
             required: true,
+            localized: true,
             admin: {
                 description: 'Ej: Página de Inicio, Nosotros, etc.',
             },
@@ -54,11 +61,13 @@ export const Paginas: CollectionConfig = {
                             name: 'heroTitle',
                             type: 'text',
                             label: 'Título de la Cabecera',
+                            localized: true,
                         },
                         {
                             name: 'heroSubtitle',
                             type: 'textarea',
                             label: 'Subtítulo de la Cabecera',
+                            localized: true,
                         },
                     ],
                 },
@@ -123,6 +132,7 @@ export const Paginas: CollectionConfig = {
                             name: 'metaTitle',
                             type: 'text',
                             label: 'Título SEO (Meta Title)',
+                            localized: true,
                             admin: {
                                 description: 'Aparece en la pestaña del navegador y Google',
                             },
@@ -131,6 +141,7 @@ export const Paginas: CollectionConfig = {
                             name: 'metaDescription',
                             type: 'textarea',
                             label: 'Descripción SEO (Meta Description)',
+                            localized: true,
                             admin: {
                                 description: 'Breve resumen para los resultados de búsqueda',
                             },

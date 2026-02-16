@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { createAutoTranslateHook } from '../hooks/auto-translate'
 
 export const Banners: CollectionConfig = {
   slug: 'banners',
@@ -14,17 +15,24 @@ export const Banners: CollectionConfig = {
   access: {
     read: () => true, // Public read access
   },
+  hooks: {
+    afterChange: [
+      createAutoTranslateHook(['titulo', 'texto']),
+    ],
+  },
   fields: [
     {
       name: 'titulo',
       type: 'text',
       label: 'Título del Banner',
       required: true,
+      localized: true,
     },
     {
       name: 'texto',
       type: 'textarea',
       label: 'Texto del Banner',
+      localized: true,
       admin: {
         description: 'Texto descriptivo del anuncio',
       },
@@ -49,6 +57,7 @@ export const Banners: CollectionConfig = {
           name: 'texto',
           type: 'text',
           label: 'Texto del enlace',
+          localized: true,
         },
         {
           name: 'externo',

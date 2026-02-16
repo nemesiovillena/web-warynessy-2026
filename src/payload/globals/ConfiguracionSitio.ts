@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { createGlobalAutoTranslateHook } from '../hooks/auto-translate'
 
 export const ConfiguracionSitio: GlobalConfig = {
   slug: 'configuracion-sitio',
@@ -6,12 +7,18 @@ export const ConfiguracionSitio: GlobalConfig = {
   access: {
     read: () => true, // Public read access
   },
+  hooks: {
+    afterChange: [
+      createGlobalAutoTranslateHook(['title', 'description', 'copyright']),
+    ],
+  },
   fields: [
     {
       name: 'title',
       type: 'text',
       label: 'Nombre del Restaurante',
       required: true,
+      localized: true,
       admin: {
         description: 'Nombre oficial del restaurante',
       },
@@ -27,6 +34,7 @@ export const ConfiguracionSitio: GlobalConfig = {
       type: 'textarea',
       label: 'Descripción del Restaurante',
       maxLength: 160,
+      localized: true,
       admin: {
         description: 'Descripción breve para SEO y redes sociales',
       },
@@ -55,6 +63,7 @@ export const ConfiguracionSitio: GlobalConfig = {
           name: 'whatsappMessage',
           type: 'text',
           label: 'Mensaje predeterminado de WhatsApp',
+          localized: true,
           admin: {
             description: 'Mensaje que aparecerá al abrir el chat (ej: "Hola, me gustaría reservar una mesa...")',
           },
@@ -68,6 +77,7 @@ export const ConfiguracionSitio: GlobalConfig = {
           name: 'address',
           type: 'textarea',
           label: 'Dirección Completa',
+          localized: true,
         },
         {
           name: 'postalCode',
@@ -124,6 +134,7 @@ export const ConfiguracionSitio: GlobalConfig = {
           name: 'days',
           type: 'text',
           label: 'Días',
+          localized: true,
           admin: {
             description: 'Ej: "Lunes a Viernes", "Sábados", etc.',
           },
@@ -132,6 +143,7 @@ export const ConfiguracionSitio: GlobalConfig = {
           name: 'hours',
           type: 'text',
           label: 'Horario',
+          localized: true,
           admin: {
             description: 'Ej: "13:00 - 16:00 y 20:00 - 23:00"',
           },
@@ -205,6 +217,7 @@ export const ConfiguracionSitio: GlobalConfig = {
           type: 'text',
           label: 'Texto alternativo',
           required: true,
+          localized: true,
         },
         {
           name: 'link',
@@ -222,6 +235,7 @@ export const ConfiguracionSitio: GlobalConfig = {
       name: 'copyright',
       type: 'text',
       label: 'Texto de Copyright',
+      localized: true,
       admin: {
         description: 'Ej: © 2026 Restaurante Warynessy. Todos los derechos reservados.',
       },

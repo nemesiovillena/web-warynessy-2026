@@ -89,7 +89,7 @@ const splitImages = [
                <div class="flex items-center gap-4">
                  <span class="text-primary font-bold tracking-tighter text-4xl opacity-20">0{index + 1}</span>
                  <h2 class="text-3xl md:text-5xl font-display font-black text-warynessy-black dark:text-white uppercase tracking-tight">
-                   {space.nombre}
+                   {space?.nombre || 'Espacio'}
                  </h2>
                </div>
 
@@ -109,10 +109,10 @@ const splitImages = [
                </div>
 
                <div class="flex flex-col gap-6">
-                  <RichText content={space.descripcion} class="text-gray-600 dark:text-gray-400 text-base leading-relaxed" />
+                  <RichText content={space?.descripcion} class="text-gray-600 dark:text-gray-400 text-base leading-relaxed" />
                   
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {space.capacidad && (
+                    {space?.capacidad && (
                       <div class="p-4 rounded-xl bg-white dark:bg-zinc-800/50 border border-gray-100 dark:border-zinc-800 flex items-center gap-3">
                         <span class="material-symbols-outlined text-primary">groups</span>
                         <div>
@@ -122,11 +122,11 @@ const splitImages = [
                       </div>
                     )}
                     
-                    {space.caracteristicas && space.caracteristicas.length > 0 && (
+                    {space?.caracteristicas && space.caracteristicas.length > 0 && (
                       <div class="p-4 rounded-xl bg-white dark:bg-zinc-800/50 border border-gray-100 dark:border-zinc-800 flex flex-wrap gap-2">
                          {space.caracteristicas.map((item: any) => (
                            <span class="text-[10px] font-black uppercase tracking-tight text-gray-500">
-                             • {item.caracteristica}
+                             • {item?.caracteristica}
                            </span>
                          ))}
                       </div>

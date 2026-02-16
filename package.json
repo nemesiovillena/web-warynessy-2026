@@ -6,6 +6,7 @@
     "dev": "astro dev",
     "dev:payload": "tsx server.ts",
     "dev:admin": "next dev -p 3000",
+    "dev:all": "chmod +x dev-servers.sh && ./dev-servers.sh",
     "build": "astro build && next build",
     "build:astro": "astro build",
     "build:payload": "next build",

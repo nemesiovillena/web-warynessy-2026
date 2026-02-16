@@ -28,8 +28,8 @@ if (!menu) return Astro.redirect('/menus');
 
 const siteSettings = await getSiteSettings(locale);
 
-const pageTitle = `${menu.nombre} | ${siteSettings?.title || "Warynessy"}`;
-const pageDescription = menu.descripcion_menu || undefined;
+const pageTitle = `${menu?.nombre || 'Menú'} | ${siteSettings?.title || "Warynessy"}`;
+const pageDescription = menu?.descripcion_menu || undefined;
 
 const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000';
 
@@ -86,7 +86,7 @@ const daysMap: Record<string, string> = {
           </span>
         )}
         <h1 class="text-5xl md:text-8xl font-display font-black text-white mb-6 leading-[1.1] tracking-tight">
-          {menu.nombre}
+          {menu?.nombre}
         </h1>
         
         <div class="flex flex-wrap items-center gap-6 md:gap-12 mb-8">
@@ -163,7 +163,7 @@ const daysMap: Record<string, string> = {
 
           <div class="w-20 h-1 bg-primary mb-12 hidden lg:block"></div>
 
-          <RichText content={menu.descripcion} class="mb-16" />
+          <RichText content={menu?.descripcion} class="mb-16" />
 
 
         </div>

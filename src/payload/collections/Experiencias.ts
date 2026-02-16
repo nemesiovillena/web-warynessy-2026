@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { createAutoTranslateHook } from '../hooks/auto-translate'
 
 export const Experiencias: CollectionConfig = {
     slug: 'experiencias',
@@ -14,12 +15,18 @@ export const Experiencias: CollectionConfig = {
     access: {
         read: () => true, // Public read access
     },
+    hooks: {
+        afterChange: [
+            createAutoTranslateHook(['titulo', 'resumen', 'validez']),
+        ],
+    },
     fields: [
         {
             name: 'titulo',
             type: 'text',
             label: 'Título de la Experiencia',
             required: true,
+            localized: true,
         },
         {
             name: 'slug',
@@ -47,6 +54,7 @@ export const Experiencias: CollectionConfig = {
             name: 'descripcion',
             type: 'richText',
             label: 'Descripción',
+            localized: true,
             admin: {
                 description: 'Descripción completa de la experiencia',
             },
@@ -56,6 +64,7 @@ export const Experiencias: CollectionConfig = {
             type: 'textarea',
             label: 'Resumen Corto',
             maxLength: 150,
+            localized: true,
             admin: {
                 description: 'Descripción breve para la tarjeta',
             },
@@ -105,6 +114,7 @@ export const Experiencias: CollectionConfig = {
                     name: 'item',
                     type: 'text',
                     required: true,
+                    localized: true,
                 },
             ],
             admin: {
@@ -115,6 +125,7 @@ export const Experiencias: CollectionConfig = {
             name: 'validez',
             type: 'text',
             label: 'Validez',
+            localized: true,
             admin: {
                 description: 'Ej: "Válido durante 1 año desde la compra"',
             },

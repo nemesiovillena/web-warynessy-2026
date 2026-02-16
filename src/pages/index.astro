@@ -120,17 +120,19 @@ const pageTitle = siteSettings?.title || "Warynessy 2026";
         </div>
         
         <div class="w-full bg-matte-black/50 backdrop-blur-md rounded-2xl p-6 md:p-10 shadow-2xl border border-white/5 animate-stagger-container">
-          {siteSettings?.openingHours?.map((schedule: any) => (
+          {siteSettings?.openingHours && Array.isArray(siteSettings.openingHours) ? siteSettings.openingHours.map((schedule: any) => (
             <div class="flex justify-between items-center py-4 border-b border-white/5 last:border-0 animate-stagger-item">
               <p class="text-[#FDFDFD] font-bold text-base md:text-lg">{schedule.days}</p>
               <p class="text-[#D1C2B4] text-sm md:text-base font-medium text-right leading-relaxed">
                 {schedule.closed ? 
                   <span class="text-white/30 uppercase tracking-widest text-xs font-black">Cerrado</span> : 
-                  <Fragment set:html={schedule.hours.replace(' / ', '<br/>')} />
+                  (schedule.hours ? <Fragment set:html={schedule.hours.replace(' / ', '<br/>')} /> : null)
                 }
               </p>
             </div>
-          ))}
+          )) : (
+            <p class="text-white/50 italic text-center">Horario no disponible</p>
+          )}
         </div>
 
         <div class="mt-12">

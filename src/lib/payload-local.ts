@@ -1,7 +1,7 @@
 // Cliente REST de Payload para Astro
 // Usa la API REST de Payload en lugar de la API local para evitar conflictos de inicialización
 
-const API_URL = import.meta.env.PUBLIC_PAYLOAD_API_URL || process.env.PUBLIC_PAYLOAD_API_URL || 'https://admin.warynessy.eneweb.es/api'
+const API_URL = import.meta.env.PUBLIC_PAYLOAD_API_URL || process.env.PUBLIC_PAYLOAD_API_URL || 'http://localhost:3000/api'
 console.log('--------------------------------------------------')
 console.log('🔧 [DEBUG] Payload API URL:', API_URL)
 console.log('--------------------------------------------------')

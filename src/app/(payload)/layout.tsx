@@ -26,10 +26,13 @@ async function serverFunction(args: any) {
     })
 }
 
-const Layout = ({ children }: Args) => (
-    <RootLayout config={configPromise} importMap={importMap} serverFunction={serverFunction} htmlProps={{ suppressHydrationWarning: true }}>
-        {children}
-    </RootLayout>
-)
+const Layout = ({ children }: Args) => {
+    const RootLayoutAny = RootLayout as any;
+    return (
+        <RootLayoutAny config={configPromise} importMap={importMap} serverFunction={serverFunction} htmlProps={{ suppressHydrationWarning: true }} bodyProps={{ suppressHydrationWarning: true }}>
+            {children}
+        </RootLayoutAny>
+    );
+}
 
 export default Layout
