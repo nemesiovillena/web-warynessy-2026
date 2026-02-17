@@ -194,8 +194,8 @@ const daysMap: Record<string, string> = {
                       <span class="material-symbols-outlined text-xl">calendar_month</span>
                     </div>
                     <div>
-                      <span class="text-white font-bold block mb-1 text-sm">Vigencia del Menú</span>
-                      <span class="text-white/40 text-xs leading-relaxed italic">
+                      <span class="text-white font-bold block mb-1">Vigencia del Menú</span>
+                      <span class="text-white/50 text-sm leading-relaxed">
                         Del {formatDate(menu.fechaInicio)} <br/> al {formatDate(menu.fechaFin)}
                       </span>
                     </div>
@@ -207,7 +207,7 @@ const daysMap: Record<string, string> = {
             {/* Selector de Días de la Semana */}
             {menu.diasSemana && menu.diasSemana.length > 0 && (
               <div class="space-y-6 pt-4">
-                <h4 class="text-primary font-black uppercase tracking-widest text-[11px]">
+                <h4 class="text-white/50 font-black uppercase tracking-widest text-[11px]">
                   Días de Servicio
                 </h4>
                 <div class="flex flex-wrap gap-2.5">
@@ -248,7 +248,7 @@ const daysMap: Record<string, string> = {
 
             {/* Letra Pequeña */}
             <p class="text-[9px] text-white/20 leading-relaxed uppercase tracking-[0.1em] font-medium text-center italic">
-              * El menú puede sufrir ligeras modificaciones según mercado. <br/> Bebidas no incluidas salvo indicación.
+              * El menú puede sufrir ligeras modificaciones según mercado. <br/> Bebidas no incluidas.
             </p>
           </div>
         </aside>
