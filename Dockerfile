@@ -74,6 +74,17 @@ COPY --from=builder /app/package.json ./
 # Copy server.ts (will be executed with tsx)
 COPY --from=builder /app/server.ts ./
 
+# Copy migrations folder
+COPY --from=builder /app/src/migrations ./src/migrations
+
+# Create startup script that runs migrations then starts server
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'echo "Running Payload migrations..."' >> /app/start.sh && \
+    echo 'npx payload migrate || echo "Migration failed or no migrations to run"' >> /app/start.sh && \
+    echo 'echo "Starting server..."' >> /app/start.sh && \
+    echo 'exec npx tsx server.ts' >> /app/start.sh && \
+    chmod +x /app/start.sh
+
 # Create media directory with correct permissions
 RUN mkdir -p /app/public/media && chown -R payload:nodejs /app
 
@@ -89,8 +100,8 @@ USER payload
 # Expose port
 EXPOSE 3000
 
-# Start unified Express server (handles Next.js + Astro)
-CMD ["npx", "tsx", "server.ts"]
+# Start with migrations and then server
+CMD ["/app/start.sh"]
 
 # ========================================
 # Stage 4: Development Runtime
