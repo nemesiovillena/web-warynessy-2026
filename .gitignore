@@ -74,6 +74,7 @@ sanity-old/
 # Backups
 *.backup
 *.bak
+*.sql
 
 # Bunny.net / CDN
 cdn-uploads/
