@@ -207,8 +207,7 @@ const daysMap: Record<string, string> = {
             {/* Selector de Días de la Semana */}
             {menu.diasSemana && menu.diasSemana.length > 0 && (
               <div class="space-y-6 pt-4">
-                <h4 class="text-primary font-black uppercase tracking-widest text-[11px] flex items-center gap-3">
-                  <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                <h4 class="text-white/50 font-black uppercase tracking-widest text-[11px]">
                   Días de Servicio
                 </h4>
                 <div class="flex flex-wrap gap-2.5">
@@ -218,7 +217,7 @@ const daysMap: Record<string, string> = {
                       <span class:list={[
                         "px-3.5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all duration-300",
                         isAvailable 
-                          ? "bg-primary/10 border-primary/30 text-primary shadow-sm" 
+                          ? "bg-primary/10 border-primary/30 text-white/90 shadow-sm" 
                           : "bg-transparent border-white/5 text-white/10 opacity-40"
                       ]}>
                         {daysMap[dia]}
