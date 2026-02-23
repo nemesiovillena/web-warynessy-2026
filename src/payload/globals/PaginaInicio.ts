@@ -13,6 +13,7 @@ export const PaginaInicio: GlobalConfig = {
       type: 'text',
       label: 'Título Principal (Hero)',
       required: true,
+      localized: true,
       admin: {
         description: 'Título principal de la página de inicio',
       },
@@ -21,6 +22,7 @@ export const PaginaInicio: GlobalConfig = {
       name: 'heroSubtitle',
       type: 'textarea',
       label: 'Subtítulo (Hero)',
+      localized: true,
       admin: {
         description: 'Subtítulo o claim del restaurante',
       },
@@ -38,6 +40,7 @@ export const PaginaInicio: GlobalConfig = {
       name: 'welcomeTitle',
       type: 'text',
       label: 'Título de Bienvenida',
+      localized: true,
       admin: {
         description: 'Título de la sección "Sobre nosotros"',
       },
@@ -46,6 +49,7 @@ export const PaginaInicio: GlobalConfig = {
       name: 'welcomeText',
       type: 'richText',
       label: 'Texto de Bienvenida / Fundación',
+      localized: true,
       admin: {
         description: 'Historia y filosofía del restaurante',
       },
@@ -74,6 +78,7 @@ export const PaginaInicio: GlobalConfig = {
       name: 'ctaTitle',
       type: 'text',
       label: 'Título del CTA de Reservas',
+      localized: true,
       admin: {
         description: 'Texto del call to action para reservar',
       },
@@ -82,12 +87,14 @@ export const PaginaInicio: GlobalConfig = {
       name: 'ctaText',
       type: 'textarea',
       label: 'Texto del CTA',
+      localized: true,
     },
     {
       name: 'ctaButtonText',
       type: 'text',
       label: 'Texto del Botón CTA',
       defaultValue: 'Reservar ahora',
+      localized: true,
       admin: {
         description: 'Texto del botón de reserva',
       },
@@ -144,6 +151,7 @@ export const PaginaInicio: GlobalConfig = {
       type: 'text',
       label: 'SEO: Título',
       maxLength: 60,
+      localized: true,
       admin: {
         description: 'Título para SEO (meta title)',
       },
@@ -153,6 +161,7 @@ export const PaginaInicio: GlobalConfig = {
       type: 'textarea',
       label: 'SEO: Descripción',
       maxLength: 160,
+      localized: true,
       admin: {
         description: 'Descripción para SEO (meta description)',
       },

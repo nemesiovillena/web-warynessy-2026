@@ -33,12 +33,19 @@ import { PaginaInicio } from './src/payload/globals/PaginaInicio'
 import { ConfiguracionSitio } from './src/payload/globals/ConfiguracionSitio'
 
 export default buildConfig({
-  // Configuración del panel de administración
+  // Configuraciรณn del panel de administraciรณn
   admin: {
     user: Usuarios.slug,
     meta: {
       titleSuffix: '- Warynessy CMS',
     },
+  },
+
+  // Configuraciรณn de i18n/localizaciรณn
+  localization: {
+    locales: ['es', 'en', 'fr', 'de'],
+    defaultLocale: 'es',
+    fallback: true,
   },
 
   // Colecciones (tipos de documentos)
@@ -62,10 +69,10 @@ export default buildConfig({
     ConfiguracionSitio,
   ],
 
-  // Configuración del editor
+  // Configuraciรณn del editor
   editor: lexicalEditor({}),
 
-  // Configuración de base de datos
+  // Configuraciรณn de base de datos
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
@@ -73,10 +80,10 @@ export default buildConfig({
     push: true, // Auto-sync schema on startup (creates tables)
   }),
 
-  // Optimización de imágenes
+  // Optimizaciรณn de imรกgenes
   sharp,
 
-  // Configuración de TypeScript
+  // Configuraciรณn de TypeScript
   typescript: {
     outputFile: path.resolve(dirname, 'src/payload/payload-types.ts'),
   },
@@ -84,18 +91,18 @@ export default buildConfig({
   // Clave secreta
   secret: process.env.PAYLOAD_SECRET || 'development-secret-key',
 
-  // Configuración de Servidor y URLs
-  // Nota: En producción Next.js detecta automáticamente la URL si no se especifica,
+  // Configuraciรณn de Servidor y URLs
+  // Nota: En producciรณn Next.js detecta automรกticamente la URL si no se especifica,
   // pero forzamos el uso de variables de entorno si existen.
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || '',
 
-  // Configuración CORS - Permitir el propio servidor y el sitio público
+  // Configuraciรณn CORS - Permitir el propio servidor y el sitio pรบblico
   cors: [
     process.env.PAYLOAD_PUBLIC_SERVER_URL,
     process.env.PUBLIC_SITE_URL,
   ].filter(Boolean) as string[],
 
-  // Configuración CSRF
+  // Configuraciรณn CSRF
   csrf: [
     process.env.PAYLOAD_PUBLIC_SERVER_URL,
     process.env.PUBLIC_SITE_URL,

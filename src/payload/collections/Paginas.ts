@@ -23,6 +23,7 @@ export const Paginas: CollectionConfig = {
             type: 'text',
             label: 'Nombre Interno (Admin)',
             required: true,
+            localized: true,
             admin: {
                 description: 'Ej: Página de Inicio, Nosotros, etc.',
             },
@@ -54,11 +55,13 @@ export const Paginas: CollectionConfig = {
                             name: 'heroTitle',
                             type: 'text',
                             label: 'Título de la Cabecera',
+                            localized: true,
                         },
                         {
                             name: 'heroSubtitle',
                             type: 'textarea',
                             label: 'Subtítulo de la Cabecera',
+                            localized: true,
                         },
                     ],
                 },
@@ -123,6 +126,7 @@ export const Paginas: CollectionConfig = {
                             name: 'metaTitle',
                             type: 'text',
                             label: 'Título SEO (Meta Title)',
+                            localized: true,
                             admin: {
                                 description: 'Aparece en la pestaña del navegador y Google',
                             },
@@ -131,6 +135,7 @@ export const Paginas: CollectionConfig = {
                             name: 'metaDescription',
                             type: 'textarea',
                             label: 'Descripción SEO (Meta Description)',
+                            localized: true,
                             admin: {
                                 description: 'Breve resumen para los resultados de búsqueda',
                             },

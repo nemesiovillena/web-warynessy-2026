@@ -20,6 +20,7 @@ export const Categorias: CollectionConfig = {
       type: 'text',
       label: 'Nombre de la Categoría',
       required: true,
+      localized: true,
       admin: {
         description: 'Ej: Entrantes, Carnes, Pescados, Postres, etc.',
       },
@@ -53,6 +54,7 @@ export const Categorias: CollectionConfig = {
       name: 'descripcion',
       type: 'textarea',
       label: 'Descripción',
+      localized: true,
       admin: {
         description: 'Descripción opcional de la categoría',
       },

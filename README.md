@@ -284,3 +284,4 @@ Ver [MIGRACION-PAYLOAD.md](MIGRACION-PAYLOAD.md) para más troubleshooting.
 **Versión:** 1.0.0
 **Estado:** 🟡 En Desarrollo
 **CMS:** Payload CMS (migrado desde Sanity.io)
+# idiomas.warynessy

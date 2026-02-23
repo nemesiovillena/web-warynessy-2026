@@ -20,11 +20,13 @@ export const Platos: CollectionConfig = {
       type: 'text',
       label: 'Nombre del Plato',
       required: true,
+      localized: true,
     },
     {
       name: 'descripcion',
       type: 'textarea',
       label: 'Descripción / Ingredientes',
+      localized: true,
       admin: {
         description: 'Descripción del plato e ingredientes principales',
       },
@@ -99,6 +101,7 @@ export const Platos: CollectionConfig = {
           name: 'etiqueta',
           type: 'text',
           required: true,
+          localized: true,
         },
       ],
       admin: {
