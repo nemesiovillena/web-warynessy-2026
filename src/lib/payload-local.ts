@@ -92,9 +92,10 @@ export async function getAlergenos() {
 }
 
 export async function getMenus(activo = true) {
-  const where = activo ? { activo: { equals: true } } : {}
-  const query = buildQuery({ where, sort: 'orden', depth: 1, limit: 100 })
-  const result = await fetchAPI<PayloadResponse<any>>(`/menus${query}`)
+  const url = activo
+    ? `/menus?where[activo][equals]=true&sort=orden&depth=1&limit=100`
+    : `/menus?sort=orden&depth=1&limit=100`
+  const result = await fetchAPI<PayloadResponse<any>>(url)
 
   // Refuerzo manual del orden para asegurar consistencia total
   return result.docs.sort((a: any, b: any) => {
