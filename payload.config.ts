@@ -41,13 +41,6 @@ export default buildConfig({
     },
   },
 
-  // Configuraciรณn de i18n/localizaciรณn
-  localization: {
-    locales: ['es', 'en', 'fr', 'de'],
-    defaultLocale: 'es',
-    fallback: true,
-  },
-
   // Colecciones (tipos de documentos)
   collections: [
     Usuarios,

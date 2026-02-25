@@ -20,7 +20,6 @@ export const Menus: CollectionConfig = {
       type: 'text',
       label: 'Nombre del Menú',
       required: true,
-      localized: true,
       admin: {
         description: 'Ej: Menú del Día, Menú Degustación, Menú San Valentín, etc.',
       },
@@ -29,7 +28,6 @@ export const Menus: CollectionConfig = {
       name: 'etiqueta',
       type: 'text',
       label: 'Etiqueta (Badge)',
-      localized: true,
       admin: {
         description: 'Pequeño texto decorativo (ej: "Popular", "Exclusivo", "Nuevo")',
       },
@@ -73,7 +71,6 @@ export const Menus: CollectionConfig = {
       name: 'descripcion_menu',
       type: 'textarea',
       label: 'Información',
-      localized: true,
       admin: {
         description: 'Ej: "Este menú se ofrece de miércoles a viernes mediodía. A partir de 2 personas."',
       },
@@ -82,7 +79,6 @@ export const Menus: CollectionConfig = {
       name: 'fechasDias',
       type: 'text',
       label: 'Etiqueta de disponibilidad',
-      localized: true,
       admin: {
         description: 'Texto corto para badge (ej: "Entre semana", "Fines de semana")',
       },
@@ -113,7 +109,6 @@ export const Menus: CollectionConfig = {
       name: 'descripcion',
       type: 'richText',
       label: 'Descripción del menú (Composición)',
-      localized: true,
       admin: {
         description: 'Escribe aquí la composición completa del menú: entrantes, principales, postres, etc.',
       },
