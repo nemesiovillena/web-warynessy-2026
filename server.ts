@@ -220,9 +220,9 @@ async function start() {
     res.setHeader('Content-Security-Policy',
       "default-src 'self'; " +
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' *.googletagmanager.com *.google-analytics.com; " +
-      "style-src 'self' 'unsafe-inline' *.googleapis.com; " +
-      "img-src 'self' data: *.googleapis.com *.gstatic.com; " +
-      "font-src 'self' *.googleapis.com *.gstatic.com; " +
+      "style-src 'self' 'unsafe-inline' *.googleapis.com *.cloudflare.com cdnjs.cloudflare.com; " +
+      "img-src 'self' data: blob: *.googleapis.com *.gstatic.com *.b-cdn.net lh3.googleusercontent.com; " +
+      "font-src 'self' *.googleapis.com *.gstatic.com *.cloudflare.com cdnjs.cloudflare.com; " +
       "connect-src 'self' *.google-analytics.com *.googletagmanager.com; " +
       "frame-ancestors 'none';"
     )

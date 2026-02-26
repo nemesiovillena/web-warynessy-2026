@@ -109,7 +109,7 @@ export default buildConfig({
       storage: {
         apiKey: process.env.BUNNY_STORAGE_PASSWORD || '',
         zoneName: process.env.BUNNY_STORAGE_ZONE_NAME || '',
-        hostname: process.env.PUBLIC_BUNNY_CDN_URL || 'warynessy.b-cdn.net',
+        hostname: process.env.PUBLIC_BUNNY_CDN_URL || 'https://warynessy.b-cdn.net',
       },
     }),
   ],
