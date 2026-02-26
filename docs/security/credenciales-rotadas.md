@@ -20,7 +20,8 @@
 - [x] Contraseña generada con OpenSSL (32 bytes, base64)
 - [x] Contraseña rotada en PostgreSQL
 - [x] .env actualizado en desarrollo
-- [ ] DATABASE_URL actualizado en Dokploy (Pendiente - MANUAL)
+- [x] DATABASE_URL actualizado en Dokploy (Application ID: A7lu1aMaTIGvlc7dW_AKf)
+- [x] Redespliegue iniciado para aplicar nuevas credenciales
 - [ ] Aplicación verificada en producción (Pendiente)
 
 **Notas**:
