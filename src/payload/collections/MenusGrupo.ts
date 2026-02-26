@@ -3,8 +3,8 @@ import type { CollectionConfig } from 'payload'
 export const MenusGrupo: CollectionConfig = {
     slug: 'menus-grupo',
     labels: {
-        singular: 'Menú de Grupo',
-        plural: 'Menús de Grupo',
+        singular: 'Otro Menú',
+        plural: 'Otros Menús',
     },
     admin: {
         useAsTitle: 'nombre',
