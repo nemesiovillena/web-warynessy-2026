@@ -1,8 +1,18 @@
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
 import { getSiteSettings } from '../../lib/payload-local';
+import DOMPurify from 'dompurify';
 
 export const prerender = false;
+
+// Función para sanitizar inputs y prevenir XSS
+const sanitizeInput = (input: string): string => {
+  if (!input) return '';
+  return DOMPurify.sanitize(input, {
+    ALLOWED_TAGS: [], // No permitir ningún tag HTML
+    ALLOWED_ATTR: [] // No permitir ningún atributo
+  });
+};
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -64,13 +74,19 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    // Sanitizar todos los inputs para prevenir XSS
+    const sanitizedName = sanitizeInput(nombre);
+    const sanitizedPhone = telefono ? sanitizeInput(telefono) : 'No proporcionado';
+    const sanitizedSubject = asunto ? sanitizeInput(asunto) : 'Sin especificar';
+    const sanitizedMessage = sanitizeInput(mensaje);
+
     const resend = new Resend(resendApiKey);
 
     await resend.emails.send({
       from: emailFrom,
       to: emailTo,
       replyTo: email,
-      subject: `[Web Warynessy] ${asunto || 'Nuevo mensaje'} - ${nombre}`,
+      subject: `[Web Warynessy] ${sanitizedSubject} - ${sanitizedName}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #AD9775; border-bottom: 2px solid #AD9775; padding-bottom: 10px;">
@@ -79,7 +95,7 @@ export const POST: APIRoute = async ({ request }) => {
           <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
             <tr>
               <td style="padding: 8px 12px; font-weight: bold; color: #666; width: 100px;">Nombre:</td>
-              <td style="padding: 8px 12px;">${nombre}</td>
+              <td style="padding: 8px 12px;">${sanitizedName}</td>
             </tr>
             <tr>
               <td style="padding: 8px 12px; font-weight: bold; color: #666;">Email:</td>
@@ -87,16 +103,16 @@ export const POST: APIRoute = async ({ request }) => {
             </tr>
             <tr>
               <td style="padding: 8px 12px; font-weight: bold; color: #666;">Teléfono:</td>
-              <td style="padding: 8px 12px;">${telefono || 'No proporcionado'}</td>
+              <td style="padding: 8px 12px;">${sanitizedPhone}</td>
             </tr>
             <tr>
               <td style="padding: 8px 12px; font-weight: bold; color: #666;">Asunto:</td>
-              <td style="padding: 8px 12px;">${asunto || 'Sin especificar'}</td>
+              <td style="padding: 8px 12px;">${sanitizedSubject}</td>
             </tr>
           </table>
           <div style="margin-top: 20px; padding: 16px; background: #f5f5f5; border-radius: 8px;">
             <p style="font-weight: bold; color: #666; margin: 0 0 8px;">Mensaje:</p>
-            <p style="white-space: pre-wrap; margin: 0;">${mensaje}</p>
+            <p style="white-space: pre-wrap; margin: 0;">${sanitizedMessage}</p>
           </div>
           <p style="margin-top: 20px; font-size: 12px; color: #999;">
             Enviado desde el formulario de contacto de warynessy.com
