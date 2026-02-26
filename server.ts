@@ -4,6 +4,7 @@ import { createServer } from 'http'
 import next from 'next'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import rateLimit from 'express-rate-limit'
 
 import pg from 'pg'
 
@@ -210,6 +211,54 @@ async function start() {
 
   const app = express()
 
+  // Headers de seguridad para prevenir ataques comunes
+  app.use((req, res, next) => {
+    // Prevenir clickjacking
+    res.setHeader('X-Frame-Options', 'DENY')
+
+    // Content Security Policy para prevenir XSS
+    res.setHeader('Content-Security-Policy',
+      "default-src 'self'; " +
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' *.googletagmanager.com *.google-analytics.com; " +
+      "style-src 'self' 'unsafe-inline' *.googleapis.com; " +
+      "img-src 'self' data: *.googleapis.com *.gstatic.com; " +
+      "font-src 'self' *.googleapis.com *.gstatic.com; " +
+      "connect-src 'self' *.google-analytics.com *.googletagmanager.com; " +
+      "frame-ancestors 'none';"
+    )
+
+    // XSS Protection
+    res.setHeader('X-XSS-Protection', '1; mode=block')
+
+    // Prevenir MIME-sniffing
+    res.setHeader('X-Content-Type-Options', 'nosniff')
+
+    // HSTS (solo en producción con HTTPS)
+    if (!dev) {
+      res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
+    }
+
+    // Referrer Policy
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+
+    // Permissions Policy
+    res.setHeader('Permissions-Policy',
+      'geolocation=(), ' +
+      'microphone=(), ' +
+      'camera=(), ' +
+      'payment=(), ' +
+      'usb=(), ' +
+      'magnetometer=(), ' +
+      'gyroscope=(), ' +
+      'accelerometer=()'
+    )
+
+    // Ocultar información del servidor
+    res.removeHeader('X-Powered-By')
+
+    next()
+  })
+
   // Inicializar Next.js para Payload CMS
   const nextApp = next({ dev, dir: process.cwd() })
   try {
@@ -223,6 +272,22 @@ async function start() {
   // Servir archivos estáticos del cliente Astro
   app.use('/_astro', express.static(path.join(__dirname, 'dist/client/_astro')))
   app.use(express.static(path.join(__dirname, 'dist/client'), { index: false }))
+
+  // Rate limiting para endpoint de contacto (prevenir SPAM y DoS)
+  const contactLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 5, // Máximo 5 requests por IP
+    message: JSON.stringify({ error: 'Demasiados intentos. Por favor espera 15 minutos antes de intentar de nuevo.' }),
+    standardHeaders: true, // Enviar headers estándar de rate limit
+    legacyHeaders: false, // No enviar headers legacy
+    skip: (req) => dev, // Desactivar en desarrollo
+    handler: (req, res) => {
+      res.status(429).json({
+        error: 'Demasiados intentos. Por favor espera 15 minutos antes de intentar de nuevo.',
+        retryAfter: '15 minutes'
+      })
+    }
+  })
 
   // Endpoint de salud para Dokploy
   app.get('/health', (req, res) => {
@@ -239,6 +304,9 @@ async function start() {
   app.all(/^\/api\/(?!contact|instagram|reviews).*/, (req, res) => {
     return nextHandler(req, res)
   })
+
+  // Aplicar rate limiting a endpoint de contacto
+  app.use('/api/contact', contactLimiter)
 
   try {
     // Importar handler de Astro SSR dinámicamente
