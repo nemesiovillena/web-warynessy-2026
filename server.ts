@@ -276,9 +276,6 @@ async function start() {
     process.exit(1)
   }
   const nextHandler = nextApp.getRequestHandler()
-
-  // Servir archivos estáticos del cliente Astro
-  app.use('/_astro', express.static(path.join(__dirname, 'dist/client/_astro')))
   app.use(express.static(path.join(__dirname, 'dist/client'), { index: false }))
 
   // Rate limiting para endpoint de contacto (prevenir SPAM y DoS)
