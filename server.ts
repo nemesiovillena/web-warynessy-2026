@@ -116,6 +116,7 @@ async function runDatabaseHotfix() {
           "imagen_espacio2_id" integer,
           "imagen_espacio3_id" integer,
           "imagen_espacio4_id" integer,
+          "historia_mision" varchar,
           "meta_title" varchar,
           "meta_description" varchar,
           "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
@@ -129,6 +130,32 @@ async function runDatabaseHotfix() {
       await pool.query(`CREATE INDEX IF NOT EXISTS "paginas_hero_image_idx" ON "paginas" USING btree ("hero_image_id");`)
       await pool.query(`CREATE INDEX IF NOT EXISTS "paginas_created_at_idx" ON "paginas" USING btree ("created_at");`)
       console.log('✅ paginas indexes created.')
+    } else {
+      // Asegurar que la columna historia_mision existe (puede faltar en instancias previas)
+      await pool.query(`ALTER TABLE "paginas" ADD COLUMN IF NOT EXISTS "historia_mision" varchar;`)
+    }
+
+    // Crear tabla paginas_historia_hitos si no existe
+    const paginasHitosExists = await pool.query(`
+      SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'paginas_historia_hitos');
+    `)
+    if (!paginasHitosExists.rows[0].exists) {
+      console.log('➕ Creating paginas_historia_hitos table...')
+      await pool.query(`
+        CREATE TABLE "paginas_historia_hitos" (
+          "id" serial PRIMARY KEY,
+          "_order" integer NOT NULL,
+          "_parent_id" integer NOT NULL,
+          "titulo" varchar NOT NULL,
+          "descripcion" varchar NOT NULL,
+          "imagen_id" integer,
+          CONSTRAINT "paginas_historia_hitos_parent_fk" FOREIGN KEY ("_parent_id") REFERENCES "paginas"("id") ON DELETE CASCADE
+        );
+      `)
+      await pool.query(`CREATE INDEX IF NOT EXISTS "paginas_historia_hitos_order_idx" ON "paginas_historia_hitos" USING btree ("_order");`)
+      await pool.query(`CREATE INDEX IF NOT EXISTS "paginas_historia_hitos_parent_id_idx" ON "paginas_historia_hitos" USING btree ("_parent_id");`)
+      await pool.query(`CREATE INDEX IF NOT EXISTS "paginas_historia_hitos_imagen_idx" ON "paginas_historia_hitos" USING btree ("imagen_id");`)
+      console.log('✅ paginas_historia_hitos table created.')
     }
 
     // ========================================
@@ -299,11 +326,12 @@ async function start() {
       // Content Security Policy solo para rutas de Astro
       res.setHeader('Content-Security-Policy',
         "default-src 'self'; " +
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' *.googletagmanager.com *.google-analytics.com; " +
-        "style-src 'self' 'unsafe-inline' *.googleapis.com *.cloudflare.com cdnjs.cloudflare.com; " +
-        "img-src 'self' data: blob: *.googleapis.com *.gstatic.com *.b-cdn.net lh3.googleusercontent.com; " +
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' *.googletagmanager.com *.google-analytics.com *.covermanager.com; " +
+        "style-src 'self' 'unsafe-inline' *.googleapis.com *.cloudflare.com cdnjs.cloudflare.com *.covermanager.com; " +
+        "img-src 'self' data: blob: *.googleapis.com *.gstatic.com *.b-cdn.net lh3.googleusercontent.com *.cdninstagram.com *.fbcdn.net *.instagram.com *.covermanager.com; " +
         "font-src 'self' *.googleapis.com *.gstatic.com *.cloudflare.com cdnjs.cloudflare.com; " +
-        "connect-src 'self' *.google-analytics.com *.googletagmanager.com; " +
+        "connect-src 'self' *.google-analytics.com *.googletagmanager.com graph.instagram.com *.instagram.com *.covermanager.com; " +
+        "frame-src *.covermanager.com; " +
         "frame-ancestors 'none';"
       )
       res.setHeader('X-Frame-Options', 'DENY')
@@ -311,7 +339,6 @@ async function start() {
         'geolocation=(), ' +
         'microphone=(), ' +
         'camera=(), ' +
-        'payment=(), ' +
         'usb=(), ' +
         'magnetometer=(), ' +
         'gyroscope=(), ' +
