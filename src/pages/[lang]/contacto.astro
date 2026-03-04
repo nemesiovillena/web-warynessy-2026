@@ -37,15 +37,17 @@ const heroImg = getOptimizedImageUrl(rawHeroImg);
      <div class="absolute inset-0 bg-cover bg-center opacity-20" style={`background-image: url('${heroImg}')`}></div>
      <div class="absolute inset-0 bg-gradient-to-t from-matte-black to-transparent"></div>
      <Container class="relative z-10 text-center animate-fade-up">
+      {pageData?.heroSubtitle && (
         <span class="text-primary font-bold tracking-[0.3em] uppercase text-sm mb-4 block">
-          {pageData?.heroSubtitle || ui.heroFallbackSubtitle}
+          {pageData.heroSubtitle}
         </span>
+      )}
+      {pageData?.heroTitle && (
         <h1 class="text-5xl md:text-7xl font-display font-black text-white mb-6">
-          {pageData?.heroTitle || ui.heroFallbackTitle}
+          {pageData.heroTitle}
         </h1>
-        <p class="text-white/60 text-lg max-w-2xl mx-auto font-light">
-          {pageData?.heroSubtitle ? "" : ui.heroFallbackDesc}
-        </p>
+      )}
+      {/* Se eliminan fallbacks de descripción */}
      </Container>
   </section>
 

@@ -67,12 +67,16 @@ const splitImages = [
       <!-- Hero/Intro Section within Scroll -->
       <section class="pt-24 pb-12 px-8 md:px-16 animate-fade-up">
          <span class="text-primary font-bold tracking-[0.3em] uppercase text-xs mb-4 block">{ui.badge}</span>
-         <h1 class="text-5xl md:text-7xl font-display font-black text-white mb-6 uppercase tracking-tighter">
-           {pageData?.heroTitle || 'Espacios únicos'}
-         </h1>
-         <p class="text-gray-400 text-lg font-light leading-relaxed max-w-xl">
-            {pageData?.heroSubtitle || 'Cada rincón de Warynessy ha sido diseñado para crear la atmósfera perfecta. Descubre donde la gastronomía se encuentra con el confort en un entorno incomparable.'}
-         </p>
+         {pageData?.heroTitle && (
+           <h1 class="text-5xl md:text-7xl font-display font-black text-white mb-6 uppercase tracking-tighter">
+             {pageData.heroTitle}
+           </h1>
+         )}
+         {pageData?.heroSubtitle && (
+           <p class="text-gray-400 text-lg font-light leading-relaxed max-w-xl">
+              {pageData.heroSubtitle}
+           </p>
+         )}
          {pageData?.descripcionEspacios && (
            <div class="mt-6">
              <RichText content={pageData.descripcionEspacios} class="text-gray-400 text-base leading-relaxed" />
