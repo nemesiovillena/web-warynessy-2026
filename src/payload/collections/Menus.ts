@@ -18,10 +18,20 @@ export const Menus: CollectionConfig = {
   hooks: {
     afterChange: [
       async ({ doc, previousDoc, operation, req }) => {
-        if ((req as any).locale !== 'es') return;
+        const locale = (req as any).locale;
+
+        // PROTECCIÓN CRÍTICA: Solo traducir si estamos editando explícitamente en español
+        // y si no es una operación disparada por el propio sistema de traducción
+        if (locale !== 'es') {
+          return;
+        }
+
         if (operation === 'create' || operation === 'update') {
           const payload = req.payload;
           const executeTranslations = async () => {
+            // Esperar un momento para asegurar que la transacción original se complete
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
             try {
               const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
               const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
@@ -48,7 +58,7 @@ export const Menus: CollectionConfig = {
                     id: doc.id,
                     locale: locale as any,
                     data: translatedData,
-                    req: { ...req, disableHooks: true } as any,
+                    req: { payload: req.payload, disableHooks: true } as any,
                   });
                 }
               }
@@ -163,6 +173,7 @@ export const Menus: CollectionConfig = {
       name: 'descripcion',
       type: 'richText',
       label: 'Descripción del menú (Composición)',
+      localized: true,
       admin: {
         description: 'Escribe aquí la composición completa del menú: entrantes, principales, postres, etc.',
       },

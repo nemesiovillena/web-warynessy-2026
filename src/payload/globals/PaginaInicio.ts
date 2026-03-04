@@ -16,6 +16,9 @@ export const PaginaInicio: GlobalConfig = {
         const payload = req.payload;
 
         const executeTranslations = async () => {
+          // Esperar un momento para asegurar que la transacción original se complete
+          await new Promise(resolve => setTimeout(resolve, 1000));
+
           try {
             const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
             const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
@@ -65,7 +68,7 @@ export const PaginaInicio: GlobalConfig = {
                   slug: 'pagina-inicio',
                   data: translatedData,
                   locale: locale as any,
-                  req: { ...req, disableHooks: true } as any,
+                  req: { payload: req.payload, disableHooks: true } as any,
                 });
               }
             }

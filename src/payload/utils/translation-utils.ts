@@ -159,8 +159,13 @@ export async function translateDocument({
             // Caso 4: Strings simples
             else if (typeof value === 'string' && value.trim().length > 0) {
                 console.log(`[TranslateTool] Traduciendo Texto: ${field} al locale ${targetLang}...`);
-                translatedData[field] = await callTranslationAgent(value, targetLang, endpoint, model);
-                hasTranslations = true;
+                const translated = await callTranslationAgent(value, targetLang, endpoint, model);
+
+                // Solo guardar si la traducción es diferente al original (para evitar bucles)
+                if (translated && translated !== value) {
+                    translatedData[field] = translated;
+                    hasTranslations = true;
+                }
             }
         } catch (fieldError) {
             console.error(`[TranslateTool] Error traduciendo campo '${field}' a '${targetLang}':`, fieldError);

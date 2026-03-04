@@ -26,8 +26,10 @@ export const MenusGrupo: CollectionConfig = {
                     const payload = req.payload;
 
                     const executeTranslations = async () => {
-                        try {
+                        // Esperar un momento para asegurar que la transacción original se complete
+                        await new Promise(resolve => setTimeout(resolve, 1000));
 
+                        try {
                             const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
                             const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
                             const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
@@ -56,12 +58,12 @@ export const MenusGrupo: CollectionConfig = {
 
                                 if (hasTranslations) {
                                     console.log(`[MENUS-GRUPO] [Background] Aplicando traducciones a locale ${locale}...`);
-                                    await (payload as any).update({
+                                    await req.payload.update({
                                         collection: 'menus-grupo',
                                         id: doc.id,
                                         locale: locale as any,
                                         data: translatedData,
-                                        req: { ...req, disableHooks: true } as any,
+                                        req: { payload: req.payload, disableHooks: true } as any,
                                     });
                                 }
                             }
