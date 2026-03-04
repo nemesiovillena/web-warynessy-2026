@@ -13,48 +13,62 @@ export const ConfiguracionSitio: GlobalConfig = {
         if ((req as any).locale !== 'es') return;
 
         const payload = req.payload;
-        const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
-        const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
-        const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
 
-        const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
+        // Función asíncrona para ejecutar en segundo plano
+        const executeTranslations = async () => {
+          try {
+            const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
+            const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
+            const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
 
-        const prevHours: any[] = (previousDoc as any)?.openingHours || [];
-        const currHours: any[] = doc.openingHours || [];
+            const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
 
-        // Detectar filas que cambiaron en days u hours
-        const changedIndexes = currHours.reduce<number[]>((acc, row, i) => {
-          const prev = prevHours[i];
-          if (!prev || row.days !== prev.days || row.hours !== prev.hours) acc.push(i);
-          return acc;
-        }, []);
+            const prevHours: any[] = (previousDoc as any)?.openingHours || [];
+            const currHours: any[] = doc.openingHours || [];
 
-        if (changedIndexes.length === 0) return;
+            // Detectar filas que cambiaron en days u hours
+            const changedIndexes = currHours.reduce<number[]>((acc, row, i) => {
+              const prev = prevHours[i];
+              if (!prev || row.days !== prev.days || row.hours !== prev.hours) acc.push(i);
+              return acc;
+            }, []);
 
-        console.log(`[CONFIG-SITIO] Traduciendo ${changedIndexes.length} filas de horario...`);
+            if (changedIndexes.length === 0) return;
 
-        await Promise.all(targetLocales.map(async (locale) => {
-          const translatedHours = currHours.map((row: any) => ({ ...row }));
+            console.log(`[CONFIG-SITIO] [Background] Iniciando traducción de ${changedIndexes.length} filas de horario...`);
 
-          await Promise.all(changedIndexes.map(async (i) => {
-            const row = currHours[i];
-            if (row.days?.trim()) {
-              translatedHours[i].days = await callTranslationAgent(row.days, locale, endpoint, modelo);
+            // Procesar locales secuencialmente para estabilidad, pero en background
+            for (const locale of targetLocales) {
+              const translatedHours = currHours.map((row: any) => ({ ...row }));
+
+              for (const i of changedIndexes) {
+                const row = currHours[i];
+                if (row.days?.trim()) {
+                  translatedHours[i].days = await callTranslationAgent(row.days, locale, endpoint, modelo);
+                }
+                if (row.hours?.trim()) {
+                  translatedHours[i].hours = await callTranslationAgent(row.hours, locale, endpoint, modelo);
+                }
+              }
+
+              await payload.updateGlobal({
+                slug: 'configuracion-sitio',
+                locale: locale as any,
+                data: { openingHours: translatedHours },
+                req: { ...req, disableHooks: true } as any,
+              });
             }
-            if (row.hours?.trim()) {
-              translatedHours[i].hours = await callTranslationAgent(row.hours, locale, endpoint, modelo);
-            }
-          }));
 
-          await payload.updateGlobal({
-            slug: 'configuracion-sitio',
-            locale: locale as any,
-            data: { openingHours: translatedHours },
-          });
-        }));
+            console.log(`[CONFIG-SITIO] [Background] Horarios traducidos con éxito.`);
+          } catch (error) {
+            console.error(`[CONFIG-SITIO] [Background] Error en el proceso de traducción:`, error);
+          }
+        };
 
-        console.log(`[CONFIG-SITIO] Horarios traducidos.`);
+        // Lanzar en segundo plano sin esperar (await)
+        executeTranslations();
       }
+
     ]
   },
   fields: [

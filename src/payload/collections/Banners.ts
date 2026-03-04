@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { translateDocument } from '../utils/translation-utils'
 
 export const Banners: CollectionConfig = {
   slug: 'banners',
@@ -10,6 +11,56 @@ export const Banners: CollectionConfig = {
     useAsTitle: 'titulo',
     defaultColumns: ['titulo', 'posicion', 'activo', 'fechaInicio', 'fechaFin'],
     group: 'Contenido',
+  },
+  hooks: {
+    afterChange: [
+      async ({ doc, previousDoc, operation, req }) => {
+        if (operation === 'create' || operation === 'update') {
+          const payload = req.payload
+          const executeTranslations = async () => {
+            try {
+              const configTraduccion: any = await payload.findGlobal({
+                slug: 'configuracion-traduccion' as any,
+              })
+              const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate'
+              const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001'
+
+              const targetLocales = ['ca', 'en', 'fr', 'de'] as const
+              const fieldsToTranslate = ['title', 'subtitle', 'buttonText']
+
+              for (const locale of targetLocales) {
+                const { translatedData, hasTranslations } = await translateDocument({
+                  doc,
+                  previousDoc,
+                  fields: fieldsToTranslate,
+                  targetLang: locale,
+                  endpoint,
+                  model: modelo,
+                  operation,
+                })
+
+                if (hasTranslations) {
+                  console.log(`[BANNERS] [Background] Aplicando traducciones a locale ${locale}...`)
+                  await req.payload.update({
+                    collection: 'banners',
+                    id: doc.id,
+                    locale: locale as any,
+                    data: translatedData,
+                    req: { ...req, disableHooks: true } as any,
+                  })
+                }
+              }
+              console.log(`[BANNERS] [Background] Traducciones completadas.`)
+            } catch (error) {
+              console.error('[BANNERS] [Background] Error en hook de traducción:', error)
+            }
+          };
+
+          executeTranslations();
+        }
+
+      },
+    ],
   },
   access: {
     read: () => true, // Public read access
@@ -51,6 +102,7 @@ export const Banners: CollectionConfig = {
           name: 'texto',
           type: 'text',
           label: 'Texto del enlace',
+          localized: true,
         },
         {
           name: 'externo',

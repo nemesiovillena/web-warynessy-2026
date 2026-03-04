@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { translateDocument } from '../utils/translation-utils'
 
 export const Experiencias: CollectionConfig = {
     slug: 'experiencias',
@@ -13,6 +14,56 @@ export const Experiencias: CollectionConfig = {
     },
     access: {
         read: () => true, // Public read access
+    },
+    hooks: {
+        afterChange: [
+            async ({ doc, previousDoc, operation, req }) => {
+                if (operation === 'create' || operation === 'update') {
+                    const payload = req.payload
+                    const executeTranslations = async () => {
+                        try {
+                            const configTraduccion: any = await payload.findGlobal({
+                                slug: 'configuracion-traduccion' as any,
+                            })
+                            const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate'
+                            const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001'
+
+                            const targetLocales = ['ca', 'en', 'fr', 'de'] as const
+                            const fieldsToTranslate = ['titulo', 'descripcion', 'resumen', 'incluye', 'validez']
+
+                            for (const locale of targetLocales) {
+                                const { translatedData, hasTranslations } = await translateDocument({
+                                    doc,
+                                    previousDoc,
+                                    fields: fieldsToTranslate,
+                                    targetLang: locale,
+                                    endpoint,
+                                    model: modelo,
+                                    operation,
+                                })
+
+                                if (hasTranslations) {
+                                    console.log(`[EXPERIENCIAS] [Background] Aplicando traducciones a locale ${locale}...`)
+                                    await req.payload.update({
+                                        collection: 'experiencias',
+                                        id: doc.id,
+                                        locale: locale as any,
+                                        data: translatedData,
+                                        req: { ...req, disableHooks: true } as any,
+                                    })
+                                }
+                            }
+                            console.log(`[EXPERIENCIAS] [Background] Traducciones completadas.`)
+                        } catch (error) {
+                            console.error('[EXPERIENCIAS] [Background] Error en hook de traducción:', error)
+                        }
+                    }
+
+                    executeTranslations()
+                }
+
+            },
+        ],
     },
     fields: [
         {
@@ -109,6 +160,7 @@ export const Experiencias: CollectionConfig = {
                     name: 'item',
                     type: 'text',
                     required: true,
+                    localized: true,
                 },
             ],
             admin: {

@@ -23,47 +23,55 @@ export const MenusGrupo: CollectionConfig = {
             async ({ doc, previousDoc, operation, req }) => {
                 if (operation === 'create' || operation === 'update') {
                     const payload = req.payload;
-                    try {
-                        if ((req as any).locale !== 'es') return;
 
-                        console.log(`[MENUS-GRUPO] Iniciando traducción automática para: ${doc.nombre}`);
+                    const executeTranslations = async () => {
+                        try {
+                            if ((req as any).locale !== 'es') return;
 
-                        const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
-                        const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
-                        const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
+                            const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
+                            const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
+                            const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
 
-                        const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
-                        const fieldsToTranslate = ['nombre', 'descripcion'];
+                            const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
+                            const fieldsToTranslate = ['nombre', 'descripcion'];
 
-                        await Promise.all(targetLocales.map(async (locale) => {
-                            const translatedData: any = {};
-                            let hasTranslations = false;
+                            console.log(`[MENUS-GRUPO] [Background] Iniciando traducción automática para: ${doc.nombre}`);
 
-                            await Promise.all(fieldsToTranslate.map(async (field) => {
-                                const value = doc[field];
-                                const prevValue = previousDoc?.[field];
-                                const changed = operation === 'create' || value !== prevValue;
-                                if (changed && value && typeof value === 'string' && value.trim().length > 0) {
-                                    console.log(`[MENUS-GRUPO] Traduciendo ${field} al locale ${locale}...`);
-                                    translatedData[field] = await callTranslationAgent(value, locale, endpoint, modelo);
-                                    hasTranslations = true;
+                            for (const locale of targetLocales) {
+                                const translatedData: any = {};
+                                let hasTranslations = false;
+
+                                for (const field of fieldsToTranslate) {
+                                    const value = doc[field];
+                                    if (!value) continue;
+
+                                    const prevValue = previousDoc?.[field];
+                                    const changed = operation === 'create' || value !== prevValue;
+                                    if (changed && typeof value === 'string' && value.trim().length > 0) {
+                                        console.log(`[MENUS-GRUPO] [Background] Traduciendo ${field} al locale ${locale}...`);
+                                        translatedData[field] = await callTranslationAgent(value, locale, endpoint, modelo);
+                                        hasTranslations = true;
+                                    }
                                 }
-                            }));
 
-                            if (hasTranslations) {
-                                console.log(`[MENUS-GRUPO] Aplicando traducciones a locale ${locale}...`);
-                                await (payload as any).update({
-                                    collection: 'menus-grupo',
-                                    id: doc.id,
-                                    locale: locale as any,
-                                    data: translatedData,
-                                    req: { ...req, disableHooks: true } as any,
-                                });
+                                if (hasTranslations) {
+                                    console.log(`[MENUS-GRUPO] [Background] Aplicando traducciones a locale ${locale}...`);
+                                    await (payload as any).update({
+                                        collection: 'menus-grupo',
+                                        id: doc.id,
+                                        locale: locale as any,
+                                        data: translatedData,
+                                        req: { ...req, disableHooks: true } as any,
+                                    });
+                                }
                             }
-                        }));
-                    } catch (error) {
-                        console.error('[MENUS-GRUPO] Error en hook de traducción:', error);
-                    }
+                            console.log(`[MENUS-GRUPO] [Background] Traducciones completadas.`);
+                        } catch (error) {
+                            console.error('[MENUS-GRUPO] [Background] Error en hook de traducción:', error);
+                        }
+                    };
+
+                    executeTranslations();
                 }
             }
         ]

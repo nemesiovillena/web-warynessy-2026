@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { callTranslationAgent, translateLexical } from '../utils/translation-utils'
+import { callTranslationAgent, translateLexical, translateDocument } from '../utils/translation-utils'
 
 export const Menus: CollectionConfig = {
   slug: 'menus',
@@ -20,53 +20,46 @@ export const Menus: CollectionConfig = {
       async ({ doc, previousDoc, operation, req }) => {
         if (operation === 'create' || operation === 'update') {
           const payload = req.payload;
-          try {
-            // Evitar bucles: solo traducir si el locale de la petición es 'es'
-            if ((req as any).locale !== 'es') return;
+          const executeTranslations = async () => {
+            try {
+              const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
+              const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
+              const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
 
-            console.log(`[MENUS] Iniciando traducción automática para: ${doc.nombre}`);
+              const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
+              const fieldsToTranslate = ['nombre', 'etiqueta', 'descripcion_menu', 'fechasDias', 'descripcion'];
 
-            const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
-            const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
-            const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
-
-            const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
-            const fieldsToTranslate = ['nombre', 'etiqueta', 'descripcion_menu', 'fechasDias', 'descripcion'];
-
-            await Promise.all(targetLocales.map(async (locale) => {
-              const translatedData: any = {};
-              let hasTranslations = false;
-
-              await Promise.all(fieldsToTranslate.map(async (field) => {
-                const value = doc[field];
-                if (!value) return;
-                const prevValue = previousDoc?.[field];
-                const changed = operation === 'create' || JSON.stringify(value) !== JSON.stringify(prevValue);
-                if (!changed) return;
-                if (typeof value === 'object' && value !== null && value.root) {
-                  translatedData[field] = await translateLexical(value, locale, endpoint, modelo);
-                  hasTranslations = true;
-                } else if (typeof value === 'string' && value.trim().length > 0) {
-                  translatedData[field] = await callTranslationAgent(value, locale, endpoint, modelo);
-                  hasTranslations = true;
-                }
-              }));
-
-              if (hasTranslations) {
-                console.log(`[MENUS] Aplicando traducciones a locale ${locale}...`);
-                await (payload as any).update({
-                  collection: 'menus',
-                  id: doc.id,
-                  locale: locale as any,
-                  data: translatedData,
-                  req: { ...req, disableHooks: true } as any,
+              for (const locale of targetLocales) {
+                const { translatedData, hasTranslations } = await translateDocument({
+                  doc,
+                  previousDoc,
+                  fields: fieldsToTranslate,
+                  targetLang: locale,
+                  endpoint,
+                  model: modelo,
+                  operation
                 });
+
+                if (hasTranslations) {
+                  console.log(`[MENUS] [Background] Aplicando traducciones a locale ${locale}...`);
+                  await req.payload.update({
+                    collection: 'menus',
+                    id: doc.id,
+                    locale: locale as any,
+                    data: translatedData,
+                    req: { ...req, disableHooks: true } as any,
+                  });
+                }
               }
-            }));
-          } catch (error) {
-            console.error('[MENUS] Error en hook de traducción:', error);
-          }
+              console.log(`[MENUS] [Background] Traducciones completadas.`);
+            } catch (error) {
+              console.error('[MENUS] [Background] Error en hook de traducción:', error);
+            }
+          };
+
+          executeTranslations();
         }
+
       }
     ]
   },

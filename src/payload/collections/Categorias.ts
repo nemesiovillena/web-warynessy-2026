@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { callTranslationAgent } from '../utils/translation-utils'
+import { callTranslationAgent, translateDocument } from '../utils/translation-utils'
 
 export const Categorias: CollectionConfig = {
   slug: 'categorias',
@@ -20,48 +20,46 @@ export const Categorias: CollectionConfig = {
       async ({ doc, previousDoc, operation, req }) => {
         if (operation === 'create' || operation === 'update') {
           const payload = req.payload;
-          try {
-            if ((req as any).locale !== 'es') return;
+          const executeTranslations = async () => {
+            try {
+              const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
+              const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
+              const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
 
-            console.log(`[CATEGORIAS] Iniciando traducción automática para: ${doc.nombre}`);
+              const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
+              const fieldsToTranslate = ['nombre', 'descripcion'];
 
-            const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
-            const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
-            const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
-
-            const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
-            const fieldsToTranslate = ['nombre', 'descripcion'];
-
-            await Promise.all(targetLocales.map(async (locale) => {
-              const translatedData: any = {};
-              let hasTranslations = false;
-
-              await Promise.all(fieldsToTranslate.map(async (field) => {
-                const value = doc[field];
-                const prevValue = previousDoc?.[field];
-                const changed = operation === 'create' || value !== prevValue;
-                if (changed && value && typeof value === 'string' && value.trim().length > 0) {
-                  console.log(`[CATEGORIAS] Traduciendo ${field} al locale ${locale}...`);
-                  translatedData[field] = await callTranslationAgent(value, locale, endpoint, modelo);
-                  hasTranslations = true;
-                }
-              }));
-
-              if (hasTranslations) {
-                console.log(`[CATEGORIAS] Aplicando traducciones a locale ${locale}...`);
-                await (payload as any).update({
-                  collection: 'categorias',
-                  id: doc.id,
-                  locale: locale as any,
-                  data: translatedData,
-                  req: { ...req, disableHooks: true } as any,
+              for (const locale of targetLocales) {
+                const { translatedData, hasTranslations } = await translateDocument({
+                  doc,
+                  previousDoc,
+                  fields: fieldsToTranslate,
+                  targetLang: locale,
+                  endpoint,
+                  model: modelo,
+                  operation
                 });
+
+                if (hasTranslations) {
+                  console.log(`[CATEGORIAS] [Background] Aplicando traducciones a locale ${locale}...`);
+                  await req.payload.update({
+                    collection: 'categorias',
+                    id: doc.id,
+                    locale: locale as any,
+                    data: translatedData,
+                    req: { ...req, disableHooks: true } as any,
+                  });
+                }
               }
-            }));
-          } catch (error) {
-            console.error('[CATEGORIAS] Error en hook de traducción:', error);
-          }
+              console.log(`[CATEGORIAS] [Background] Traducciones completadas.`);
+            } catch (error) {
+              console.error('[CATEGORIAS] [Background] Error en hook de traducción:', error);
+            }
+          };
+
+          executeTranslations();
         }
+
       }
     ]
   },

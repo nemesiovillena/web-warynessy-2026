@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { callTranslationAgent, translateLexical } from '../utils/translation-utils'
+import { callTranslationAgent, translateLexical, translateDocument } from '../utils/translation-utils'
 
 export const Espacios: CollectionConfig = {
   slug: 'espacios',
@@ -20,60 +20,47 @@ export const Espacios: CollectionConfig = {
       async ({ doc, previousDoc, operation, req }) => {
         if (operation === 'create' || operation === 'update') {
           const payload = req.payload;
-          try {
-            // Evitar bucles: solo traducir si el locale de la petición es 'es'
-            if ((req as any).locale !== 'es') return;
+          const executeTranslations = async () => {
+            try {
+              const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
+              const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
+              const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
 
-            console.log(`[ESPACIOS] Iniciando traducción automática para: ${doc.nombre}`);
+              const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
+              // Campos a traducir, incluyendo el RichText 'descripcion' y el array 'caracteristicas'
+              const fieldsToTranslate = ['nombre', 'descripcion', 'caracteristicas'];
 
-            const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
-            const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
-            const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
-
-            const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
-            // Campos a traducir, incluyendo el RichText 'descripcion'
-            const fieldsToTranslate = ['nombre', 'descripcion'];
-
-            await Promise.all(targetLocales.map(async (locale) => {
-              const translatedData: any = {};
-              let hasTranslations = false;
-
-              await Promise.all(fieldsToTranslate.map(async (field) => {
-                const value = doc[field];
-                if (!value) return;
-                const prevValue = previousDoc?.[field];
-                const changed = operation === 'create' || JSON.stringify(value) !== JSON.stringify(prevValue);
-                if (!changed) return;
-
-                // Si es RichText (Lexical)
-                if (typeof value === 'object' && value !== null && value.root) {
-                  console.log(`[ESPACIOS] Traduciendo RichText: ${field} al locale ${locale}...`);
-                  translatedData[field] = await translateLexical(value, locale, endpoint, modelo);
-                  hasTranslations = true;
-                }
-                // Si es texto plano
-                else if (typeof value === 'string' && value.trim().length > 0) {
-                  console.log(`[ESPACIOS] Traduciendo texto: ${field} al locale ${locale}...`);
-                  translatedData[field] = await callTranslationAgent(value, locale, endpoint, modelo);
-                  hasTranslations = true;
-                }
-              }));
-
-              if (hasTranslations) {
-                console.log(`[ESPACIOS] Aplicando traducciones a locale ${locale}...`);
-                await (payload as any).update({
-                  collection: 'espacios',
-                  id: doc.id,
-                  locale: locale as any,
-                  data: translatedData,
-                  req: { ...req, disableHooks: true } as any,
+              for (const locale of targetLocales) {
+                const { translatedData, hasTranslations } = await translateDocument({
+                  doc,
+                  previousDoc,
+                  fields: fieldsToTranslate,
+                  targetLang: locale,
+                  endpoint,
+                  model: modelo,
+                  operation
                 });
+
+                if (hasTranslations) {
+                  console.log(`[ESPACIOS] [Background] Aplicando traducciones a locale ${locale}...`);
+                  await req.payload.update({
+                    collection: 'espacios',
+                    id: doc.id,
+                    locale: locale as any,
+                    data: translatedData,
+                    req: { ...req, disableHooks: true } as any,
+                  });
+                }
               }
-            }));
-          } catch (error) {
-            console.error('[ESPACIOS] Error en hook de traducción:', error);
-          }
+              console.log(`[ESPACIOS] [Background] Traducciones completadas.`);
+            } catch (error) {
+              console.error('[ESPACIOS] [Background] Error en hook de traducción:', error);
+            }
+          };
+
+          executeTranslations();
         }
+
       }
     ]
   },
@@ -152,6 +139,7 @@ export const Espacios: CollectionConfig = {
           name: 'caracteristica',
           type: 'text',
           required: true,
+          localized: true,
         },
       ],
       admin: {

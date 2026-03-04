@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { callTranslationAgent, translateLexical } from '../utils/translation-utils'
+import { callTranslationAgent, translateLexical, translateDocument } from '../utils/translation-utils'
 
 export const Paginas: CollectionConfig = {
     slug: 'paginas',
@@ -21,63 +21,49 @@ export const Paginas: CollectionConfig = {
     hooks: {
         afterChange: [
             async ({ doc, previousDoc, operation, req }) => {
-                // Solo si el usuario ha solicitado traducción y no es una petición interna
-                if ((operation === 'create' || operation === 'update')) {
+                if (operation === 'create' || operation === 'update') {
                     const payload = req.payload;
-                    try {
-                        // Evitar bucles: solo traducir si el locale de la petición es 'es'
-                        if ((req as any).locale !== 'es') return;
+                    const executeTranslations = async () => {
+                        try {
+                            const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
+                            const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
+                            const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
 
-                        console.log(`[PAGINAS] Iniciando traducción automática para: ${doc.tituloInterno}`);
+                            const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
+                            const fieldsToTranslate = ['heroTitle', 'heroSubtitle', 'historiaMision', 'historiaHitos', 'metaTitle', 'metaDescription'];
 
-                        const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
-                        const endpoint = configTraduccion.endpointAgente || 'http://localhost:8000/translate';
-                        const modelo = configTraduccion.modeloIA;
-
-                        const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
-                        const fieldsToTranslate = ['heroTitle', 'heroSubtitle', 'historiaMision', 'metaTitle', 'metaDescription'];
-
-                        await Promise.all(targetLocales.map(async (locale) => {
-                            const translatedData: any = {};
-                            let hasTranslations = false;
-
-                            await Promise.all(fieldsToTranslate.map(async (field) => {
-                                const value = doc[field];
-                                if (!value) return;
-                                const prevValue = previousDoc?.[field];
-                                const changed = operation === 'create' || JSON.stringify(value) !== JSON.stringify(prevValue);
-                                if (!changed) return;
-
-                                // Si es RichText (Lexical)
-                                if (typeof value === 'object' && value !== null && value.root) {
-                                    console.log(`[PAGINAS] Traduciendo RichText: ${field} al locale ${locale}...`);
-                                    translatedData[field] = await translateLexical(value, locale, endpoint, modelo);
-                                    hasTranslations = true;
-                                }
-                                // Si es texto plano
-                                else if (typeof value === 'string' && value.trim().length > 0) {
-                                    console.log(`[PAGINAS] Traduciendo texto: ${field} al locale ${locale}...`);
-                                    translatedData[field] = await callTranslationAgent(value, locale, endpoint, modelo);
-                                    hasTranslations = true;
-                                }
-                            }));
-
-                            if (hasTranslations) {
-                                console.log(`[PAGINAS] Aplicando traducciones a locale ${locale}...`);
-                                await (payload as any).update({
-                                    collection: 'paginas',
-                                    id: doc.id,
-                                    locale: locale as any,
-                                    data: translatedData,
-                                    req: { ...req, disableHooks: true } as any,
+                            for (const locale of targetLocales) {
+                                const { translatedData, hasTranslations } = await translateDocument({
+                                    doc,
+                                    previousDoc,
+                                    fields: fieldsToTranslate,
+                                    targetLang: locale,
+                                    endpoint,
+                                    model: modelo,
+                                    operation
                                 });
+
+                                if (hasTranslations) {
+                                    console.log(`[PAGINAS] [Background] Aplicando traducciones a locale ${locale}...`);
+                                    await req.payload.update({
+                                        collection: 'paginas',
+                                        id: doc.id,
+                                        locale: locale as any,
+                                        data: translatedData,
+                                        req: { ...req, disableHooks: true } as any,
+                                    });
+                                }
                             }
-                        }));
-                    } catch (error) {
-                        console.error('[PAGINAS] Error en hook de traducción:', error);
-                    }
+                            console.log(`[PAGINAS] [Background] Traducciones completadas.`);
+                        } catch (error) {
+                            console.error('[PAGINAS] [Background] Error en hook de traducción:', error);
+                        }
+                    };
+
+                    executeTranslations();
                 }
             }
+
         ]
     },
     fields: [

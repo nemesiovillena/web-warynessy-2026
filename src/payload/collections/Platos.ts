@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { callTranslationAgent } from '../utils/translation-utils'
+import { callTranslationAgent, translateDocument } from '../utils/translation-utils'
 
 export const Platos: CollectionConfig = {
   slug: 'platos',
@@ -20,49 +20,46 @@ export const Platos: CollectionConfig = {
       async ({ doc, previousDoc, operation, req }) => {
         if (operation === 'create' || operation === 'update') {
           const payload = req.payload;
-          try {
-            // Evitar bucles: solo traducir si el locale de la petición es 'es'
-            if ((req as any).locale !== 'es') return;
+          const executeTranslations = async () => {
+            try {
+              const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
+              const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
+              const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
 
-            console.log(`[PLATOS] Iniciando traducción automática para: ${doc.nombre}`);
+              const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
+              const fieldsToTranslate = ['nombre', 'descripcion', 'etiquetas'];
 
-            const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
-            const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
-            const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
-
-            const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
-            const fieldsToTranslate = ['nombre', 'descripcion'];
-
-            await Promise.all(targetLocales.map(async (locale) => {
-              const translatedData: any = {};
-              let hasTranslations = false;
-
-              await Promise.all(fieldsToTranslate.map(async (field) => {
-                const value = doc[field];
-                const prevValue = previousDoc?.[field];
-                const changed = operation === 'create' || value !== prevValue;
-                if (changed && value && typeof value === 'string' && value.trim().length > 0) {
-                  console.log(`[PLATOS] Traduciendo ${field} al locale ${locale}...`);
-                  translatedData[field] = await callTranslationAgent(value, locale, endpoint, modelo);
-                  hasTranslations = true;
-                }
-              }));
-
-              if (hasTranslations) {
-                console.log(`[PLATOS] Aplicando traducciones a locale ${locale}...`);
-                await (payload as any).update({
-                  collection: 'platos',
-                  id: doc.id,
-                  locale: locale as any,
-                  data: translatedData,
-                  req: { ...req, disableHooks: true } as any,
+              for (const locale of targetLocales) {
+                const { translatedData, hasTranslations } = await translateDocument({
+                  doc,
+                  previousDoc,
+                  fields: fieldsToTranslate,
+                  targetLang: locale,
+                  endpoint,
+                  model: modelo,
+                  operation
                 });
+
+                if (hasTranslations) {
+                  console.log(`[PLATOS] [Background] Aplicando traducciones a locale ${locale}...`);
+                  await req.payload.update({
+                    collection: 'platos',
+                    id: doc.id,
+                    locale: locale as any,
+                    data: translatedData,
+                    req: { ...req, disableHooks: true } as any,
+                  });
+                }
               }
-            }));
-          } catch (error) {
-            console.error('[PLATOS] Error en hook de traducción:', error);
-          }
+              console.log(`[PLATOS] [Background] Traducciones completadas.`);
+            } catch (error) {
+              console.error('[PLATOS] [Background] Error en hook de traducción:', error);
+            }
+          };
+
+          executeTranslations();
         }
+
       }
     ]
   },
@@ -153,6 +150,7 @@ export const Platos: CollectionConfig = {
           name: 'etiqueta',
           type: 'text',
           required: true,
+          localized: true,
         },
       ],
       admin: {

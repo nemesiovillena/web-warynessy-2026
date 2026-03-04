@@ -11,65 +11,71 @@ export const PaginaInicio: GlobalConfig = {
     afterChange: [
       async ({ doc, previousDoc, req }) => {
         // Solo si venimos de la versión en español
-        if ((req as any).locale !== 'es') {
-          console.log(`[PAGINA-INICIO] Saltando traducción automático (locale: ${(req as any).locale})`);
-          return;
-        }
-
-        console.log(`[PAGINA-INICIO] Iniciando proceso de traducción automática...`);
+        if ((req as any).locale !== 'es') return;
 
         const payload = req.payload;
-        const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
-        const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
-        const model = configTraduccion?.modeloIA;
 
-        const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
-        const fieldsToTranslate = [
-          'heroTitle', 'heroSubtitle', 'welcomeTitle', 'welcomeText',
-          'ctaTitle', 'ctaText', 'ctaButtonText', 'seoTitle', 'seoDescription'
-        ];
+        const executeTranslations = async () => {
+          try {
+            const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
+            const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
+            const model = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
 
-        await Promise.all(targetLocales.map(async (locale) => {
-          const translatedData: any = {};
-          let hasTranslations = false;
+            const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
+            const fieldsToTranslate = [
+              'heroTitle', 'heroSubtitle', 'welcomeTitle', 'welcomeText',
+              'ctaTitle', 'ctaText', 'ctaButtonText', 'seoTitle', 'seoDescription'
+            ];
 
-          await Promise.all(fieldsToTranslate.map(async (field) => {
-            const value = doc[field];
-            if (!value) return;
-            const prevValue = (previousDoc as any)?.[field];
-            const changed = JSON.stringify(value) !== JSON.stringify(prevValue);
-            if (!changed) return;
-            try {
-              // Si es RichText (Lexical)
-              if (typeof value === 'object' && value !== null && value.root) {
-                console.log(`[PAGINA-INICIO] Traduciendo RichText: ${field} al locale ${locale}...`);
-                translatedData[field] = await translateLexical(value, locale, endpoint, model);
-                hasTranslations = true;
+            console.log(`[PAGINA-INICIO] [Background] Iniciando proceso de traducción automática...`);
+
+            for (const locale of targetLocales) {
+              const translatedData: any = {};
+              let hasTranslations = false;
+
+              for (const field of fieldsToTranslate) {
+                const value = doc[field];
+                if (!value) continue;
+
+                const prevValue = (previousDoc as any)?.[field];
+                const changed = JSON.stringify(value) !== JSON.stringify(prevValue);
+                if (!changed) continue;
+
+                try {
+                  // Si es RichText (Lexical)
+                  if (typeof value === 'object' && value !== null && value.root) {
+                    console.log(`[PAGINA-INICIO] [Background] Traduciendo RichText: ${field} al locale ${locale}...`);
+                    translatedData[field] = await translateLexical(value, locale, endpoint, model);
+                    hasTranslations = true;
+                  }
+                  // Si es texto plano
+                  else if (typeof value === 'string' && value.trim().length > 0) {
+                    console.log(`[PAGINA-INICIO] [Background] Traduciendo texto: ${field} al locale ${locale}...`);
+                    translatedData[field] = await callTranslationAgent(value, locale, endpoint, model);
+                    hasTranslations = true;
+                  }
+                } catch (e) {
+                  console.error(`[PAGINA-INICIO] [Background] Error al traducir ${field} a ${locale}:`, e);
+                }
               }
-              // Si es texto plano
-              else if (typeof value === 'string' && value.trim().length > 0) {
-                console.log(`[PAGINA-INICIO] Traduciendo texto: ${field} al locale ${locale}...`);
-                translatedData[field] = await callTranslationAgent(value, locale, endpoint, model);
-                hasTranslations = true;
-              }
-            } catch (e) {
-              console.error(`[PAGINA-INICIO] Error al traducir ${field} a ${locale}:`, e);
-            }
-          }));
 
-          if (hasTranslations) {
-            console.log(`[PAGINA-INICIO] Aplicando traducciones a locale ${locale}...`);
-            try {
-              await payload.updateGlobal({
-                slug: 'pagina-inicio',
-                data: translatedData,
-                locale: locale as any,
-              });
-            } catch (updateErr) {
-              console.error(`[PAGINA-INICIO] Error guardando locale ${locale}:`, updateErr);
+              if (hasTranslations) {
+                console.log(`[PAGINA-INICIO] [Background] Aplicando traducciones a locale ${locale}...`);
+                await payload.updateGlobal({
+                  slug: 'pagina-inicio',
+                  data: translatedData,
+                  locale: locale as any,
+                  req: { ...req, disableHooks: true } as any,
+                });
+              }
             }
+            console.log(`[PAGINA-INICIO] [Background] Traducciones completadas.`);
+          } catch (error) {
+            console.error('[PAGINA-INICIO] [Background] Error en hook de traducción:', error);
           }
-        }));
+        };
+
+        executeTranslations();
       }
     ]
   },

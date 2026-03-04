@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { translateDocument } from '../utils/translation-utils'
 
 export const Alergenos: CollectionConfig = {
   slug: 'alergenos',
@@ -11,6 +12,55 @@ export const Alergenos: CollectionConfig = {
     defaultColumns: ['nombre', 'codigo', 'icono'],
     group: 'Carta',
   },
+  hooks: {
+    afterChange: [
+      async ({ doc, previousDoc, operation, req }) => {
+        if (operation === 'create' || operation === 'update') {
+          const payload = req.payload
+          const executeTranslations = async () => {
+            try {
+              const configTraduccion: any = await payload.findGlobal({
+                slug: 'configuracion-traduccion' as any,
+              })
+              const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate'
+              const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001'
+
+              const targetLocales = ['ca', 'en', 'fr', 'de'] as const
+              const fieldsToTranslate = ['nombre', 'descripcion']
+
+              for (const locale of targetLocales) {
+                const { translatedData, hasTranslations } = await translateDocument({
+                  doc,
+                  previousDoc,
+                  fields: fieldsToTranslate,
+                  targetLang: locale,
+                  endpoint,
+                  model: modelo,
+                  operation,
+                })
+
+                if (hasTranslations) {
+                  console.log(`[ALERGENOS] [Background] Aplicando traducciones a locale ${locale}...`)
+                  await req.payload.update({
+                    collection: 'alergenos',
+                    id: doc.id,
+                    locale: locale as any,
+                    data: translatedData,
+                    req: { ...req, disableHooks: true } as any,
+                  })
+                }
+              }
+              console.log(`[ALERGENOS] [Background] Traducciones completadas.`)
+            } catch (error) {
+              console.error('[ALERGENOS] [Background] Error en hook de traducción:', error)
+            }
+          }
+
+          executeTranslations()
+        }
+      },
+    ],
+  },
   access: {
     read: () => true, // Public read access
   },
@@ -20,6 +70,7 @@ export const Alergenos: CollectionConfig = {
       type: 'text',
       label: 'Nombre del Alérgeno',
       required: true,
+      localized: true,
       admin: {
         description: 'Ej: Gluten, Lactosa, Frutos secos, etc.',
       },
@@ -38,6 +89,7 @@ export const Alergenos: CollectionConfig = {
       name: 'descripcion',
       type: 'textarea',
       label: 'Descripción',
+      localized: true,
       admin: {
         description: 'Descripción detallada del alérgeno',
       },

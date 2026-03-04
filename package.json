@@ -21,6 +21,7 @@
     "migrate:rollback": "payload migrate:rollback"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.6",
     "@astrojs/node": "^9.5.2",
     "@astrojs/sitemap": "^3.6.1",
     "@payloadcms/db-postgres": "3.74.0",
