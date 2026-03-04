@@ -21,12 +21,12 @@ export const MenusGrupo: CollectionConfig = {
     hooks: {
         afterChange: [
             async ({ doc, previousDoc, operation, req }) => {
+                if ((req as any).locale !== 'es') return;
                 if (operation === 'create' || operation === 'update') {
                     const payload = req.payload;
 
                     const executeTranslations = async () => {
                         try {
-                            if ((req as any).locale !== 'es') return;
 
                             const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
                             const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';

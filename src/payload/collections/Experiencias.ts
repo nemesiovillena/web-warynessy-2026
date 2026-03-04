@@ -18,6 +18,7 @@ export const Experiencias: CollectionConfig = {
     hooks: {
         afterChange: [
             async ({ doc, previousDoc, operation, req }) => {
+                if ((req as any).locale !== 'es') return;
                 if (operation === 'create' || operation === 'update') {
                     const payload = req.payload
                     const executeTranslations = async () => {
