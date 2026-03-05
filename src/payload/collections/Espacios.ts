@@ -21,15 +21,16 @@ export const Espacios: CollectionConfig = {
         const locale = (req as any).locale;
 
         // PROTECCIÓN CRÍTICA: Solo traducir si estamos editando explícitamente en español
-        if (locale !== 'es') {
+        if (locale && locale !== 'es') {
           return;
         }
 
         if (operation === 'create' || operation === 'update') {
           const payload = req.payload;
           const executeTranslations = async () => {
-            // Esperar un momento para asegurar que la transacción original se complete
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // Esperar un momento aleatorio para evitar colisiones
+            const randomDelay = Math.floor(Math.random() * 2000);
+            await new Promise(resolve => setTimeout(resolve, 1000 + randomDelay));
 
             try {
               const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
@@ -39,6 +40,8 @@ export const Espacios: CollectionConfig = {
               const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
               // Campos a traducir, incluyendo el RichText 'descripcion' y el array 'caracteristicas'
               const fieldsToTranslate = ['nombre', 'descripcion', 'caracteristicas'];
+
+              console.log(`[ESPACIOS] [Background] Iniciando traducciones para ID: ${doc.id}`);
 
               for (const locale of targetLocales) {
                 const { translatedData, hasTranslations } = await translateDocument({
@@ -52,7 +55,7 @@ export const Espacios: CollectionConfig = {
                 });
 
                 if (hasTranslations) {
-                  console.log(`[ESPACIOS] [Background] Aplicando traducciones a locale ${locale}...`);
+                  console.log(`[ESPACIOS] [Background] Aplicando traducciones a locale ${locale} para ID: ${doc.id}...`);
                   await req.payload.update({
                     collection: 'espacios',
                     id: doc.id,
@@ -62,7 +65,7 @@ export const Espacios: CollectionConfig = {
                   });
                 }
               }
-              console.log(`[ESPACIOS] [Background] Traducciones completadas.`);
+              console.log(`[ESPACIOS] [Background] Traducciones completadas para ID: ${doc.id}.`);
             } catch (error) {
               console.error('[ESPACIOS] [Background] Error en hook de traducción:', error);
             }

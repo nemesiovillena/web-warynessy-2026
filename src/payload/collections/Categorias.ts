@@ -21,15 +21,16 @@ export const Categorias: CollectionConfig = {
         const locale = (req as any).locale;
 
         // PROTECCIÓN CRÍTICA: Solo traducir si estamos editando explícitamente en español
-        if (locale !== 'es') {
+        if (locale && locale !== 'es') {
           return;
         }
 
         if (operation === 'create' || operation === 'update') {
           const payload = req.payload;
           const executeTranslations = async () => {
-            // Esperar un momento para asegurar que la transacción original se complete
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // Esperar un momento aleatorio para evitar colisiones
+            const randomDelay = Math.floor(Math.random() * 2000);
+            await new Promise(resolve => setTimeout(resolve, 1000 + randomDelay));
 
             try {
               const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
@@ -38,6 +39,8 @@ export const Categorias: CollectionConfig = {
 
               const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
               const fieldsToTranslate = ['nombre', 'descripcion'];
+
+              console.log(`[CATEGORIAS] [Background] Iniciando traducciones para ID: ${doc.id}`);
 
               for (const locale of targetLocales) {
                 const { translatedData, hasTranslations } = await translateDocument({
@@ -51,7 +54,7 @@ export const Categorias: CollectionConfig = {
                 });
 
                 if (hasTranslations) {
-                  console.log(`[CATEGORIAS] [Background] Aplicando traducciones a locale ${locale}...`);
+                  console.log(`[CATEGORIAS] [Background] Aplicando traducciones a locale ${locale} para ID: ${doc.id}...`);
                   await req.payload.update({
                     collection: 'categorias',
                     id: doc.id,
@@ -61,7 +64,7 @@ export const Categorias: CollectionConfig = {
                   });
                 }
               }
-              console.log(`[CATEGORIAS] [Background] Traducciones completadas.`);
+              console.log(`[CATEGORIAS] [Background] Traducciones completadas para ID: ${doc.id}.`);
             } catch (error) {
               console.error('[CATEGORIAS] [Background] Error en hook de traducción:', error);
             }

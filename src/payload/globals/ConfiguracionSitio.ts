@@ -13,7 +13,7 @@ export const ConfiguracionSitio: GlobalConfig = {
         const locale = (req as any).locale;
 
         // PROTECCIÓN CRÍTICA: Solo traducir si estamos editando explícitamente en español
-        if (locale !== 'es') {
+        if (locale && locale !== 'es') {
           return;
         }
 
@@ -21,8 +21,9 @@ export const ConfiguracionSitio: GlobalConfig = {
 
         // Función asíncrona para ejecutar en segundo plano
         const executeTranslations = async () => {
-          // Esperar un momento para asegurar que la transacción original se complete
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          // Esperar un momento aleatorio para evitar colisiones
+          const randomDelay = Math.floor(Math.random() * 2000);
+          await new Promise(resolve => setTimeout(resolve, 1000 + randomDelay));
 
           try {
             const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
@@ -52,9 +53,11 @@ export const ConfiguracionSitio: GlobalConfig = {
               for (const i of changedIndexes) {
                 const row = currHours[i];
                 if (row.days?.trim()) {
+                  console.log(`[CONFIG-SITIO] [Background] Traduciendo horario (días) a ${locale}...`);
                   translatedHours[i].days = await callTranslationAgent(row.days, locale, endpoint, modelo);
                 }
                 if (row.hours?.trim()) {
+                  console.log(`[CONFIG-SITIO] [Background] Traduciendo horario (horas) a ${locale}...`);
                   translatedHours[i].hours = await callTranslationAgent(row.hours, locale, endpoint, modelo);
                 }
               }

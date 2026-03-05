@@ -21,12 +21,14 @@ export const Paginas: CollectionConfig = {
     hooks: {
         afterChange: [
             async ({ doc, previousDoc, operation, req }) => {
-                if ((req as any).locale !== 'es') return;
+                const _locale = (req as any).locale;
+                if (_locale && _locale !== 'es') return;
                 if (operation === 'create' || operation === 'update') {
                     const payload = req.payload;
                     const executeTranslations = async () => {
-                        // Esperar un momento para asegurar que la transacción original se complete
-                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        // Esperar un momento aleatorio para evitar colisiones
+                        const randomDelay = Math.floor(Math.random() * 2000);
+                        await new Promise(resolve => setTimeout(resolve, 1000 + randomDelay));
 
                         try {
                             const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
@@ -34,7 +36,9 @@ export const Paginas: CollectionConfig = {
                             const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
 
                             const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
-                            const fieldsToTranslate = ['heroTitle', 'heroSubtitle', 'historiaMision', 'historiaHitos', 'metaTitle', 'metaDescription'];
+                            const fieldsToTranslate = ['titulo', 'descripcion', 'slug_es_manual', 'slug_ca_manual', 'slug_en_manual', 'slug_fr_manual', 'slug_de_manual', 'hero', 'layout'];
+
+                            console.log(`[PAGINAS] [Background] Iniciando traducciones para ID: ${doc.id}`);
 
                             for (const locale of targetLocales) {
                                 const { translatedData, hasTranslations } = await translateDocument({
@@ -48,7 +52,7 @@ export const Paginas: CollectionConfig = {
                                 });
 
                                 if (hasTranslations) {
-                                    console.log(`[PAGINAS] [Background] Aplicando traducciones a locale ${locale}...`);
+                                    console.log(`[PAGINAS] [Background] Aplicando traducciones a locale ${locale} para ID: ${doc.id}...`);
                                     await req.payload.update({
                                         collection: 'paginas',
                                         id: doc.id,
@@ -58,7 +62,7 @@ export const Paginas: CollectionConfig = {
                                     });
                                 }
                             }
-                            console.log(`[PAGINAS] [Background] Traducciones completadas.`);
+                            console.log(`[PAGINAS] [Background] Traducciones completadas para ID: ${doc.id}.`);
                         } catch (error) {
                             console.error('[PAGINAS] [Background] Error en hook de traducción:', error);
                         }

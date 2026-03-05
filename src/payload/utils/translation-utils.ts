@@ -107,10 +107,16 @@ export async function translateDocument({
             if (value === undefined || value === null) continue;
 
             const prevValue = previousDoc?.[field];
-            // Comprobación profunda para cambios (útil para arrays/objetos)
-            const isChanged = operation === 'create' || JSON.stringify(value) !== JSON.stringify(prevValue);
+            // Comprobación profunda para cambios
+            // Si el valor previo es nulo/indefinido o el JSON es diferente, consideramos que ha cambiado
+            const isChanged = operation === 'create' ||
+                !prevValue ||
+                JSON.stringify(value) !== JSON.stringify(prevValue);
 
-            if (!isChanged) continue;
+            if (!isChanged) {
+                console.log(`[TranslateTool] Omitiendo campo '${field}' porque no ha cambiado.`);
+                continue;
+            }
 
             // Caso 1: RichText (Lexical)
             if (typeof value === 'object' && value !== null && value.root) {

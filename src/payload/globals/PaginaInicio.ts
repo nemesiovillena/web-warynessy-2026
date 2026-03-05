@@ -1,5 +1,5 @@
 import type { GlobalConfig } from 'payload'
-import { callTranslationAgent, translateLexical } from '../utils/translation-utils'
+import { callTranslationAgent, translateLexical, translateDocument } from '../utils/translation-utils'
 
 export const PaginaInicio: GlobalConfig = {
   slug: 'pagina-inicio',
@@ -13,20 +13,20 @@ export const PaginaInicio: GlobalConfig = {
         const locale = (req as any).locale;
 
         // PROTECCIÓN CRÍTICA: Solo traducir si estamos editando explícitamente en español
-        if (locale !== 'es') {
+        if (locale && locale !== 'es') {
           return;
         }
 
         const payload = req.payload;
-
         const executeTranslations = async () => {
-          // Esperar un momento para asegurar que la transacción original se complete
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          // Esperar un momento aleatorio para evitar colisiones
+          const randomDelay = Math.floor(Math.random() * 2000);
+          await new Promise(resolve => setTimeout(resolve, 1000 + randomDelay));
 
           try {
             const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
             const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
-            const model = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
+            const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
 
             const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
             const fieldsToTranslate = [
@@ -34,44 +34,25 @@ export const PaginaInicio: GlobalConfig = {
               'ctaTitle', 'ctaText', 'ctaButtonText', 'seoTitle', 'seoDescription'
             ];
 
-            console.log(`[PAGINA-INICIO] [Background] Iniciando proceso de traducción automática...`);
+            console.log(`[PAGINA-INICIO] [Background] Iniciando proceso de traducción para Global...`);
 
-            for (const locale of targetLocales) {
-              const translatedData: any = {};
-              let hasTranslations = false;
-
-              for (const field of fieldsToTranslate) {
-                const value = doc[field];
-                if (!value) continue;
-
-                const prevValue = (previousDoc as any)?.[field];
-                const changed = JSON.stringify(value) !== JSON.stringify(prevValue);
-                if (!changed) continue;
-
-                try {
-                  // Si es RichText (Lexical)
-                  if (typeof value === 'object' && value !== null && value.root) {
-                    console.log(`[PAGINA-INICIO] [Background] Traduciendo RichText: ${field} al locale ${locale}...`);
-                    translatedData[field] = await translateLexical(value, locale, endpoint, model);
-                    hasTranslations = true;
-                  }
-                  // Si es texto plano
-                  else if (typeof value === 'string' && value.trim().length > 0) {
-                    console.log(`[PAGINA-INICIO] [Background] Traduciendo texto: ${field} al locale ${locale}...`);
-                    translatedData[field] = await callTranslationAgent(value, locale, endpoint, model);
-                    hasTranslations = true;
-                  }
-                } catch (e) {
-                  console.error(`[PAGINA-INICIO] [Background] Error al traducir ${field} a ${locale}:`, e);
-                }
-              }
+            for (const targetLocale of targetLocales) {
+              const { translatedData, hasTranslations } = await translateDocument({
+                doc,
+                previousDoc,
+                fields: fieldsToTranslate,
+                targetLang: targetLocale,
+                endpoint,
+                model: modelo,
+                operation: 'update'
+              });
 
               if (hasTranslations) {
-                console.log(`[PAGINA-INICIO] [Background] Aplicando traducciones a locale ${locale}...`);
-                await payload.updateGlobal({
+                console.log(`[PAGINA-INICIO] [Background] Aplicando traducciones a locale ${targetLocale}...`);
+                await req.payload.updateGlobal({
                   slug: 'pagina-inicio',
+                  locale: targetLocale as any,
                   data: translatedData,
-                  locale: locale as any,
                   req: { payload: req.payload, disableHooks: true } as any,
                 });
               }

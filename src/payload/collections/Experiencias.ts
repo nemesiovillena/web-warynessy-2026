@@ -21,24 +21,25 @@ export const Experiencias: CollectionConfig = {
                 const locale = (req as any).locale;
 
                 // PROTECCIÓN CRÍTICA: Solo traducir si estamos editando explícitamente en español
-                if (locale !== 'es') {
+                if (locale && locale !== 'es') {
                     return;
                 }
                 if (operation === 'create' || operation === 'update') {
                     const payload = req.payload
                     const executeTranslations = async () => {
-                        // Esperar un momento para asegurar que la transacción original se complete
-                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        // Esperar un momento aleatorio para evitar colisiones
+                        const randomDelay = Math.floor(Math.random() * 2000);
+                        await new Promise(resolve => setTimeout(resolve, 1000 + randomDelay));
 
                         try {
-                            const configTraduccion: any = await payload.findGlobal({
-                                slug: 'configuracion-traduccion' as any,
-                            })
-                            const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate'
-                            const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001'
+                            const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
+                            const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
+                            const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
 
-                            const targetLocales = ['ca', 'en', 'fr', 'de'] as const
-                            const fieldsToTranslate = ['titulo', 'descripcion', 'resumen', 'incluye', 'validez']
+                            const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
+                            const fieldsToTranslate = ['titulo', 'descripcion', 'resumen', 'incluye', 'validez'];
+
+                            console.log(`[EXPERIENCIAS] [Background] Iniciando traducciones para ID: ${doc.id}`);
 
                             for (const locale of targetLocales) {
                                 const { translatedData, hasTranslations } = await translateDocument({
@@ -52,17 +53,17 @@ export const Experiencias: CollectionConfig = {
                                 })
 
                                 if (hasTranslations) {
-                                    console.log(`[EXPERIENCIAS] [Background] Aplicando traducciones a locale ${locale}...`)
+                                    console.log(`[EXPERIENCIAS] [Background] Aplicando traducciones a locale ${locale} para ID: ${doc.id}...`);
                                     await req.payload.update({
                                         collection: 'experiencias',
                                         id: doc.id,
                                         locale: locale as any,
                                         data: translatedData,
                                         req: { payload: req.payload, disableHooks: true } as any,
-                                    })
+                                    });
                                 }
                             }
-                            console.log(`[EXPERIENCIAS] [Background] Traducciones completadas.`)
+                            console.log(`[EXPERIENCIAS] [Background] Traducciones completadas para ID: ${doc.id}.`);
                         } catch (error) {
                             console.error('[EXPERIENCIAS] [Background] Error en hook de traducción:', error)
                         }

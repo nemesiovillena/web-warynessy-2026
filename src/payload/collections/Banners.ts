@@ -18,15 +18,16 @@ export const Banners: CollectionConfig = {
         const locale = (req as any).locale;
 
         // PROTECCIÓN CRÍTICA: Solo traducir si estamos editando explícitamente en español
-        if (locale !== 'es') {
+        if (locale && locale !== 'es') {
           return;
         }
 
         if (operation === 'create' || operation === 'update') {
           const payload = req.payload
           const executeTranslations = async () => {
-            // Esperar un momento para asegurar que la transacción original se complete
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // Esperar un momento aleatorio para evitar colisiones
+            const randomDelay = Math.floor(Math.random() * 2000);
+            await new Promise(resolve => setTimeout(resolve, 1000 + randomDelay));
 
             try {
               const configTraduccion: any = await payload.findGlobal({
@@ -36,7 +37,9 @@ export const Banners: CollectionConfig = {
               const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001'
 
               const targetLocales = ['ca', 'en', 'fr', 'de'] as const
-              const fieldsToTranslate = ['titulo', 'texto'] // Corregido nombres de campos según fields real
+              const fieldsToTranslate = ['titulo', 'subtitulo', 'ctaText'] // Corregido nombres de campos según fields real
+
+              console.log(`[BANNERS] [Background] Iniciando traducciones para ID: ${doc.id}`);
 
               for (const locale of targetLocales) {
                 const { translatedData, hasTranslations } = await translateDocument({
@@ -60,7 +63,7 @@ export const Banners: CollectionConfig = {
                     };
                   }
 
-                  console.log(`[BANNERS] [Background] Aplicando traducciones a locale ${locale}...`)
+                  console.log(`[BANNERS] [Background] Aplicando traducciones a locale ${locale} para ID: ${doc.id}...`)
                   await req.payload.update({
                     collection: 'banners',
                     id: doc.id,
