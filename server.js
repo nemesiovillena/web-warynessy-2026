@@ -257,6 +257,7 @@ async function start() {
     console.error("\u274C Database hotfix failed:", dbError);
   }
   const app = express();
+
   app.use((req, res, next2) => {
     const isPayloadRoute = /^\/(admin|api|_next)(\/|$)/.test(req.path);
     if (!isPayloadRoute) {

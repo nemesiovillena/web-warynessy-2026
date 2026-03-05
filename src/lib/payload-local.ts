@@ -137,7 +137,7 @@ export async function getActiveMenusSlugs() {
 
 export async function getEspacios(activo = true, locale?: string) {
   const where = activo ? { activo: { equals: true } } : {}
-  const query = buildQuery({ where, sort: 'orden', depth: 1, limit: 100 }, locale)
+  const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 100 }, locale)
   const result = await fetchAPI<PayloadResponse<any>>(`/espacios${query}`, {}, locale)
   return result.docs
 }
@@ -195,14 +195,14 @@ export async function getPaginaInicio(locale?: string) {
 }
 
 export async function getConfiguracionSitio(locale?: string) {
-  const query = buildQuery({ depth: 1 }, locale)
+  const query = buildQuery({ depth: 2 }, locale)
   return fetchAPI<any>(`/globals/configuracion-sitio${query}`, {}, locale)
 }
 
 export async function getPaginaBySlug(slug: string, locale?: string) {
   try {
     const localeParam = locale ? `&locale=${locale}` : ''
-    const url = `/paginas?where[slug][equals]=${slug}&limit=1&depth=1${localeParam}`
+    const url = `/paginas?where[slug][equals]=${slug}&limit=1&depth=2${localeParam}`
     const result = await fetchAPI<PayloadResponse<any>>(url, {}, locale)
     return result.docs[0] || null
   } catch (error) {
