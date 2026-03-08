@@ -83,11 +83,11 @@ const menuData = [
   { category: "Arroces", subcategory: "Arroces secos (por encargo)", dish: "Arroz y pata", price: 17.50 },
   { category: "Arroces", subcategory: "Arroces secos (por encargo)", dish: "Arroz con conejo y caracoles", price: 15.80 },
 
-  // ARROCES - MELOSOS
-  { category: "Arroces", subcategory: "Arroces melosos", dish: "Arroz meloso de bogabante con almejas", price: 22.00 },
-  { category: "Arroces", subcategory: "Arroces melosos", dish: "Arroz meloso de rape y gambas", price: 19.00 },
-  { category: "Arroces", subcategory: "Arroces melosos", dish: "Arroz meloso del señoret", price: 17.00 },
-  { category: "Arroces", subcategory: "Arroces melosos", dish: "Rissoto de setas de temporada", price: 15.00 },
+  // ARROCES - MELOSOS (por encargo)
+  { category: "Arroces", subcategory: "Arroces melosos (por encargo)", dish: "Arroz meloso de bogabante con almejas", price: 22.00 },
+  { category: "Arroces", subcategory: "Arroces melosos (por encargo)", dish: "Arroz meloso de rape y gambas", price: 19.00 },
+  { category: "Arroces", subcategory: "Arroces melosos (por encargo)", dish: "Arroz meloso del señoret", price: 17.00 },
+  { category: "Arroces", subcategory: "Arroces melosos (por encargo)", dish: "Rissoto de setas de temporada", price: 15.00 },
 
   // CARNES
   { category: "Carnes", subcategory: "", dish: "Entrecot de ternera a la parrilla con patatas", price: 24.00 },
@@ -110,24 +110,24 @@ const menuData = [
   { category: "Pescados", subcategory: "", dish: "Tempura de dorada, rúcula, salsa tártara y tomatitos cherry", price: 18.00 },
   { category: "Pescados", subcategory: "", dish: "Salmón teriyaki con arroz basmati, espinacas salteadas y edamame", price: 18.00 },
 
-  // MONTADITOS
-  { category: "Montaditos y panes", subcategory: "Montaditos", dish: "Ternera a la salsa roquefort", price: 4.10 },
-  { category: "Montaditos y panes", subcategory: "Montaditos", dish: "Pepito de ternera", price: 3.60 },
-  { category: "Montaditos y panes", subcategory: "Montaditos", dish: "Ternera con foie micuit", price: 5.10 },
-  { category: "Montaditos y panes", subcategory: "Montaditos", dish: "Salmón marinado con mantequilla", price: 3.50 },
-  { category: "Montaditos y panes", subcategory: "Montaditos", dish: "Queso fresco con gambas y salsa de anchoas", price: 4.90 },
-  { category: "Montaditos y panes", subcategory: "Montaditos", dish: "Jamón ibérico de bellota", price: 4.10 },
-  { category: "Montaditos y panes", subcategory: "Montaditos", dish: "Completo", price: 3.00 },
-  { category: "Montaditos y panes", subcategory: "Montaditos", dish: "Mojama de almadraba con rodaja de tomate", price: 3.40 },
-  { category: "Montaditos y panes", subcategory: "Montaditos", dish: "Hueva de maruca con rodaja de tomate", price: 3.60 },
-  { category: "Montaditos y panes", subcategory: "Montaditos", dish: "Anchoas en salmuera con rodaja de tomate", price: 5.40 },
-  { category: "Montaditos y panes", subcategory: "Montaditos", dish: "Bacon con queso fundido", price: 2.90 },
-  { category: "Montaditos y panes", subcategory: "Montaditos", dish: "Warynessy", price: 3.00 },
+  // MONTADITOS (Solo por la noche)
+  { category: "Montaditos y panes", subcategory: "Montaditos (Solo por la noche)", dish: "Ternera a la salsa roquefort", price: 4.10 },
+  { category: "Montaditos y panes", subcategory: "Montaditos (Solo por la noche)", dish: "Pepito de ternera", price: 3.60 },
+  { category: "Montaditos y panes", subcategory: "Montaditos (Solo por la noche)", dish: "Ternera con foie micuit", price: 5.10 },
+  { category: "Montaditos y panes", subcategory: "Montaditos (Solo por la noche)", dish: "Salmón marinado con mantequilla", price: 3.50 },
+  { category: "Montaditos y panes", subcategory: "Montaditos (Solo por la noche)", dish: "Queso fresco con gambas y salsa de anchoas", price: 4.90 },
+  { category: "Montaditos y panes", subcategory: "Montaditos (Solo por la noche)", dish: "Jamón ibérico de bellota", price: 4.10 },
+  { category: "Montaditos y panes", subcategory: "Montaditos (Solo por la noche)", dish: "Completo", price: 3.00 },
+  { category: "Montaditos y panes", subcategory: "Montaditos (Solo por la noche)", dish: "Mojama de almadraba con rodaja de tomate", price: 3.40 },
+  { category: "Montaditos y panes", subcategory: "Montaditos (Solo por la noche)", dish: "Hueva de maruca con rodaja de tomate", price: 3.60 },
+  { category: "Montaditos y panes", subcategory: "Montaditos (Solo por la noche)", dish: "Anchoas en salmuera con rodaja de tomate", price: 5.40 },
+  { category: "Montaditos y panes", subcategory: "Montaditos (Solo por la noche)", dish: "Bacon con queso fundido", price: 2.90 },
+  { category: "Montaditos y panes", subcategory: "Montaditos (Solo por la noche)", dish: "Warynessy", price: 3.00 },
 
-  // MINIBOCATA
-  { category: "Montaditos y panes", subcategory: "Minibocata", dish: "Chipirón con pisto de verduras", price: 6.20 },
-  { category: "Montaditos y panes", subcategory: "Minibocata", dish: "Ternera con jamón ibérico", price: 7.80 },
-  { category: "Montaditos y panes", subcategory: "Minibocata", dish: "Ternera, queso de cabra y champiñón", price: 6.70 },
+  // MINIBOCATA (Solo por la noche)
+  { category: "Montaditos y panes", subcategory: "Minibocata (Solo por la noche)", dish: "Chipirón con pisto de verduras", price: 6.20 },
+  { category: "Montaditos y panes", subcategory: "Minibocata (Solo por la noche)", dish: "Ternera con jamón ibérico", price: 7.80 },
+  { category: "Montaditos y panes", subcategory: "Minibocata (Solo por la noche)", dish: "Ternera, queso de cabra y champiñón", price: 6.70 },
 
   // HAMBURGUESAS
   { category: "Montaditos y panes", subcategory: "Hamburguesas", dish: "Burger gourmet", price: 16.50 },
@@ -232,6 +232,21 @@ function generateSlug(text: string): string {
     .replace(/(^-|-$)/g, '')
 }
 
+// Orden de aparición correcto por categoría principal (según JSON de referencia)
+const CATEGORY_ORDER: Record<string, number> = {
+  "Aperitivos": 1,
+  "Ensaladas": 2,
+  "Cuchara": 3,
+  "Arroces": 4,
+  "Carnes": 5,
+  "Pescados": 6,
+  "Montaditos y panes": 7,
+  "Postres": 8,
+  "Vinos": 9,
+  "Vermut y Cervezas": 10,
+  "Espumosos y vinos dulces": 11,
+}
+
 // Función para obtener nombre de categoría completo
 function getCategoryName(category: string, subcategory: string): string {
   if (!subcategory || subcategory.trim() === '') {
@@ -281,12 +296,15 @@ async function seed() {
         console.log(`  ⏭️  Categoría "${catName}" ya existe`)
         categoryMap.set(catName, existing.docs[0].id as string)
       } else {
+        // Orden: si es subcategoría ("Cat - Sub"), usa el orden de la cat principal
+        const mainCat = catName.includes(' - ') ? catName.split(' - ')[0] : catName
+        const orden = CATEGORY_ORDER[mainCat] ?? (i + 1)
         const created = await payload.create({
           collection: 'categorias',
           data: {
             nombre: catName,
             slug: slug,
-            orden: i + 1,
+            orden,
             activa: true,
           },
         })
