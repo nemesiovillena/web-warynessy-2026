@@ -399,6 +399,9 @@ async function start() {
     res.status(200).send('OK - Unified Server is up')
   })
 
+  // Servir archivos de medios para que el CDN de Bunny pueda hacer PULL
+  app.use('/api/archivos/file', express.static(path.join(__dirname, 'media')))
+
   // Rutas de Payload/Next.js (admin, api, _next)
   // Excluir endpoints de Astro: /api/contact, /api/instagram, /api/reviews
   app.all(/^\/(admin|_next)($|\/.*)/, (req, res) => {

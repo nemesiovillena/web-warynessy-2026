@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { callTranslationAgent, translateLexical, translateDocument } from '../utils/translation-utils'
 
 export const Espacios: CollectionConfig = {
   slug: 'espacios',
@@ -14,12 +15,75 @@ export const Espacios: CollectionConfig = {
   access: {
     read: () => true, // Public read access
   },
+  hooks: {
+    afterChange: [
+      async ({ doc, previousDoc, operation, req }) => {
+        const locale = (req as any).locale;
+
+        // PROTECCIÓN CRÍTICA: Solo traducir si estamos editando explícitamente en español
+        if (locale && locale !== 'es') {
+          return;
+        }
+
+        if (operation === 'create' || operation === 'update') {
+          const payload = req.payload;
+          const executeTranslations = async () => {
+            // Esperar un momento aleatorio para evitar colisiones
+            const randomDelay = Math.floor(Math.random() * 2000);
+            await new Promise(resolve => setTimeout(resolve, 1000 + randomDelay));
+
+            try {
+              const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
+              const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
+              const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
+
+              const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
+              // Campos a traducir, incluyendo el RichText 'descripcion' y el array 'caracteristicas'
+              const fieldsToTranslate = ['nombre', 'descripcion', 'caracteristicas'];
+
+              console.log(`[ESPACIOS] [Background] Iniciando traducciones para ID: ${doc.id}`);
+
+              for (const locale of targetLocales) {
+                const { translatedData, hasTranslations } = await translateDocument({
+                  doc,
+                  previousDoc,
+                  fields: fieldsToTranslate,
+                  targetLang: locale,
+                  endpoint,
+                  model: modelo,
+                  operation
+                });
+
+                if (hasTranslations) {
+                  console.log(`[ESPACIOS] [Background] Aplicando traducciones a locale ${locale} para ID: ${doc.id}...`);
+                  await req.payload.update({
+                    collection: 'espacios',
+                    id: doc.id,
+                    locale: locale as any,
+                    data: translatedData,
+                    req: { payload: req.payload, disableHooks: true } as any,
+                  });
+                }
+              }
+              console.log(`[ESPACIOS] [Background] Traducciones completadas para ID: ${doc.id}.`);
+            } catch (error) {
+              console.error('[ESPACIOS] [Background] Error en hook de traducción:', error);
+            }
+          };
+
+          executeTranslations();
+        }
+
+      }
+    ]
+  },
   fields: [
     {
       name: 'nombre',
       type: 'text',
       label: 'Nombre del Espacio',
       required: true,
+      localized: true,
       admin: {
         description: 'Ej: Salón Principal, Zona Bar, Terraza, Sala Privada, etc.',
       },
@@ -50,6 +114,7 @@ export const Espacios: CollectionConfig = {
       name: 'descripcion',
       type: 'richText',
       label: 'Descripción del Espacio',
+      localized: true,
       admin: {
         description: 'Descripción detallada del espacio',
       },
@@ -87,6 +152,7 @@ export const Espacios: CollectionConfig = {
           name: 'caracteristica',
           type: 'text',
           required: true,
+          localized: true,
         },
       ],
       admin: {
