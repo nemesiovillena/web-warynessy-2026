@@ -18,7 +18,7 @@ export const Archivos: CollectionConfig = {
     read: () => true, // Public read access
   },
   upload: {
-    staticDir: path.resolve(__dirname, '../../../../media'),
+    staticDir: path.resolve(__dirname, '../../../media'),
     mimeTypes: ['image/*', 'application/pdf'],
     imageSizes: [
       {

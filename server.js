@@ -317,6 +317,10 @@ async function start() {
   app.get("/health", (req, res) => {
     res.status(200).send("OK - Unified Server is up");
   });
+
+  // Servir archivos de medios para que el CDN de Bunny pueda hacer PULL
+  app.use('/api/archivos/file', express.static(path.join(__dirname, 'media')));
+
   app.all(/^\/(admin|_next)($|\/.*)/, (req, res) => {
     return nextHandler(req, res);
   });

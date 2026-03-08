@@ -104,7 +104,7 @@ const splitImages = [
 
                <div class="relative rounded-2xl overflow-hidden shadow-xl aspect-[16/9]">
                   <ResponsiveImage 
-                    src={imagenPrincipal?.url || '/images/placeholder-space.jpg'} 
+                    src={imagenPrincipal?.filename ? `https://warynessy.b-cdn.net/${imagenPrincipal.filename}` : (imagenPrincipal?.url || '')} 
                     alt={space.nombre}
                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                   />
