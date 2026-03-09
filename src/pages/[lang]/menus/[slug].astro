@@ -46,11 +46,17 @@ const heroImg = (rawHeroUrl.startsWith('/') && !rawHeroUrl.startsWith('http'))
   ? `${PAYLOAD_URL}${rawHeroUrl}`
   : rawHeroUrl || 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80';
 
-// PDF URL
+// PDF URL — se sirve a través del proxy /api/download-pdf para forzar descarga cross-origin (Bunny CDN)
 const rawPdfUrl = typeof menu.pdf === 'object' && menu.pdf?.url ? menu.pdf.url : '';
-const pdfUrl = (rawPdfUrl.startsWith('/') && !rawPdfUrl.startsWith('http'))
+const absolutePdfUrl = (rawPdfUrl.startsWith('/') && !rawPdfUrl.startsWith('http'))
   ? `${PAYLOAD_URL}${rawPdfUrl}`
   : rawPdfUrl;
+const pdfFilename = (typeof menu.pdf === 'object' && menu.pdf?.filename)
+  ? menu.pdf.filename
+  : `menu-${slug}.pdf`;
+const pdfUrl = absolutePdfUrl
+  ? `/api/download-pdf?url=${encodeURIComponent(absolutePdfUrl)}&filename=${encodeURIComponent(pdfFilename)}`
+  : '';
 
 // Reservas link
 const reservasLink = `/${locale}/reservas`;
@@ -248,7 +254,7 @@ const daysMap: Record<string, string> = {
                   </span>
                </Button>
                {pdfUrl && (
-                 <Button href={pdfUrl} variant="outline" size="lg" class="w-full py-5 rounded-2xl" target="_blank">
+                 <Button href={pdfUrl} variant="outline" size="lg" class="w-full py-5 rounded-2xl">
                     <span class="flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-xs">
                        <span class="material-symbols-outlined text-lg">picture_as_pdf</span>
                        {ui.downloadMenu}
