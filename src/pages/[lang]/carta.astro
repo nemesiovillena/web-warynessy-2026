@@ -16,8 +16,24 @@ const locale = lang || 'es';
 const ui = getTranslations(locale).carta;
 
 const siteSettings = await getSiteSettings(locale);
-const allCategories = await getCategorias(true, locale);
-const allDishes = await getPlatos(true, locale);
+// Fetch categories in current locale (for display) and in ES (for grouping by "Main - Sub" pattern)
+const [allCategories, allCategoriesES] = await Promise.all([
+  getCategorias(true, locale),
+  locale !== 'es' ? getCategorias(true, 'es') : Promise.resolve(null),
+]);
+// Map id → ES nombre for grouping (slug-based split is always in ES format)
+const categoriaESMap = new Map<number, string>(
+  (allCategoriesES || allCategories).map((c: any) => [c.id, c.nombre as string])
+);
+// Also fetch dishes in ES for image lookup (filenames are based on Spanish dish names)
+const [allDishes, allDishesES] = await Promise.all([
+  getPlatos(true, locale),
+  locale !== 'es' ? getPlatos(true, 'es') : Promise.resolve(null),
+]);
+// Map dishId → ES nombre for image filename matching
+const dishESNameMap = new Map<number, string>(
+  (allDishesES || allDishes).map((d: any) => [d.id, d.nombre as string])
+);
 const allAlergenos = await getAlergenos(locale);
 
 const pageData = await getPaginaBySlug('carta', locale);
@@ -115,30 +131,40 @@ interface MainCategoryGroup {
 const groupedCategories = new Map<string, MainCategoryGroup>();
 
 activeCategories.forEach((cat: any) => {
-  const mainName = getMainCategory(cat.nombre);
-  const subName = getSubcategory(cat.nombre);
+  // Use ES nombre for grouping logic (split by " - "), locale nombre for display
+  const nombreES = categoriaESMap.get(cat.id) || cat.nombre;
+  const mainNameES = getMainCategory(nombreES);
+  const subNameES = getSubcategory(nombreES);
+
+  // Display name: use translated mainName (part before " - ") if category has no subcategory,
+  // or extract the translated mainName from translated nombre if format matches
+  const nombreLocale = cat.nombre as string;
+  const mainNameDisplay = getMainCategory(nombreLocale);
+  // For subcategory display: use the ES subcategory name (proper nouns like "La Tierra", "El Mar")
+  const subNameDisplay = subNameES;
+
   const catOrden = cat.orden || 999;
 
-  if (!groupedCategories.has(mainName)) {
-    // Create slug from main category name
-    const mainSlug = mainName.toLowerCase()
+  if (!groupedCategories.has(mainNameES)) {
+    // Create slug from ES main category name (always consistent)
+    const mainSlug = mainNameES.toLowerCase()
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '');
 
-    groupedCategories.set(mainName, {
-      mainName,
+    groupedCategories.set(mainNameES, {
+      mainName: mainNameDisplay,
       slug: mainSlug,
       subcategories: [],
       minOrden: catOrden,
     });
   } else {
-    const group = groupedCategories.get(mainName)!;
+    const group = groupedCategories.get(mainNameES)!;
     if (catOrden < group.minOrden) group.minOrden = catOrden;
   }
 
-  groupedCategories.get(mainName)!.subcategories.push({
-    subcategoryName: subName,
+  groupedCategories.get(mainNameES)!.subcategories.push({
+    subcategoryName: subNameDisplay,
     slug: cat.slug,
     descripcion: cat.descripcion,
     platos: cat.platos,
@@ -314,7 +340,9 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
                     let dishWithImg = dish;
                     
                     if (isVisualCategory) {
-                       const localImg = getLocalImageForDish(dish.nombre, mainCat.slug);
+                       // Use ES dish name for image lookup (files are named in Spanish)
+                       const dishNameForImg = dishESNameMap.get(dish.id) || dish.nombre;
+                       const localImg = getLocalImageForDish(dishNameForImg, mainCat.slug);
                        if (localImg) {
                          dishWithImg = { ...dish, imagen: { url: localImg } };
                        }
