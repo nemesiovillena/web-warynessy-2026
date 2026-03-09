@@ -217,7 +217,7 @@ const menusGrupoConMenus = menusGrupo.filter((grupo: any) =>
     }
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  function initGrupoPasswordHandlers() {
     document.querySelectorAll<HTMLButtonElement>('.grupo-password-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         const rawId = btn.dataset.grupo!;
@@ -234,6 +234,15 @@ const menusGrupoConMenus = menusGrupo.filter((grupo: any) =>
         }
       });
     });
-  });
+  }
+
+  // Ejecutar inmediatamente (el script de Astro se ejecuta tras el DOM)
+  // y también en navegación con View Transitions si se activan en el futuro
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGrupoPasswordHandlers);
+  } else {
+    initGrupoPasswordHandlers();
+  }
+  document.addEventListener('astro:page-load', initGrupoPasswordHandlers);
 </script>
 </MainLayout>

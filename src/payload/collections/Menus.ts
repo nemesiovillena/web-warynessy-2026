@@ -118,6 +118,8 @@ export const Menus: CollectionConfig = {
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/(^-|-$)/g, '')
             }
+            // Sanitizar siempre: trim + minúsculas + sin espacios internos
+            if (typeof value === 'string') return value.trim().toLowerCase().replace(/\s+/g, '-')
             return value
           },
         ],
