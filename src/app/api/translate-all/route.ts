@@ -10,7 +10,7 @@ export async function GET(req: Request) {
         const secret = searchParams.get('secret')
 
         // Validar secreto (usamos PAYLOAD_SECRET como llave)
-        if (secret !== process.env.PAYLOAD_SECRET && secret !== 'warynessy-force') {
+        if (secret !== process.env.PAYLOAD_SECRET) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
