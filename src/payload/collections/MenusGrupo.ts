@@ -119,6 +119,14 @@ export const MenusGrupo: CollectionConfig = {
             },
         },
         {
+            name: 'contrasena',
+            type: 'text',
+            label: 'Contraseña de Acceso',
+            admin: {
+                description: 'Si se establece, los visitantes deberán introducir esta contraseña para ver los menús de este grupo.',
+            },
+        },
+        {
             name: 'orden',
             type: 'number',
             label: 'Orden de Aparición',

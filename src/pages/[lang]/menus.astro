@@ -52,6 +52,11 @@ const menuIdsEnGrupos = new Set(
 
 // Filtrar menús individuales excluyendo los que están en grupos
 const menusIndividuales = menus.filter((menu: any) => !menuIdsEnGrupos.has(menu.id));
+
+// Excluir grupos sin menús (no mostrar si está vacío)
+const menusGrupoConMenus = menusGrupo.filter((grupo: any) =>
+  (grupo.menus || []).some((m: any) => m && typeof m === 'object')
+);
 ---
 
 <MainLayout title={pageTitle} description={pageDescription} hideFloatingButton={true} noPaddingTop={true}>
@@ -93,7 +98,7 @@ const menusIndividuales = menus.filter((menu: any) => !menuIdsEnGrupos.has(menu.
        )}
 
        {/* Sección de Menús de Grupo */}
-       {menusGrupo && menusGrupo.length > 0 && (
+       {menusGrupoConMenus && menusGrupoConMenus.length > 0 && (
          <div>
            <div class="flex items-center gap-6 mb-12">
              <h2 class="text-3xl md:text-4xl font-display font-black text-white uppercase tracking-tight shrink-0">{ui.groupsTitle}</h2>
@@ -101,11 +106,17 @@ const menusIndividuales = menus.filter((menu: any) => !menuIdsEnGrupos.has(menu.
            </div>
 
            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-             {menusGrupo.map((grupo: any) => (
-               <div class="bg-surface-dark/50 border border-white/5 rounded-[2.5rem] overflow-hidden group hover:border-primary/30 transition-all duration-500 shadow-2xl">
+             {menusGrupoConMenus.map((grupo: any) => {
+               const tieneContrasena = !!grupo.contrasena;
+               const rawId = grupo.id;
+               return (
+               <div
+                 class="bg-surface-dark/50 border border-white/5 rounded-[2.5rem] overflow-hidden group hover:border-primary/30 transition-all duration-500 shadow-2xl"
+                 data-grupo-id={rawId}
+                 data-contrasena={tieneContrasena ? grupo.contrasena : undefined}
+               >
                  <div class="relative h-64 overflow-hidden">
                     {(() => {
-                      // Fallback: si no tiene imagenPortada propia, usar la imagen del primer menú
                       const imgUrl = grupo.imagenPortada?.url
                         || grupo.menus?.find((m: any) => m && typeof m === 'object' && m.imagen?.url)?.imagen?.url;
                       return imgUrl ? (
@@ -129,7 +140,33 @@ const menusIndividuales = menus.filter((menu: any) => !menuIdsEnGrupos.has(menu.
                      </p>
                    )}
 
-                   <div class="space-y-4">
+                   {tieneContrasena ? (
+                     /* Overlay de contraseña */
+                     <div id={`lock-grupo-${rawId}`} class="grupo-lock-overlay">
+                       <div class="flex flex-col items-center gap-5 py-4">
+                         <span class="material-symbols-outlined text-primary text-5xl">lock</span>
+                         <p class="text-white/60 text-center text-sm">Este contenido está protegido.</p>
+                         <div class="flex gap-2 w-full">
+                           <input
+                             type="password"
+                             placeholder="Contraseña"
+                             class="grupo-password-input flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-primary/50 transition-colors"
+                             data-grupo={rawId}
+                           />
+                           <button
+                             type="button"
+                             class="grupo-password-btn bg-primary text-black font-bold px-5 py-3 rounded-xl hover:bg-primary/80 transition-colors"
+                             data-grupo={rawId}
+                           >
+                             <span class="material-symbols-outlined text-xl">arrow_forward</span>
+                           </button>
+                         </div>
+                         <p id={`error-grupo-${rawId}`} class="text-red-400 text-sm hidden">Contraseña incorrecta</p>
+                       </div>
+                     </div>
+                   ) : null}
+
+                   <div id={`content-grupo-${rawId}`} class={tieneContrasena ? 'space-y-4 hidden' : 'space-y-4'}>
                       {grupo.menus?.map((menu: any) => (
                         menu && typeof menu === 'object' && menu.slug ? (
                           <a
@@ -152,10 +189,51 @@ const menusIndividuales = menus.filter((menu: any) => !menuIdsEnGrupos.has(menu.
                    </div>
                  </div>
                </div>
-             ))}
+             )})}
            </div>
          </div>
        )}
      </Container>
    </Section>
+
+<script>
+  // grupoRawId = el id crudo del documento (e.g. "abc123")
+  // En el HTML los IDs son: lock-grupo-{rawId}, content-grupo-{rawId}, error-grupo-{rawId}
+  function checkGrupoPassword(rawId: string, inputPassword: string): void {
+    const card = document.querySelector(`[data-grupo-id="${rawId}"]`) as HTMLElement | null;
+    if (!card) return;
+
+    const correctPassword = card.dataset.contrasena;
+    const lockEl = document.getElementById(`lock-grupo-${rawId}`);
+    const contentEl = document.getElementById(`content-grupo-${rawId}`);
+    const errorEl = document.getElementById(`error-grupo-${rawId}`);
+
+    if (inputPassword === correctPassword) {
+      lockEl?.classList.add('hidden');
+      contentEl?.classList.remove('hidden');
+      errorEl?.classList.add('hidden');
+    } else {
+      errorEl?.classList.remove('hidden');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll<HTMLButtonElement>('.grupo-password-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const rawId = btn.dataset.grupo!;
+        const input = document.querySelector<HTMLInputElement>(`.grupo-password-input[data-grupo="${rawId}"]`);
+        if (input) checkGrupoPassword(rawId, input.value);
+      });
+    });
+
+    document.querySelectorAll<HTMLInputElement>('.grupo-password-input').forEach((input) => {
+      input.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter') {
+          const rawId = input.dataset.grupo!;
+          checkGrupoPassword(rawId, input.value);
+        }
+      });
+    });
+  });
+</script>
 </MainLayout>
