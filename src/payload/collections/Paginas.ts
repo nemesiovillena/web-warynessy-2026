@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { callTranslationAgent, translateLexical, translateDocument } from '../utils/translation-utils'
+import { translatingIds, translateDocument } from '../utils/translation-utils'
 
 export const Paginas: CollectionConfig = {
     slug: 'paginas',
@@ -27,9 +27,11 @@ export const Paginas: CollectionConfig = {
                 if (operation === 'create' || operation === 'update') {
                     const payload = req.payload;
                     const executeTranslations = async () => {
-                        // Esperar un momento aleatorio para evitar colisiones
-                        const randomDelay = Math.floor(Math.random() * 2000);
-                        await new Promise(resolve => setTimeout(resolve, 1000 + randomDelay));
+                        if (translatingIds.has(doc.id)) {
+                            console.log(`[PAGINAS] Traducción ya en curso para ID: ${doc.id}, omitiendo.`);
+                            return;
+                        }
+                        translatingIds.add(doc.id);
 
                         try {
                             const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
@@ -72,6 +74,8 @@ export const Paginas: CollectionConfig = {
                             console.log(`[PAGINAS] [Background] Traducciones completadas para ID: ${doc.id}.`);
                         } catch (error) {
                             console.error('[PAGINAS] [Background] Error en hook de traducción:', error);
+                        } finally {
+                            translatingIds.delete(doc.id);
                         }
                     };
 

@@ -7,7 +7,47 @@ export interface TranslationResponse {
 }
 
 /**
- * Llama al agente de traducción Python
+ * Set de IDs de documentos que están siendo traducidos actualmente.
+ * Los hooks afterChange deben comprobar este set para evitar ejecuciones paralelas
+ * sobre el mismo documento (condición de carrera).
+ */
+export const translatingIds = new Set<string>();
+
+const TRANSLATION_TIMEOUT_MS = 15_000;
+
+/**
+ * Realiza una petición de traducción con timeout y un reintento en caso de error de red.
+ */
+async function fetchTranslation(
+    text: string,
+    targetLang: string,
+    endpoint: string,
+    model: string
+): Promise<string> {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), TRANSLATION_TIMEOUT_MS);
+
+    try {
+        const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, target_lang: targetLang, model }),
+            signal: controller.signal,
+        });
+
+        if (res.ok) {
+            const data: TranslationResponse = await res.json();
+            return data.translated_text;
+        }
+        console.error(`[Translation] Error del agente para '${targetLang}' (${res.status}):`, await res.text());
+        return text;
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+/**
+ * Llama al agente de traducción Python con timeout (15s) y un reintento en fallos de red.
  */
 export async function callTranslationAgent(
     text: string,
@@ -15,31 +55,25 @@ export async function callTranslationAgent(
     endpoint: string,
     model?: string
 ): Promise<string> {
+    if (!text || typeof text !== 'string' || text.trim().length === 0) return text;
+
+    const resolvedModel = model || 'google/gemini-2.0-flash-001';
+    console.log(`[Translation] Solicitando traducción a '${targetLang}'...`);
+
     try {
-        if (!text || typeof text !== 'string' || text.trim().length === 0) return text;
-
-        console.log(`[Translation] Solicitando traducción a '${targetLang}'...`);
-        const res = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                text,
-                target_lang: targetLang,
-                model: model || 'google/gemini-2.0-flash-001'
-            })
-        });
-
-        if (res.ok) {
-            const data: TranslationResponse = await res.json();
-            console.log(`[Translation] Éxito: traducción a '${targetLang}' recibida.`);
-            return data.translated_text;
-        } else {
-            console.error(`[Translation] Error del agente para '${targetLang}' (${res.status}):`, await res.text());
+        const result = await fetchTranslation(text, targetLang, endpoint, resolvedModel);
+        console.log(`[Translation] Éxito: traducción a '${targetLang}' recibida.`);
+        return result;
+    } catch (firstError) {
+        console.warn(`[Translation] Primer intento fallido para '${targetLang}', reintentando...`, firstError);
+        try {
+            const result = await fetchTranslation(text, targetLang, endpoint, resolvedModel);
+            console.log(`[Translation] Éxito en reintento: traducción a '${targetLang}' recibida.`);
+            return result;
+        } catch (retryError) {
+            console.error(`[Translation] Error de red hacia '${targetLang}' tras reintento:`, retryError);
             return text; // Fallback al original
         }
-    } catch (error) {
-        console.error(`[Translation] Error de red hacia '${targetLang}':`, error);
-        return text; // Fallback al original
     }
 }
 
