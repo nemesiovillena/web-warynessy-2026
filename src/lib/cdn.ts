@@ -62,6 +62,7 @@ export function getOptimizedImageUrl(src: string, options: CDNOptions = {}): str
         path = '/' + path.split('/api/archivos/file/')[1];
     }
 
+
     // Si sigue siendo una URL absoluta externa (S3, etc), no hacemos nada
     if (path.startsWith('http') && !path.includes('localhost:3000') && (PAYLOAD_URL && !path.includes(PAYLOAD_URL))) {
         return path;
@@ -89,5 +90,11 @@ export function getOptimizedImageUrl(src: string, options: CDNOptions = {}): str
     const queryString = searchParams.toString();
     const separator = path.includes('?') ? '&' : '?';
 
-    return `${BUNNY_URL}${path}${queryString ? separator + queryString : ''}`;
+    const finalResult = `${BUNNY_URL}${path}${queryString ? separator + queryString : ''}`;
+
+    if (getEnv('PUBLIC_FORCE_CDN_LOCAL') === 'true') {
+        console.log(`[DEBUG] getOptimizedImageUrl: ${src} -> ${finalResult}`);
+    }
+
+    return finalResult;
 }

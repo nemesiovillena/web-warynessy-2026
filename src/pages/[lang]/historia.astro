@@ -25,6 +25,12 @@ console.log('[DEBUG] Historia Page Data:', {
   }))
 });
 
+const rawHeroImage = typeof pageData?.heroImage === 'object' && pageData?.heroImage?.url
+  ? pageData.heroImage.url
+  : '/media/Warynessy-historia.webp';
+
+const heroImage = getOptimizedImageUrl(rawHeroImage);
+
 const pageTitle = pageData?.metaTitle || `${ui.title} | ${siteSettings?.title || "Restaurante Warynessy"}`;
 const pageDescription = pageData?.metaDescription || "Conoce la historia y el legado del Restaurante Warynessy.";
 ---
@@ -36,10 +42,10 @@ const pageDescription = pageData?.metaDescription || "Conoce la historia y el le
     <!-- Hero Section -->
     <section class="relative h-[70vh] flex items-center justify-center overflow-hidden">
       <div class="absolute inset-0 z-0">
-        {pageData?.heroImage ? (
+        {heroImage ? (
           <ResponsiveImage 
-            src={pageData.heroImage?.url} 
-            alt={pageData.heroImage.alt || 'Historia Hero'}
+            src={heroImage} 
+            alt={pageData?.heroImage?.alt || 'Historia Hero'}
             class="w-full h-full object-cover opacity-50"
           />
         ) : (

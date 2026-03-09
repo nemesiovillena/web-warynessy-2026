@@ -202,6 +202,16 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
 
   {/* Header Hero for Menu */}
   <section class="relative pt-32 pb-6 md:pt-48 md:pb-8 bg-matte-black overflow-hidden">
+      {heroImage && (
+        <div class="absolute inset-0 z-0">
+          <img 
+            src={heroImage} 
+            alt={pageData?.heroTitle || 'Carta Hero'} 
+            class="w-full h-full object-cover opacity-30"
+          />
+          <div class="absolute inset-0 bg-gradient-to-b from-transparent via-matte-black/60 to-matte-black"></div>
+        </div>
+      )}
       <Container class="relative z-10 text-center animate-fade-up">
         {pageData?.heroTitle && (
           <h1 class="text-5xl md:text-7xl font-display font-black text-white mb-6">
