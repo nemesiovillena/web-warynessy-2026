@@ -28,7 +28,9 @@ const rawHeroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImag
   ? pageData.heroImage.url
   : 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80';
 
-const heroImg = getOptimizedImageUrl(rawHeroImg);
+const heroImg = getOptimizedImageUrl(rawHeroImg, {
+  fallback: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80'
+});
 ---
 
 <MainLayout title={pageTitle} description={pageDescription} noPaddingTop={true}>

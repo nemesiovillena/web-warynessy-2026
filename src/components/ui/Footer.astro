@@ -61,7 +61,7 @@ const t = getTranslations(locale).footer;
 
         {/* Trabaja con nosotros */}
         <a
-          href={`mailto:info@warynessy.com?subject=${t.workWithUs}`}
+          href={`mailto:${settings?.contact?.email || 'restaurante@warynessy.com'}?subject=${t.workWithUs}`}
           class="text-sm text-white/50 hover:text-primary transition-colors underline underline-offset-2"
           data-track="email_click"
           data-track-category="footer_jobs"

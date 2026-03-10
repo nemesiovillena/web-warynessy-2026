@@ -5,6 +5,7 @@ import Container from '../../../components/ui/Container.astro';
 import Button from '../../../components/ui/Button.astro';
 import RichText from '../../../components/ui/RichText.astro';
 import { getMenuBySlug, getSiteSettings, getActiveMenusSlugs } from '../../../lib/payload-local';
+import { getOptimizedImageUrl } from '../../../lib/cdn';
 import { getTranslations } from '../../../lib/i18n';
 
 // Dynamic routes for static generation (though we are in SSR, it's good practice
@@ -42,9 +43,9 @@ const PAYLOAD_URL = import.meta.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localho
 
 // Hero Image
 const rawHeroUrl = typeof menu.imagen === 'object' && menu.imagen?.url ? menu.imagen.url : '';
-const heroImg = (rawHeroUrl.startsWith('/') && !rawHeroUrl.startsWith('http'))
-  ? `${PAYLOAD_URL}${rawHeroUrl}`
-  : rawHeroUrl || 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80';
+const heroImg = getOptimizedImageUrl(rawHeroUrl, {
+  fallback: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80'
+});
 
 // PDF URL — se sirve a través del proxy /api/download-pdf para forzar descarga cross-origin (Bunny CDN)
 const rawPdfUrl = typeof menu.pdf === 'object' && menu.pdf?.url ? menu.pdf.url : '';

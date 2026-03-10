@@ -15,13 +15,14 @@ interface CDNOptions {
     height?: number;
     quality?: number;
     crop?: 'fill' | 'fit' | 'cover';
+    fallback?: string;
 }
 
 /**
  * Transforma una URL de imagen para usar el CDN si está configurado
  */
 export function getOptimizedImageUrl(src: string, options: CDNOptions = {}): string {
-    if (!src) return '/images/placeholder.jpg';
+    if (!src) return options.fallback || '/images/placeholder.jpg';
 
     let BUNNY_URL = getEnv('PUBLIC_BUNNY_CDN_URL').replace(/\/$/, "");
     // Asegurar que tiene protocolo https://

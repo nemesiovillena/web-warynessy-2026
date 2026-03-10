@@ -121,11 +121,41 @@ export const espaciosPageTranslations = {
 } as const
 
 export const historiaPageTranslations = {
-  es: { badge: 'Nuestra historia', title: 'Nuestra historia', legacySubtitle: 'Un legado de sabor' },
-  ca: { badge: 'La nostra història', title: 'La nostra història', legacySubtitle: 'Un llegat de sabor' },
-  en: { badge: 'Our history', title: 'Our history', legacySubtitle: 'A legacy of flavor' },
-  fr: { badge: 'Notre histoire', title: 'Notre histoire', legacySubtitle: 'Un héritage de saveur' },
-  de: { badge: 'Unsere Geschichte', title: 'Unsere Geschichte', legacySubtitle: 'Ein Erbe des Geschmacks' },
+  es: {
+    badge: 'Nuestra historia',
+    title: 'Nuestra historia',
+    legacySubtitle: 'Un legado de sabor',
+    metaTitle: 'Nuestra Historia',
+    metaDescription: 'Conoce la historia y el legado del Restaurante Warynessy.'
+  },
+  ca: {
+    badge: 'La nostra història',
+    title: 'La nostra història',
+    legacySubtitle: 'Un llegat de sabor',
+    metaTitle: 'La nostra Història',
+    metaDescription: 'Coneix la història i el llegat del Restaurant Warynessy.'
+  },
+  en: {
+    badge: 'Our history',
+    title: 'Our history',
+    legacySubtitle: 'A legacy of flavor',
+    metaTitle: 'Our History',
+    metaDescription: 'Discover the history and legacy of Warynessy Restaurant.'
+  },
+  fr: {
+    badge: 'Notre histoire',
+    title: 'Notre histoire',
+    legacySubtitle: 'Un héritage de saveur',
+    metaTitle: 'Notre Histoire',
+    metaDescription: 'Découvrez l\'histoire et l\'héritage du restaurant Warynessy.'
+  },
+  de: {
+    badge: 'Unsere Geschichte',
+    title: 'Unsere Geschichte',
+    legacySubtitle: 'Ein Erbe des Geschmacks',
+    metaTitle: 'Unsere Geschichte',
+    metaDescription: 'Entdecken Sie die Geschichte und das Erbe des Restaurants Warynessy.'
+  },
 } as const
 
 export const contactoPageTranslations = {

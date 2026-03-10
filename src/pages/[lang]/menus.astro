@@ -38,7 +38,9 @@ const rawHeroImg = typeof pageData?.heroImage === 'object' && pageData?.heroImag
   ? pageData.heroImage.url
   : 'https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&q=80';
 
-const heroImg = getOptimizedImageUrl(rawHeroImg);
+const heroImg = getOptimizedImageUrl(rawHeroImg, {
+  fallback: 'https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&q=80'
+});
 
 
 // Obtener IDs de menús que están en grupos para excluirlos de la sección individual

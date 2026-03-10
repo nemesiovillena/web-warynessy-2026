@@ -29,8 +29,8 @@ const heroImage = typeof pageData?.heroImage === 'object' && pageData?.heroImage
   ? getOptimizedImageUrl(pageData.heroImage.url)
   : null;
 
-const pageTitle = pageData?.metaTitle || `${ui.title} | ${siteSettings?.title || "Restaurante Warynessy"}`;
-const pageDescription = pageData?.metaDescription || "Conoce la historia y el legado del Restaurante Warynessy.";
+const pageTitle = pageData?.metaTitle || `${ui.metaTitle} | ${siteSettings?.title || "Restaurante Warynessy"}`;
+const pageDescription = pageData?.metaDescription || ui.metaDescription;
 ---
 
 <MainLayout title={pageTitle} description={pageDescription} noPaddingTop={true}>
@@ -38,7 +38,7 @@ const pageDescription = pageData?.metaDescription || "Conoce la historia y el le
   <div class="bg-matte-black min-h-screen text-white">
     
     <!-- Hero Section -->
-    <section class="relative h-[50vh] flex items-center justify-center overflow-hidden">
+    <section class="relative h-[35vh] flex items-end justify-center overflow-hidden pb-12 sm:pb-16">
       <div class="absolute inset-0 z-0">
         {heroImage ? (
           <ResponsiveImage 
@@ -55,12 +55,12 @@ const pageDescription = pageData?.metaDescription || "Conoce la historia y el le
       </div>
       
       <div class="relative z-10 text-center px-6 max-w-4xl mx-auto animate-fade-up">
-        <span class="text-primary font-bold tracking-[0.3em] uppercase text-sm mb-6 block">{ui.badge}</span>
-        <h1 class="text-5xl md:text-7xl lg:text-8xl font-display font-black text-white mb-6 tracking-tighter uppercase leading-none">
+        <span class="text-primary font-bold tracking-[0.3em] uppercase text-[10px] sm:text-xs mb-3 block">{ui.badge}</span>
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-display font-black text-white mb-4 tracking-tighter uppercase leading-none">
           {pageData?.heroTitle || ui.legacySubtitle}
         </h1>
         {pageData?.heroSubtitle && (
-          <p class="text-xl md:text-2xl text-gray-300 font-light max-w-2xl mx-auto mt-6">
+          <p class="text-lg md:text-xl text-gray-300 font-light max-w-2xl mx-auto">
             {pageData.heroSubtitle}
           </p>
         )}
@@ -69,11 +69,10 @@ const pageDescription = pageData?.metaDescription || "Conoce la historia y el le
 
     <!-- Misión / Intro -->
     {pageData?.historiaMision && (
-      <Section class="bg-matte-black relative py-12 border-b border-white/5">
+      <Section class="bg-matte-black relative pt-0 sm:pt-0 pb-12 border-b border-white/5">
         <Container class="text-center max-w-4xl mx-auto relative z-10">
-          <span class="material-symbols-outlined text-primary text-5xl mb-8 opacity-50">format_quote</span>
           <p class="text-2xl md:text-4xl font-display font-light text-white leading-tight italic">
-            "{pageData.historiaMision}"
+            {pageData.historiaMision}
           </p>
         </Container>
       </Section>
