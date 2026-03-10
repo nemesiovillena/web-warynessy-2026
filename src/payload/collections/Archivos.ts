@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { syncDocToBunny } from '../utils/bunny-upload'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -16,6 +17,20 @@ export const Archivos: CollectionConfig = {
   },
   access: {
     read: () => true, // Public read access
+  },
+  hooks: {
+    // After create or update, push file + variants to Bunny Storage
+    afterOperation: [
+      async ({ operation, result }) => {
+        if (operation === 'create' || operation === 'update') {
+          // Fire-and-forget: don't block the response
+          syncDocToBunny(result).catch((err) =>
+            console.error('[Bunny] syncDocToBunny error:', err)
+          )
+        }
+        return result
+      },
+    ],
   },
   upload: {
     staticDir: path.resolve(__dirname, '../../../media'),

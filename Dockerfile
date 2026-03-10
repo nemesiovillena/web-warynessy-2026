@@ -78,6 +78,9 @@ COPY --from=builder /app/server.js ./
 # Copy migrations folder
 COPY --from=builder /app/src/migrations ./src/migrations
 
+# Copy tsconfig for payload migrate command
+COPY --from=builder /app/tsconfig.json ./
+
 # Create startup script that runs migrations then starts server
 RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'echo "Running Payload migrations..."' >> /app/start.sh && \
@@ -86,8 +89,10 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'exec node server.js' >> /app/start.sh && \
     chmod +x /app/start.sh
 
-# Create media directory with correct permissions
-RUN mkdir -p /app/public/media && chown -R payload:nodejs /app
+# Create media directories with correct permissions
+# /app/media  → Payload staticDir (upload destination)
+# /app/public/media → served statically by Next.js (kept for compatibility)
+RUN mkdir -p /app/media /app/public/media && chown -R payload:nodejs /app
 
 # Set environment (will be overridden by Dokploy env vars)
 ENV NODE_ENV=production
