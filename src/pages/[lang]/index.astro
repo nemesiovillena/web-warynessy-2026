@@ -247,10 +247,10 @@ const ui = _t[locale as keyof typeof _t] || _t.es;
         <div class="w-full bg-matte-black/50 backdrop-blur-md rounded-2xl p-6 md:p-10 shadow-2xl border border-white/5 animate-stagger-container">
           {siteSettings?.openingHours?.map((schedule: any) => (
             <div class="flex justify-between items-center py-4 border-b border-white/5 last:border-0 animate-stagger-item">
-              <p class="text-[#FDFDFD] font-bold text-base md:text-lg">{schedule.days}</p>
-              <p class="text-[#D1C2B4] text-sm md:text-base font-medium text-right leading-relaxed">
+              <p class="text-white/80 font-bold text-base md:text-lg">{schedule.days}</p>
+              <p class="text-white/80 text-sm md:text-base font-medium text-right leading-relaxed">
                 {schedule.closed ?
-                  <span class="text-white/30 uppercase tracking-widest text-xs font-black">{ui.closed}</span> :
+                  <span class="text-white/80 uppercase tracking-widest text-xs font-black">{ui.closed}</span> :
                   <Fragment set:html={(schedule.hours || '').replace(' / ', '<br/>')} />
                 }
               </p>
@@ -314,7 +314,7 @@ const ui = _t[locale as keyof typeof _t] || _t.es;
           {homepage?.ctaText || ui.giftDesc}
         </p>
       </div>
-      <Button href={`/${locale}/experiencias`} variant="white" size="lg" class="text-accent-red hover:scale-105 transition-transform shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] group" trackEvent="gift_card_click" trackCategory="promo">
+      <Button href={`/${locale}/reservas`} variant="white" size="lg" class="text-accent-red hover:scale-105 transition-transform shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] group" trackEvent="gift_card_click" trackCategory="promo">
         {homepage?.ctaButtonText || ui.buyGiftCard}
         <span class="material-symbols-outlined ml-2 transition-transform group-hover:translate-x-1">arrow_right_alt</span>
       </Button>
@@ -339,27 +339,35 @@ const ui = _t[locale as keyof typeof _t] || _t.es;
         </Button>
       </div>
 
-      <div class="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] md:auto-rows-[250px] gap-4 md:gap-6 animate-stagger-container">
-        {homepage?.galeriaInicio?.slice(2, 7).map((img: any, i: number) => {
-          // Bento Grid para las imágenes de espacios (hasta la 07)
-          let gridClasses = "col-span-1 row-span-1";
-          
-          if (i === 0) {
-            gridClasses = "col-span-2 row-span-2"; // Imagen destacada (2x2)
-          }
-
-          return (
-            <div class={`animate-stagger-item ${gridClasses} overflow-hidden rounded-2xl group relative shadow-xl`}>
-              <ResponsiveImage
-              src={getOptimizedImageUrl(img.imagen?.url)}
-              alt={typeof img.imagen === 'object' && img.imagen?.alt ? img.imagen.alt : ui.restaurantSpace}
-                class="h-full w-full object-cover transition-transform duration-[1.5s] group-hover:scale-110"
-              />
-              <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-700"></div>
-            </div>
-          );
-        })}
-      </div>
+      {/* Build image list: prefer galeriaInicio[2..7], fall back to spaces images */}
+      {(() => {
+        const galleryImages = (homepage?.galeriaInicio?.slice(2, 7) || []).map((img: any) => ({
+          url: getOptimizedImageUrl(img.imagen?.url),
+          alt: typeof img.imagen === 'object' && img.imagen?.alt ? img.imagen.alt : ui.restaurantSpace,
+        }));
+        const spaceImages = (spaces || []).slice(0, 5).map((s: any) => ({
+          url: getOptimizedImageUrl(typeof s.imagenPrincipal === 'object' ? s.imagenPrincipal?.url : ''),
+          alt: s.nombre || ui.restaurantSpace,
+        }));
+        const bentoImages = galleryImages.length >= 3 ? galleryImages : spaceImages;
+        return (
+          <div class="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] md:auto-rows-[250px] gap-4 md:gap-6 animate-stagger-container">
+            {bentoImages.map((item: any, i: number) => {
+              const gridClasses = i === 0 ? "col-span-2 row-span-2" : "col-span-1 row-span-1";
+              return (
+                <div class={`animate-stagger-item ${gridClasses} overflow-hidden rounded-2xl group relative shadow-xl`}>
+                  <ResponsiveImage
+                    src={item.url}
+                    alt={item.alt}
+                    class="h-full w-full object-cover transition-transform duration-[1.5s] group-hover:scale-110"
+                  />
+                  <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-700"></div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })()}
     </Container>
   </Section>
 

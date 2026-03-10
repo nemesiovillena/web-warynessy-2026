@@ -1,6 +1,7 @@
 ---
 import { type Espacio } from '../../payload-types';
 import ResponsiveImage from '../ui/ResponsiveImage.astro';
+import { getOptimizedImageUrl } from '../../lib/cdn';
 
 interface Props {
   space: Espacio;
@@ -8,8 +9,8 @@ interface Props {
 }
 
 const { space, class: className = "h-[500px]" } = Astro.props;
-// Payload may return ID or object for relations depending on depth. Assuming depth is sufficient.
-const imageUrl = typeof space.imagenPrincipal === 'object' && space.imagenPrincipal?.url ? space.imagenPrincipal.url : '';
+const rawUrl = typeof space.imagenPrincipal === 'object' && space.imagenPrincipal?.url ? space.imagenPrincipal.url : '';
+const imageUrl = rawUrl ? getOptimizedImageUrl(rawUrl) : '';
 ---
 
 <div class={`relative group w-full overflow-hidden rounded-2xl cursor-pointer shadow-2xl ${className}`}>

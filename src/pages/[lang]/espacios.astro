@@ -1,7 +1,7 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
 import Container from '../../components/ui/Container.astro';
-import { getSiteSettings, getPaginaBySlug } from '../../lib/payload-local';
+import { getSiteSettings, getPaginaBySlug, getEspacios } from '../../lib/payload-local';
 import { getOptimizedImageUrl } from '../../lib/cdn';
 import { getTranslations } from '../../lib/i18n';
 
@@ -11,34 +11,30 @@ const locale = lang || 'es';
 const ui = getTranslations(locale).espacios;
 const common = getTranslations(locale).common;
 
-const siteSettings = await getSiteSettings(locale);
-const pageData = await getPaginaBySlug('espacios', locale);
+const [siteSettings, pageData, espaciosData] = await Promise.all([
+  getSiteSettings(locale),
+  getPaginaBySlug('espacios', locale),
+  getEspacios(true, locale),
+]);
 
 const pageTitle = pageData?.metaTitle || `${ui.title} | ${siteSettings?.title || "Restaurante Warynessy"}`;
 const pageDescription = pageData?.metaDescription || "Descubre los espacios únicos y exclusivos de Restaurante Warynessy. Salones diseñados para experiencias gastronómicas memorables.";
 
-const spaces = [
-  {
-    nombre: pageData?.nombreEspacio1 || ui.defaultName1,
-    descripcion: pageData?.descripcionEspacio1 || ui.defaultDesc1,
-    imagen: pageData?.imagenEspacio1,
-  },
-  {
-    nombre: pageData?.nombreEspacio2 || ui.defaultName2,
-    descripcion: pageData?.descripcionEspacio2 || ui.defaultDesc2,
-    imagen: pageData?.imagenEspacio2,
-  },
-  {
-    nombre: pageData?.nombreEspacio3 || ui.defaultName3,
-    descripcion: pageData?.descripcionEspacio3 || ui.defaultDesc3,
-    imagen: pageData?.imagenEspacio3,
-  },
-  {
-    nombre: pageData?.nombreEspacio4 || ui.defaultName4,
-    descripcion: pageData?.descripcionEspacio4 || ui.defaultDesc4,
-    imagen: pageData?.imagenEspacio4,
-  }
-];
+// Build spaces list: prefer pagina data, fall back to espacios collection
+const spacesFromPagina = [
+  { nombre: pageData?.nombreEspacio1, descripcion: pageData?.descripcionEspacio1, imagen: pageData?.imagenEspacio1 },
+  { nombre: pageData?.nombreEspacio2, descripcion: pageData?.descripcionEspacio2, imagen: pageData?.imagenEspacio2 },
+  { nombre: pageData?.nombreEspacio3, descripcion: pageData?.descripcionEspacio3, imagen: pageData?.imagenEspacio3 },
+  { nombre: pageData?.nombreEspacio4, descripcion: pageData?.descripcionEspacio4, imagen: pageData?.imagenEspacio4 },
+].filter(s => s.nombre && s.imagen);
+
+const spaces = spacesFromPagina.length > 0
+  ? spacesFromPagina
+  : (espaciosData || []).map((e: any) => ({
+      nombre: e.nombre,
+      descripcion: e.descripcion,
+      imagen: typeof e.imagenPrincipal === 'object' ? e.imagenPrincipal : null,
+    }));
 ---
 
 <MainLayout title={pageTitle} description={pageDescription}>
