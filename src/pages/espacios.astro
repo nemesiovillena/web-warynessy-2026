@@ -1,12 +1,10 @@
 ---
-import MainLayout from '../../layouts/MainLayout.astro';
-import Container from '../../components/ui/Container.astro';
-import { getSiteSettings, getPaginaBySlug, getEspacios } from '../../lib/payload-local';
-import { getOptimizedImageUrl } from '../../lib/cdn';
-import { getTranslations } from '../../lib/i18n';
+import MainLayout from '../layouts/MainLayout.astro';
+import Container from '../components/ui/Container.astro';
+import { getSiteSettings, getPaginaBySlug, getEspacios } from '../lib/payload-local';
+import { getOptimizedImageUrl } from '../lib/cdn';
 
-const { lang } = Astro.params;
-const locale = lang || 'es';
+const locale = 'es';
 
 const ui = getTranslations(locale).espacios;
 const common = getTranslations(locale).common;
@@ -38,7 +36,7 @@ const spaces = spacesFromPagina.length > 0
 ---
 
 <MainLayout title={pageTitle} description={pageDescription}>
-  
+
   <div class="bg-[#0A0A0A] min-h-screen pt-32 pb-32">
     <Container>
       <!-- Hero Section -->
@@ -61,19 +59,19 @@ const spaces = spacesFromPagina.length > 0
           <div class="group bg-[#111] rounded-[2rem] overflow-hidden border border-white/5 flex flex-col lg:flex-row animate-fade-up shadow-2xl transition-all duration-500 hover:border-white/10" style={`animation-delay: ${index * 150}ms`}>
             <!-- Image Section -->
             <div class="w-full lg:w-[500px] aspect-[4/3] lg:aspect-square overflow-hidden relative">
-               <img 
-                src={getOptimizedImageUrl(item.imagen?.url) || '/images/placeholder-space.jpg'} 
+               <img
+                src={getOptimizedImageUrl(item.imagen?.url) || '/images/placeholder-space.jpg'}
                 alt={item.nombre}
                 class="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 group-hover:rotate-1"
               />
               <div class="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/80 via-transparent to-transparent opacity-60"></div>
-              
+
               <!-- Number Indicator (Stitch Style) -->
               <div class="absolute bottom-6 left-6 flex items-center gap-3">
                 <span class="text-white/20 font-display font-black text-6xl italic leading-none">0{index + 1}</span>
               </div>
             </div>
-            
+
             <!-- Content Section -->
             <div class="p-8 lg:p-16 flex flex-col justify-center flex-1 relative">
               <div class="mb-4">
@@ -82,16 +80,16 @@ const spaces = spacesFromPagina.length > 0
                 </h2>
                 <div class="w-12 h-0.5 bg-white/10 group-hover:w-24 group-hover:bg-[#D12026] transition-all duration-700"></div>
               </div>
-              
+
               <p class="text-gray-400 text-lg font-light leading-relaxed mb-10 max-w-xl">
                 {item.descripcion}
               </p>
-              
+
 
 
               <!-- Action Button -->
               <div class="mt-12 flex items-center gap-4">
-                <a href={`/${locale}/reservas`} class="inline-flex items-center gap-3 text-[#D12026] text-xs font-black uppercase tracking-[0.3em] hover:gap-5 transition-all duration-300">
+                <a href={`/reservas`} class="inline-flex items-center gap-3 text-[#D12026] text-xs font-black uppercase tracking-[0.3em] hover:gap-5 transition-all duration-300">
                   <span>{ui.bookRoom || "Reservar Espacio"}</span>
                   <span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </a>
@@ -108,6 +106,9 @@ const spaces = spacesFromPagina.length > 0
 </MainLayout>
 
 <style>
+  /* Import Material Symbols */
+  @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
   /* Animaciones */
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(40px); }
@@ -116,9 +117,6 @@ const spaces = spacesFromPagina.length > 0
   .animate-fade-up {
     animation: fade-up 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   }
-  
-  /* Import Material Symbols */
-  @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
   .material-symbols-outlined {
     font-variation-settings:

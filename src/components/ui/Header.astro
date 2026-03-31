@@ -1,14 +1,12 @@
 ---
 import { getSiteSettings } from '../../lib/payload-local';
-import LanguageSelector from './LanguageSelector.astro';
 import { getNavLinks, navReserveNow } from '../../lib/i18n';
 
 // Fetch site settings for logo and title
 const siteSettings = await getSiteSettings();
 
 const { locale: propsLocale } = Astro.props;
-const { lang } = Astro.params;
-const locale = propsLocale || lang || 'es';
+const locale = propsLocale || 'es';
 
 const navLinks = getNavLinks(locale);
 const reservaNow = navReserveNow[locale] ?? navReserveNow.es;
@@ -32,8 +30,8 @@ const reservaNow = navReserveNow[locale] ?? navReserveNow.es;
 
     <div class="hidden lg:flex items-center gap-8">
       {navLinks.map(link => (
-        <a 
-          href={link.href} 
+        <a
+          href={link.href}
           class="text-white text-sm font-semibold tracking-widest uppercase hover:text-primary transition-colors"
           data-track="nav_click"
           data-track-category="header_menu"
@@ -41,15 +39,10 @@ const reservaNow = navReserveNow[locale] ?? navReserveNow.es;
           {link.name}
         </a>
       ))}
-      <div class="h-4 w-px bg-white/30"></div>
-      <LanguageSelector />
     </div>
 
     {/* Icons/Actions */}
     <div class="flex items-center gap-4">
-      <div class="lg:hidden">
-        <LanguageSelector />
-      </div>
 
       <button id="menu-toggle" class="text-white flex items-center justify-center hover:text-primary transition-colors lg:hidden ml-2">
         <span class="material-symbols-outlined">menu</span>

@@ -15,8 +15,7 @@ interface Props {
 }
 
 const { title, description, noPaddingTop = false, hideFloatingButton = false, schemaType, schemaData } = Astro.props;
-const { lang } = Astro.params;
-const locale = lang || 'es';
+const locale = 'es';
 ---
 
 <BaseLayout title={title} description={description} schemaType={schemaType} schemaData={schemaData} locale={locale}>

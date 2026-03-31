@@ -1,12 +1,11 @@
 ---
-import MainLayout from '../../layouts/MainLayout.astro';
-import Section from '../../components/ui/Section.astro';
-import Container from '../../components/ui/Container.astro';
-import { getSiteSettings, getPaginaBySlug } from '../../lib/payload-local';
-import { getOptimizedImageUrl } from '../../lib/cdn';
+import MainLayout from '../layouts/MainLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Container from '../components/ui/Container.astro';
+import { getSiteSettings, getPaginaBySlug } from '../lib/payload-local';
+import { getOptimizedImageUrl } from '../lib/cdn';
 
-const { lang } = Astro.params;
-const locale = lang || 'es';
+const locale = 'es';
 
 const siteSettings = await getSiteSettings(locale);
 const pageData = await getPaginaBySlug('experiencias', locale);

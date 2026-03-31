@@ -10,22 +10,13 @@ interface Props {
 const {
 	title,
 	description = "Restaurante Warynessy - Alta cocina en un ambiente exclusivo en Villena. Disfruta de nuestra gastronomía única, espacios elegantes y experiencias inolvidables.",
-	image = "/images/og-default.jpg", 
+	image = "/images/og-default.jpg",
 	url = Astro.url,
 	type = "website"
 } = Astro.props;
 
-const { lang } = Astro.params;
-const locale = lang || 'es';
-
-const localeMap: Record<string, string> = {
-  'es': 'es_ES',
-  'ca': 'ca_ES',
-  'en': 'en_US',
-  'fr': 'fr_FR',
-  'de': 'de_DE'
-};
-const ogLocale = localeMap[locale] || 'es_ES';
+const locale = 'es';
+const ogLocale = 'es_ES';
 
 const siteTitle = `${title} | Restaurante Warynessy`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);

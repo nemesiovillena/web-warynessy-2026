@@ -1,15 +1,13 @@
 ---
-import MainLayout from '../../layouts/MainLayout.astro';
-import Section from '../../components/ui/Section.astro';
-import Container from '../../components/ui/Container.astro';
-import ResponsiveImage from '../../components/ui/ResponsiveImage.astro';
-import RichText from '../../components/ui/RichText.astro';
-import { getSiteSettings, getPaginaBySlug } from '../../lib/payload-local';
-import { getOptimizedImageUrl } from '../../lib/cdn';
-import { getTranslations } from '../../lib/i18n';
+import MainLayout from '../layouts/MainLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Container from '../components/ui/Container.astro';
+import ResponsiveImage from '../components/ui/ResponsiveImage.astro';
+import RichText from '../components/ui/RichText.astro';
+import { getSiteSettings, getPaginaBySlug } from '../lib/payload-local';
+import { getOptimizedImageUrl } from '../lib/cdn';
 
-const { lang } = Astro.params;
-const locale = lang || 'es';
+const locale = 'es';
 const ui = getTranslations(locale).historia;
 
 const siteSettings = await getSiteSettings(locale);
@@ -34,15 +32,15 @@ const pageDescription = pageData?.metaDescription || ui.metaDescription;
 ---
 
 <MainLayout title={pageTitle} description={pageDescription} noPaddingTop={true}>
-  
+
   <div class="bg-matte-black min-h-screen text-white">
-    
+
     <!-- Hero Section -->
     <section class="relative h-[35vh] flex items-end justify-center overflow-hidden pb-12 sm:pb-16">
       <div class="absolute inset-0 z-0">
         {heroImage ? (
-          <ResponsiveImage 
-            src={heroImage} 
+          <ResponsiveImage
+            src={heroImage}
             alt={pageData?.heroImage?.alt || 'Historia Hero'}
             class="w-full h-full object-cover opacity-50"
           />
@@ -53,7 +51,7 @@ const pageDescription = pageData?.metaDescription || ui.metaDescription;
         )}
         <div class="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/60 to-transparent"></div>
       </div>
-      
+
       <div class="relative z-10 text-center px-6 max-w-4xl mx-auto animate-fade-up">
         <span class="text-primary font-bold tracking-[0.3em] uppercase text-[10px] sm:text-xs mb-3 block">{ui.badge}</span>
         <h1 class="text-4xl md:text-6xl lg:text-7xl font-display font-black text-white mb-4 tracking-tighter uppercase leading-none">
@@ -83,13 +81,13 @@ const pageDescription = pageData?.metaDescription || ui.metaDescription;
       <Section class="bg-zinc-950 py-32 relative">
         <div class="absolute top-0 bottom-0 left-1/2 w-px bg-white/5 ml-[-0.5px] hidden md:block"></div>
         <Container class="max-w-5xl mx-auto px-6 relative z-10">
-          
+
           <div class="space-y-24 md:space-y-32">
             {pageData.historiaHitos.map((hito: any, index: number) => {
               const isEven = index % 2 === 0;
               return (
                 <div class={`flex flex-col md:flex-row items-center justify-between gap-12 md:gap-24 animate-fade-up ${isEven ? 'md:flex-row-reverse' : ''}`} style={`animation-delay: ${index * 150}ms`}>
-                  
+
                   {/* Contenido */}
                   <div class={`w-full md:w-1/2 flex flex-col ${isEven ? 'md:items-start text-left' : 'md:items-end md:text-right text-left'}`}>
                     <div class="flex items-center gap-4 mb-6">
@@ -144,7 +142,7 @@ const pageDescription = pageData?.metaDescription || ui.metaDescription;
     transform: translateY(30px);
     animation: fadeUp 1s ease-out forwards;
   }
-  
+
   @keyframes fadeUp {
     to {
       opacity: 1;

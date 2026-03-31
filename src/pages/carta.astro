@@ -1,17 +1,15 @@
 ---
-import MainLayout from '../../layouts/MainLayout.astro';
-import Section from '../../components/ui/Section.astro';
-import Container from '../../components/ui/Container.astro';
-import DishListItem from '../../components/content/DishListItem.astro';
-import DishCard from '../../components/content/DishCard.astro';
-import { getSiteSettings, getCategorias, getPlatos, getAlergenos, getPaginaBySlug } from '../../lib/payload-local';
-import { getOptimizedImageUrl } from '../../lib/cdn';
+import MainLayout from '../layouts/MainLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Container from '../components/ui/Container.astro';
+import DishListItem from '../components/content/DishListItem.astro';
+import DishCard from '../components/content/DishCard.astro';
+import { getSiteSettings, getCategorias, getPlatos, getAlergenos, getPaginaBySlug } from '../lib/payload-local';
+import { getOptimizedImageUrl } from '../lib/cdn';
 import fs from 'node:fs';
 import path from 'node:path';
-import { getTranslations } from '../../lib/i18n';
 
-const { lang } = Astro.params;
-const locale = lang || 'es';
+const locale = 'es';
 
 const ui = getTranslations(locale).carta;
 
@@ -59,13 +57,13 @@ if (fs.existsSync(imagesBaseDir)) {
 
 function getLocalImageForDish(dishName: string, categorySlug: string): string | null {
   if (!dishName) return null;
-  
+
   // Only look for images for specific categories
   const dirName = imageCategories[categorySlug];
   if (!dirName) return null;
 
   const files = availableImages.get(categorySlug) || [];
-  
+
   // Normalize dish name to match filename format (remove non-ascii, snake_case)
   // Observation: "Marqués" -> "marqus" (accented char dropped), "Paco & Lola" -> "paco__lola" (spaces preserved as underscores)
   const normalized = dishName.toLowerCase()
@@ -75,11 +73,11 @@ function getLocalImageForDish(dishName: string, categorySlug: string): string | 
 
   // Try to find a file that starts with this normalized name
   const match = files.find(f => f.toLowerCase().startsWith(normalized));
-  
+
   if (match) {
     return `/images/carta/${dirName}/${match}`;
   }
-  
+
   return null;
 }
 
@@ -168,7 +166,7 @@ activeCategories.forEach((cat: any) => {
     slug: cat.slug,
     descripcion: cat.descripcion,
     platos: cat.platos,
-    orden: catOrden,
+    orden: cat.orden,
   });
 });
 
@@ -204,9 +202,9 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
   <section class="relative pt-32 pb-6 md:pt-48 md:pb-8 bg-matte-black overflow-hidden">
       {heroImage && (
         <div class="absolute inset-0 z-0">
-          <img 
-            src={heroImage} 
-            alt={pageData?.heroTitle || 'Carta Hero'} 
+          <img
+            src={heroImage}
+            alt={pageData?.heroTitle || 'Carta Hero'}
             class="w-full h-full object-cover opacity-30"
           />
           <div class="absolute inset-0 bg-gradient-to-b from-transparent via-matte-black/60 to-matte-black"></div>
@@ -242,7 +240,7 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
                  {ui.clearFilters}
                </button>
             </div>
-            
+
             <div class="flex overflow-x-auto pb-4 gap-3 no-scrollbar px-4 md:px-0" id="allergen-nav">
               {allAlergenos.map((alergeno: any) => {
                 const imgUrl = typeof alergeno.imagen === 'object' && alergeno.imagen?.url
@@ -293,8 +291,8 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
       {/* Categories Content */}
       <div id="carta-container" class="min-h-[50vh]">
         {sortedMainCategories.map((mainCat, index) => (
-          <section 
-            id={mainCat.slug} 
+          <section
+            id={mainCat.slug}
             class:list={[
               "category-section transition-all duration-500",
               index === 0 ? "block animate-fade-in" : "hidden"
@@ -312,7 +310,7 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
             {mainCat.subcategories.length > 1 && (
               <div class="mb-8 flex overflow-x-auto pb-4 gap-2 no-scrollbar pr-4 sticky top-[160px] md:top-20 z-20 bg-matte-black/95 backdrop-blur-md -mx-4 px-4 md:mx-0 md:px-0 mt-8 border-t border-white/5 pt-4">
                 {mainCat.subcategories.map((subcat) => subcat.subcategoryName && (
-                  <button 
+                  <button
                     class="subcategory-go-to px-4 py-1.5 rounded-full border border-white/5 bg-white/5 text-white/50 text-xs font-bold uppercase tracking-wider hover:border-primary/30 hover:text-white transition-all whitespace-nowrap"
                     data-target={`${mainCat.slug}-${subcat.slug}`}
                   >
@@ -326,7 +324,7 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
             {mainCat.subcategories.map((subcat) => {
               const isVisualCategory = ['vinos', 'espumosos-y-vinos-dulces', 'vermut-y-cervezas'].includes(mainCat.slug);
               const subcatId = `${mainCat.slug}-${subcat.slug}`;
-              
+
               return (
               <div class="mb-12 last:mb-0 scroll-mt-56 md:scroll-mt-36" id={subcatId}>
                 {/* Subcategory header */}
@@ -348,7 +346,7 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
                 ]}>
                   {subcat.platos.map((dish: any) => {
                     let dishWithImg = dish;
-                    
+
                     if (isVisualCategory) {
                        // Use ES dish name for image lookup (files are named in Spanish)
                        const dishNameForImg = dishESNameMap.get(dish.id) || dish.nombre;
@@ -372,7 +370,7 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
             )})}
           </section>
         ))}
-        
+
         <div id="no-results" class="hidden flex flex-col items-center justify-center py-20 text-center animate-fade-up">
           <span class="material-symbols-outlined text-tx-muted text-5xl mb-4">no_food</span>
           <p class="text-white/60 text-lg">{ui.noResults}</p>
@@ -548,13 +546,13 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
           const cardAlergenos = (card.getAttribute('data-alergenos') || '').split(',').filter(Boolean);
           // Logic: Hide if dish HAS any of the selected blockers (assuming "Filtrar sin")
           const hasBlockedAlergen = Array.from(activeFilters).some(filterId => cardAlergenos.includes(filterId as string));
-          
+
           // Use inline style for reliability over classList
           if (hasBlockedAlergen) {
             wrapper.style.display = 'none';
           } else {
             wrapper.style.display = '';
-            
+
             // Check if this visible dish is in the current category
             const section = wrapper.closest('.category-section');
             if (section && section.id === activeCategory) {
@@ -573,7 +571,7 @@ const heroImage = getOptimizedImageUrl(rawHeroImage);
 
     });
   </script>
-  
+
   <style is:global>
     .no-scrollbar::-webkit-scrollbar {
       display: none;
