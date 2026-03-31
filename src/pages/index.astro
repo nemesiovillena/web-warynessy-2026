@@ -1,4 +1,6 @@
 ---
-// Redirect to the default locale
-return Astro.redirect('/es/', 301);
+// No redirect - serve the root directly
+import PaginaInicio from '../pages/pagina-inicio.astro';
 ---
+
+<PaginaInicio />
