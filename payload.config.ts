@@ -122,12 +122,14 @@ export default buildConfig({
   cors: [
     process.env.PAYLOAD_PUBLIC_SERVER_URL,
     process.env.PUBLIC_SITE_URL,
+    process.env.PUBLIC_SITE_URL_WWW,
   ].filter(Boolean) as string[],
 
   // Configuraciรณn CSRF
   csrf: [
     process.env.PAYLOAD_PUBLIC_SERVER_URL,
     process.env.PUBLIC_SITE_URL,
+    process.env.PUBLIC_SITE_URL_WWW,
   ].filter(Boolean) as string[],
 
   plugins: [
