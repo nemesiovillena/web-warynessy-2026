@@ -54,7 +54,7 @@ const t = getTranslations(locale).footer;
         </div>
 
         {/* Botón Reserva */}
-        <Button href={`/${locale}/reservas`} variant="primary" size="md" trackEvent="reservation_click" trackCategory="footer">
+        <Button href="/reservas" variant="primary" size="md" trackEvent="reservation_click" trackCategory="footer">
           {t.reserve}
         </Button>
 
@@ -147,9 +147,9 @@ const t = getTranslations(locale).footer;
         </span>
       </p>
       <div class="flex gap-6">
-        <a class="hover:text-primary transition-colors" href={`/${locale}/aviso-legal`}>{t.legal}</a>
-        <a class="hover:text-primary transition-colors" href={`/${locale}/cookies`}>{t.cookies}</a>
-        <a class="hover:text-primary transition-colors" href={`/${locale}/privacidad`}>{t.privacy}</a>
+        <a class="hover:text-primary transition-colors" href="/aviso-legal">{t.legal}</a>
+        <a class="hover:text-primary transition-colors" href="/cookies">{t.cookies}</a>
+        <a class="hover:text-primary transition-colors" href="/privacidad">{t.privacy}</a>
       </div>
     </div>
   </div>
