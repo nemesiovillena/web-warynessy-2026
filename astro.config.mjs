@@ -32,7 +32,7 @@ export default defineConfig({
     defaultLocale: 'es',
     locales: ['es', 'ca', 'en', 'fr', 'de'],
     routing: {
-      prefixDefaultLocale: true
+      prefixDefaultLocale: false
     }
   },
   integrations: [sitemap()],
