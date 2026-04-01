@@ -7,8 +7,8 @@ import { getOptimizedImageUrl } from '../lib/cdn';
 
 const locale = 'es';
 
-const siteSettings = await getSiteSettings(locale);
-const pageData = await getPaginaBySlug('reservas', locale);
+const siteSettings = await getSiteSettings();
+const pageData = await getPaginaBySlug('reservas');
 
 const langMap: Record<string, string> = {
   'es': 'spanish',

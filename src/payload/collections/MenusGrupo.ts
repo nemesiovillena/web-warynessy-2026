@@ -89,7 +89,7 @@ export const MenusGrupo: CollectionConfig = {
             type: 'text',
             label: 'Nombre del Grupo de Menús',
             required: true,
-            localized: true,
+            localized: false,
             admin: {
                 description: 'Ej: Menús de Empresa, Menús de Celebración, etc.',
             },
@@ -98,7 +98,7 @@ export const MenusGrupo: CollectionConfig = {
             name: 'descripcion',
             type: 'textarea',
             label: 'Descripción del Grupo',
-            localized: true,
+            localized: false,
             admin: {
                 description: 'Breve introducción para este conjunto de menús.',
             },

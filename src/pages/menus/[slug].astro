@@ -28,10 +28,10 @@ const ui = getTranslations(locale).menuSlug;
 
 if (!slug) return Astro.redirect(`/menus`);
 
-const menu = await getMenuBySlug(slug, locale);
+const menu = await getMenuBySlug(slug);
 if (!menu) return Astro.redirect(`/menus`);
 
-const siteSettings = await getSiteSettings(locale);
+const siteSettings = await getSiteSettings();
 
 const pageTitle = `${menu.nombre} | ${siteSettings?.title || "Warynessy"}`;
 const pageDescription = menu.descripcion_menu || undefined;

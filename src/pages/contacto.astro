@@ -10,8 +10,8 @@ const locale = 'es';
 const ui = getTranslations(locale).contacto;
 
 
-const siteSettings = await getSiteSettings(locale);
-const pageData = await getPaginaBySlug('contacto', locale);
+const siteSettings = await getSiteSettings();
+const pageData = await getPaginaBySlug('contacto');
 
 const pageTitle = pageData?.metaTitle || `Contacto | ${siteSettings?.title || "Warynessy"}`;
 const pageDescription = pageData?.metaDescription || "Contacta con el equipo de Warynessy para reservas o consultas.";

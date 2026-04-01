@@ -85,7 +85,7 @@ export const Experiencias: CollectionConfig = {
             type: 'text',
             label: 'Título de la Experiencia',
             required: true,
-            localized: true,
+            localized: false,
         },
         {
             name: 'slug',
@@ -113,7 +113,7 @@ export const Experiencias: CollectionConfig = {
             name: 'descripcion',
             type: 'richText',
             label: 'Descripción',
-            localized: true,
+            localized: false,
             admin: {
                 description: 'Descripción completa de la experiencia',
             },
@@ -123,7 +123,7 @@ export const Experiencias: CollectionConfig = {
             type: 'textarea',
             label: 'Resumen Corto',
             maxLength: 150,
-            localized: true,
+            localized: false,
             admin: {
                 description: 'Descripción breve para la tarjeta',
             },
@@ -168,13 +168,13 @@ export const Experiencias: CollectionConfig = {
             name: 'incluye',
             type: 'array',
             label: '¿Qué Incluye?',
-            localized: true,
+            localized: false,
             fields: [
                 {
                     name: 'item',
                     type: 'text',
                     required: true,
-                    localized: true,
+                    localized: false,
                 },
             ],
             admin: {
@@ -185,7 +185,7 @@ export const Experiencias: CollectionConfig = {
             name: 'validez',
             type: 'text',
             label: 'Validez',
-            localized: true,
+            localized: false,
             admin: {
                 description: 'Ej: "Válido durante 1 año desde la compra"',
             },

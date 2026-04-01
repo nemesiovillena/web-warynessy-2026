@@ -87,7 +87,7 @@ export const Espacios: CollectionConfig = {
       type: 'text',
       label: 'Nombre del Espacio',
       required: true,
-      localized: true,
+      localized: false,
       admin: {
         description: 'Ej: Salón Principal, Zona Bar, Terraza, Sala Privada, etc.',
       },
@@ -118,7 +118,7 @@ export const Espacios: CollectionConfig = {
       name: 'descripcion',
       type: 'richText',
       label: 'Descripción del Espacio',
-      localized: true,
+      localized: false,
       admin: {
         description: 'Descripción detallada del espacio',
       },
@@ -156,7 +156,7 @@ export const Espacios: CollectionConfig = {
           name: 'caracteristica',
           type: 'text',
           required: true,
-          localized: true,
+          localized: false,
         },
       ],
       admin: {

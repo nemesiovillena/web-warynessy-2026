@@ -13,28 +13,22 @@ const locale = 'es';
 
 const ui = getTranslations(locale).carta;
 
-const siteSettings = await getSiteSettings(locale);
-// Fetch categories in current locale (for display) and in ES (for grouping by "Main - Sub" pattern)
-const [allCategories, allCategoriesES] = await Promise.all([
-  getCategorias(true, locale),
-  locale !== 'es' ? getCategorias(true, 'es') : Promise.resolve(null),
-]);
-// Map id → ES nombre for grouping (slug-based split is always in ES format)
+const siteSettings = await getSiteSettings();
+// Fetch categories
+const allCategories = await getCategorias(true);
+// Map id → nombre for grouping
 const categoriaESMap = new Map<number, string>(
-  (allCategoriesES || allCategories).map((c: any) => [c.id, c.nombre as string])
+  allCategories.map((c: any) => [c.id, c.nombre as string])
 );
-// Also fetch dishes in ES for image lookup (filenames are based on Spanish dish names)
-const [allDishes, allDishesES] = await Promise.all([
-  getPlatos(true, locale),
-  locale !== 'es' ? getPlatos(true, 'es') : Promise.resolve(null),
-]);
-// Map dishId → ES nombre for image filename matching
+// Fetch dishes
+const allDishes = await getPlatos(true);
+// Map dishId → nombre for image filename matching
 const dishESNameMap = new Map<number, string>(
-  (allDishesES || allDishes).map((d: any) => [d.id, d.nombre as string])
+  allDishes.map((d: any) => [d.id, d.nombre as string])
 );
-const allAlergenos = await getAlergenos(locale);
+const allAlergenos = await getAlergenos();
 
-const pageData = await getPaginaBySlug('carta', locale);
+const pageData = await getPaginaBySlug('carta');
 
 // Image mapping logic
 const imagesBaseDir = path.resolve('public/images/carta');

@@ -98,13 +98,13 @@ export const Banners: CollectionConfig = {
       type: 'text',
       label: 'Título del Banner',
       required: true,
-      localized: true,
+      localized: false,
     },
     {
       name: 'texto',
       type: 'textarea',
       label: 'Texto del Banner',
-      localized: true,
+      localized: false,
       admin: {
         description: 'Texto descriptivo del anuncio',
       },
@@ -129,7 +129,7 @@ export const Banners: CollectionConfig = {
           name: 'texto',
           type: 'text',
           label: 'Texto del enlace',
-          localized: true,
+          localized: false,
         },
         {
           name: 'externo',

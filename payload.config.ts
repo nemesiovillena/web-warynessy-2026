@@ -53,18 +53,7 @@ export default buildConfig({
     },
   },
 
-  // Internacionalización (i18n)
-  localization: {
-    locales: [
-      { label: 'Español', code: 'es' },
-      { label: 'Valencià', code: 'ca' },
-      { label: 'English', code: 'en' },
-      { label: 'Français', code: 'fr' },
-      { label: 'Deutsch', code: 'de' },
-    ],
-    defaultLocale: 'es',
-    fallback: true,
-  },
+  // i18n solo para el panel de administración (idioma de la interfaz)
   i18n: {
     fallbackLanguage: 'es',
     supportedLanguages: { es, en, ca, de, fr },

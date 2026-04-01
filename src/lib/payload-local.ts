@@ -19,7 +19,7 @@ interface PayloadResponse<T> {
   nextPage: number | null
 }
 
-async function fetchAPI<T>(endpoint: string, options: RequestInit = {}, _locale?: string): Promise<T> {
+async function fetchAPI<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const finalUrl = `${API_URL}${endpoint}`;
 
   try {
@@ -50,7 +50,7 @@ async function fetchAPI<T>(endpoint: string, options: RequestInit = {}, _locale?
 }
 
 // Helper para construir query strings de Payload
-function buildQuery(params: Record<string, any>, locale?: string): string {
+function buildQuery(params: Record<string, any>): string {
   const searchParams = new URLSearchParams()
 
   for (const [key, value] of Object.entries(params)) {
@@ -63,10 +63,6 @@ function buildQuery(params: Record<string, any>, locale?: string): string {
     }
   }
 
-  if (locale) {
-    searchParams.set('locale', locale);
-  }
-
   const query = searchParams.toString()
   return query ? `?${query}` : ''
 }
@@ -75,40 +71,40 @@ function buildQuery(params: Record<string, any>, locale?: string): string {
 // COLECCIONES
 // ============================================
 
-export async function getPlatos(activo = true, locale?: string) {
+export async function getPlatos(activo = true) {
   const where = activo ? { activo: { equals: true } } : {}
-  const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 500 }, locale)
-  const result = await fetchAPI<PayloadResponse<any>>(`/platos${query}`, {}, locale)
+  const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 500 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/platos${query}`)
   return result.docs
 }
 
-export async function getPlatosPorCategoria(categoriaId: string, activo = true, locale?: string) {
+export async function getPlatosPorCategoria(categoriaId: string, activo = true) {
   const where: any = { categoria: { equals: categoriaId } }
   if (activo) where.activo = { equals: true }
-  const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 100 }, locale)
-  const result = await fetchAPI<PayloadResponse<any>>(`/platos${query}`, {}, locale)
+  const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 100 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/platos${query}`)
   return result.docs
 }
 
-export async function getCategorias(activa = true, locale?: string) {
+export async function getCategorias(activa = true) {
   const where = activa ? { activa: { equals: true } } : {}
-  const query = buildQuery({ where, sort: 'orden', limit: 100 }, locale)
-  const result = await fetchAPI<PayloadResponse<any>>(`/categorias${query}`, {}, locale)
+  const query = buildQuery({ where, sort: 'orden', limit: 100 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/categorias${query}`)
   return result.docs
 }
 
-export async function getAlergenos(locale?: string) {
-  const query = buildQuery({ sort: 'orden', limit: 100 }, locale)
-  const result = await fetchAPI<PayloadResponse<any>>(`/alergenos${query}`, {}, locale)
+export async function getAlergenos() {
+  const query = buildQuery({ sort: 'orden', limit: 100 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/alergenos${query}`)
   return result.docs
 }
 
-export async function getMenus(activo = true, locale?: string) {
+export async function getMenus(activo = true) {
   const baseParams = { sort: 'orden', depth: 1, limit: 100 }
   const where = activo ? { activo: { equals: true } } : {}
-  const query = buildQuery({ ...baseParams, where }, locale)
+  const query = buildQuery({ ...baseParams, where })
   const url = `/menus${query}`
-  const result = await fetchAPI<PayloadResponse<any>>(url, {}, locale)
+  const result = await fetchAPI<PayloadResponse<any>>(url)
 
   // Refuerzo manual del orden para asegurar consistencia total
   return result.docs.sort((a: any, b: any) => {
@@ -119,33 +115,31 @@ export async function getMenus(activo = true, locale?: string) {
   })
 }
 
-export async function getMenuBySlug(slug: string, locale?: string) {
-  const localeParam = locale ? `&locale=${locale}` : ''
-  const url = `/menus?where[slug][equals]=${slug}&limit=1&depth=3${localeParam}`
-  const result = await fetchAPI<PayloadResponse<any>>(url, {}, locale)
+export async function getMenuBySlug(slug: string) {
+  const url = `/menus?where[slug][equals]=${slug}&limit=1&depth=3`
+  const result = await fetchAPI<PayloadResponse<any>>(url)
   return result.docs[0] || null
 }
 
 export async function getActiveMenusSlugs() {
-  // Use direct query string format for Payload REST API
   const url = `/menus?where[activo][equals]=true&limit=100`
   const result = await fetchAPI<PayloadResponse<any>>(url)
   return result.docs.map((doc: any) => doc.slug)
 }
 
-export async function getEspacios(activo = true, locale?: string) {
+export async function getEspacios(activo = true) {
   const where = activo ? { activo: { equals: true } } : {}
-  const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 100 }, locale)
-  const result = await fetchAPI<PayloadResponse<any>>(`/espacios${query}`, {}, locale)
+  const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 100 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/espacios${query}`)
   return result.docs
 }
 
-export async function getMenusGrupo(activo = true, locale?: string) {
+export async function getMenusGrupo(activo = true) {
   try {
     const where = activo ? { activo: { equals: true } } : {}
-    const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 100 }, locale)
+    const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 100 })
     const url = `/menus-grupo${query}`
-    const result = await fetchAPI<PayloadResponse<any>>(url, {}, locale)
+    const result = await fetchAPI<PayloadResponse<any>>(url)
 
     if (!result || !result.docs) return []
 
@@ -165,7 +159,7 @@ export const getGroupMenus = getMenusGrupo
 
 
 
-export async function getBannersActivos(posicion?: string, locale?: string) {
+export async function getBannersActivos(posicion?: string) {
   const now = new Date().toISOString()
 
   const where: any = {
@@ -178,8 +172,8 @@ export async function getBannersActivos(posicion?: string, locale?: string) {
     where.posicion = { equals: posicion }
   }
 
-  const query = buildQuery({ where, sort: '-prioridad', depth: 1, limit: 100 }, locale)
-  const result = await fetchAPI<PayloadResponse<any>>(`/banners${query}`, {}, locale)
+  const query = buildQuery({ where, sort: '-prioridad', depth: 1, limit: 100 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/banners${query}`)
   return result.docs
 }
 
@@ -187,21 +181,20 @@ export async function getBannersActivos(posicion?: string, locale?: string) {
 // GLOBALS
 // ============================================
 
-export async function getPaginaInicio(locale?: string) {
-  const query = buildQuery({ depth: 3 }, locale)
-  return fetchAPI<any>(`/globals/pagina-inicio${query}`, {}, locale)
+export async function getPaginaInicio() {
+  const query = buildQuery({ depth: 3 })
+  return fetchAPI<any>(`/globals/pagina-inicio${query}`)
 }
 
-export async function getConfiguracionSitio(locale?: string) {
-  const query = buildQuery({ depth: 2 }, locale)
-  return fetchAPI<any>(`/globals/configuracion-sitio${query}`, {}, locale)
+export async function getConfiguracionSitio() {
+  const query = buildQuery({ depth: 2 })
+  return fetchAPI<any>(`/globals/configuracion-sitio${query}`)
 }
 
-export async function getPaginaBySlug(slug: string, locale?: string) {
+export async function getPaginaBySlug(slug: string) {
   try {
-    const localeParam = locale ? `&locale=${locale}` : ''
-    const url = `/paginas?where[slug][equals]=${slug}&limit=1&depth=2${localeParam}`
-    const result = await fetchAPI<PayloadResponse<any>>(url, {}, locale)
+    const url = `/paginas?where[slug][equals]=${slug}&limit=1&depth=2`
+    const result = await fetchAPI<PayloadResponse<any>>(url)
     return result.docs[0] || null
   } catch (error) {
     console.error(`Error al obtener pagina por slug (${slug}):`, error)
@@ -213,10 +206,10 @@ export async function getPaginaBySlug(slug: string, locale?: string) {
 // UTILIDADES
 // ============================================
 
-export async function getCategoriasConPlatos(locale?: string) {
+export async function getCategoriasConPlatos() {
   const [categorias, platos] = await Promise.all([
-    getCategorias(true, locale),
-    getPlatos(true, locale),
+    getCategorias(true),
+    getPlatos(true),
   ])
 
   return categorias.map((categoria: any) => ({
@@ -227,13 +220,13 @@ export async function getCategoriasConPlatos(locale?: string) {
   }))
 }
 
-export async function getPlatosDestacados(locale?: string) {
+export async function getPlatosDestacados() {
   const where = {
     activo: { equals: true },
     destacado: { equals: true },
   }
-  const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 10 }, locale)
-  const result = await fetchAPI<PayloadResponse<any>>(`/platos${query}`, {}, locale)
+  const query = buildQuery({ where, sort: 'orden', depth: 2, limit: 10 })
+  const result = await fetchAPI<PayloadResponse<any>>(`/platos${query}`)
   return result.docs
 }
 

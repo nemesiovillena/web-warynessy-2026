@@ -122,13 +122,13 @@ export const Paginas: CollectionConfig = {
                             name: 'heroTitle',
                             type: 'text',
                             label: 'Título de la Cabecera',
-                            localized: true,
+                            localized: false,
                         },
                         {
                             name: 'heroSubtitle',
                             type: 'textarea',
                             label: 'Subtítulo de la Cabecera',
-                            localized: true,
+                            localized: false,
                         },
                     ],
                 },
@@ -154,7 +154,7 @@ export const Paginas: CollectionConfig = {
                                     name: 'nombreEspacio1',
                                     type: 'text',
                                     label: 'Nombre Espacio 1',
-                                    localized: true,
+                                    localized: false,
                                     admin: {
                                         width: '50%',
                                     },
@@ -165,7 +165,7 @@ export const Paginas: CollectionConfig = {
                             name: 'descripcionEspacio1',
                             type: 'textarea',
                             label: 'Descripción Espacio 1',
-                            localized: true,
+                            localized: false,
                         },
                         {
                             type: 'row',
@@ -183,7 +183,7 @@ export const Paginas: CollectionConfig = {
                                     name: 'nombreEspacio2',
                                     type: 'text',
                                     label: 'Nombre Espacio 2',
-                                    localized: true,
+                                    localized: false,
                                     admin: {
                                         width: '50%',
                                     },
@@ -194,7 +194,7 @@ export const Paginas: CollectionConfig = {
                             name: 'descripcionEspacio2',
                             type: 'textarea',
                             label: 'Descripción Espacio 2',
-                            localized: true,
+                            localized: false,
                         },
                         {
                             type: 'row',
@@ -212,7 +212,7 @@ export const Paginas: CollectionConfig = {
                                     name: 'nombreEspacio3',
                                     type: 'text',
                                     label: 'Nombre Espacio 3',
-                                    localized: true,
+                                    localized: false,
                                     admin: {
                                         width: '50%',
                                     },
@@ -223,7 +223,7 @@ export const Paginas: CollectionConfig = {
                             name: 'descripcionEspacio3',
                             type: 'textarea',
                             label: 'Descripción Espacio 3',
-                            localized: true,
+                            localized: false,
                         },
                         {
                             type: 'row',
@@ -241,7 +241,7 @@ export const Paginas: CollectionConfig = {
                                     name: 'nombreEspacio4',
                                     type: 'text',
                                     label: 'Nombre Espacio 4',
-                                    localized: true,
+                                    localized: false,
                                     admin: {
                                         width: '50%',
                                     },
@@ -252,7 +252,7 @@ export const Paginas: CollectionConfig = {
                             name: 'descripcionEspacio4',
                             type: 'textarea',
                             label: 'Descripción Espacio 4',
-                            localized: true,
+                            localized: false,
                         },
                     ],
                 },
@@ -269,25 +269,25 @@ export const Paginas: CollectionConfig = {
                             name: 'historiaMision',
                             type: 'textarea',
                             label: 'Nuestra Misión / Introducción',
-                            localized: true,
+                            localized: false,
                         },
                         {
                             name: 'historiaHitos',
                             type: 'array',
                             label: 'Hitos Históricos',
-                            localized: true,
+                            localized: false,
                             fields: [
                                 {
                                     name: 'titulo',
                                     type: 'text',
                                     label: 'Título del Hito (ej: Los Inicios)',
-                                    localized: true,
+                                    localized: false,
                                 },
                                 {
                                     name: 'descripcion',
                                     type: 'textarea',
                                     label: 'Descripción del Hito',
-                                    localized: true,
+                                    localized: false,
                                 },
                                 {
                                     name: 'imagen',
@@ -306,7 +306,7 @@ export const Paginas: CollectionConfig = {
                             name: 'metaTitle',
                             type: 'text',
                             label: 'Título SEO (Meta Title)',
-                            localized: true,
+                            localized: false,
                             admin: {
                                 description: 'Aparece en la pestaña del navegador y Google',
                             },
@@ -315,7 +315,7 @@ export const Paginas: CollectionConfig = {
                             name: 'metaDescription',
                             type: 'textarea',
                             label: 'Descripción SEO (Meta Description)',
-                            localized: true,
+                            localized: false,
                             admin: {
                                 description: 'Breve resumen para los resultados de búsqueda',
                             },

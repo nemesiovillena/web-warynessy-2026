@@ -85,7 +85,7 @@ export const Alergenos: CollectionConfig = {
       type: 'text',
       label: 'Nombre del Alérgeno',
       required: true,
-      localized: true,
+      localized: false,
       admin: {
         description: 'Ej: Gluten, Lactosa, Frutos secos, etc.',
       },
@@ -104,7 +104,7 @@ export const Alergenos: CollectionConfig = {
       name: 'descripcion',
       type: 'textarea',
       label: 'Descripción',
-      localized: true,
+      localized: false,
       admin: {
         description: 'Descripción detallada del alérgeno',
       },

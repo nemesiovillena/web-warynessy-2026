@@ -86,13 +86,13 @@ export const Platos: CollectionConfig = {
       type: 'text',
       label: 'Nombre del Plato',
       required: true,
-      localized: true,
+      localized: false,
     },
     {
       name: 'descripcion',
       type: 'textarea',
       label: 'Descripción / Ingredientes',
-      localized: true,
+      localized: false,
       admin: {
         description: 'Descripción del plato e ingredientes principales',
       },
@@ -167,7 +167,7 @@ export const Platos: CollectionConfig = {
           name: 'etiqueta',
           type: 'text',
           required: true,
-          localized: true,
+          localized: false,
         },
       ],
       admin: {

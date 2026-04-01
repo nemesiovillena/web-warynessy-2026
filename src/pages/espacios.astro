@@ -10,9 +10,9 @@ const ui = getTranslations(locale).espacios;
 const common = getTranslations(locale).common;
 
 const [siteSettings, pageData, espaciosData] = await Promise.all([
-  getSiteSettings(locale),
-  getPaginaBySlug('espacios', locale),
-  getEspacios(true, locale),
+  getSiteSettings(),
+  getPaginaBySlug('espacios'),
+  getEspacios(true),
 ]);
 
 const pageTitle = pageData?.metaTitle || `${ui.title} | ${siteSettings?.title || "Restaurante Warynessy"}`;

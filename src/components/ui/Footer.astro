@@ -7,7 +7,7 @@ const { locale: propsLocale, hideFloatingButton = false } = Astro.props;
 const locale = propsLocale || 'es';
 
 // Query to fetch global site settings
-const settings = await getSiteSettings(locale);
+const settings = await getSiteSettings();
 
 const currentYear = new Date().getFullYear();
 const t = getTranslations(locale).footer;

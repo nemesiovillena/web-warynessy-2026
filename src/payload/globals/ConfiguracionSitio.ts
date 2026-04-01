@@ -1,86 +1,10 @@
 import type { GlobalConfig } from 'payload'
-import { callTranslationAgent } from '../utils/translation-utils'
 
 export const ConfiguracionSitio: GlobalConfig = {
   slug: 'configuracion-sitio',
   label: 'Configuración del Sitio',
   access: {
     read: () => true, // Public read access
-  },
-  hooks: {
-    afterChange: [
-      async ({ doc, previousDoc, req }) => {
-        const locale = (req as any).locale;
-
-        // PROTECCIÓN CRÍTICA: Solo traducir si estamos editando explícitamente en español
-        if (locale && locale !== 'es') {
-          return;
-        }
-
-        const payload = req.payload;
-
-        // Función asíncrona para ejecutar en segundo plano
-        const executeTranslations = async () => {
-          // Esperar un momento aleatorio para evitar colisiones
-          const randomDelay = Math.floor(Math.random() * 2000);
-          await new Promise(resolve => setTimeout(resolve, 1000 + randomDelay));
-
-          try {
-            const configTraduccion: any = await payload.findGlobal({ slug: 'configuracion-traduccion' as any });
-            const endpoint = configTraduccion?.endpointAgente || 'http://localhost:8000/translate';
-            const modelo = configTraduccion?.modeloIA || 'google/gemini-2.0-flash-001';
-
-            const targetLocales = ['ca', 'en', 'fr', 'de'] as const;
-
-            const prevHours: any[] = (previousDoc as any)?.openingHours || [];
-            const currHours: any[] = doc.openingHours || [];
-
-            // Detectar filas que cambiaron en days u hours
-            const changedIndexes = currHours.reduce<number[]>((acc, row, i) => {
-              const prev = prevHours[i];
-              if (!prev || row.days !== prev.days || row.hours !== prev.hours) acc.push(i);
-              return acc;
-            }, []);
-
-            if (changedIndexes.length === 0) return;
-
-            console.log(`[CONFIG-SITIO] [Background] Iniciando traducción de ${changedIndexes.length} filas de horario...`);
-
-            // Procesar locales secuencialmente para estabilidad, pero en background
-            for (const locale of targetLocales) {
-              const translatedHours = currHours.map((row: any) => ({ ...row }));
-
-              for (const i of changedIndexes) {
-                const row = currHours[i];
-                if (row.days?.trim()) {
-                  console.log(`[CONFIG-SITIO] [Background] Traduciendo horario (días) a ${locale}...`);
-                  translatedHours[i].days = await callTranslationAgent(row.days, locale, endpoint, modelo);
-                }
-                if (row.hours?.trim()) {
-                  console.log(`[CONFIG-SITIO] [Background] Traduciendo horario (horas) a ${locale}...`);
-                  translatedHours[i].hours = await callTranslationAgent(row.hours, locale, endpoint, modelo);
-                }
-              }
-
-              await payload.updateGlobal({
-                slug: 'configuracion-sitio',
-                locale: locale as any,
-                data: { openingHours: translatedHours },
-                req: { payload: req.payload, disableHooks: true } as any,
-              });
-            }
-
-            console.log(`[CONFIG-SITIO] [Background] Horarios traducidos con éxito.`);
-          } catch (error) {
-            console.error(`[CONFIG-SITIO] [Background] Error en el proceso de traducción:`, error);
-          }
-        };
-
-        // Lanzar en segundo plano sin esperar (await)
-        executeTranslations();
-      }
-
-    ]
   },
   fields: [
     {
@@ -200,7 +124,7 @@ export const ConfiguracionSitio: GlobalConfig = {
           name: 'days',
           type: 'text',
           label: 'Días',
-          localized: true,
+          localized: false,
           admin: {
             description: 'Ej: "Lunes a Viernes", "Sábados", etc.',
           },
@@ -209,7 +133,7 @@ export const ConfiguracionSitio: GlobalConfig = {
           name: 'hours',
           type: 'text',
           label: 'Horario',
-          localized: true,
+          localized: false,
           admin: {
             description: 'Ej: "13:00 - 16:00 y 20:00 - 23:00"',
           },

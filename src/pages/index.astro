@@ -14,10 +14,10 @@ import { getOptimizedImageUrl } from '../lib/cdn';
 const locale = 'es';
 
 // Fetch data from Payload CMS (Local API) with locale
-const siteSettings = await getSiteSettings(locale);
-const homepage = await getHomepage(locale);
-const spaces = await getSpaces(true, locale);
-const featuredDishes = await getFeaturedDishes(locale);
+const siteSettings = await getSiteSettings();
+const homepage = await getHomepage();
+const spaces = await getSpaces(true);
+const featuredDishes = await getFeaturedDishes();
 const rawOpiniones = await getGoogleReviews();
 // Filtrar por 4-5 estrellas y ordenar por las más recientes
 const opiniones = rawOpiniones

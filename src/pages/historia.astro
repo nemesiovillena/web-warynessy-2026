@@ -10,8 +10,8 @@ import { getOptimizedImageUrl } from '../lib/cdn';
 const locale = 'es';
 const ui = getTranslations(locale).historia;
 
-const siteSettings = await getSiteSettings(locale);
-const pageData = await getPaginaBySlug('historia', locale);
+const siteSettings = await getSiteSettings();
+const pageData = await getPaginaBySlug('historia');
 
 console.log('[DEBUG] Historia Page Data:', {
   hasPageData: !!pageData,

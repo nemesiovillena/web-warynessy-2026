@@ -18,10 +18,10 @@ let siteSettings, menus = [], menusGrupo = [], pageData;
 
 try {
   [siteSettings, menus, menusGrupo, pageData] = await Promise.all([
-    getSiteSettings(locale),
-    getMenus(true, locale),
-    getMenusGrupo(true, locale),
-    getPaginaBySlug('menus', locale)
+    getSiteSettings(),
+    getMenus(true),
+    getMenusGrupo(true),
+    getPaginaBySlug('menus')
   ]);
 } catch (error) {
   console.error("Error al cargar datos en menus.astro:", error);
