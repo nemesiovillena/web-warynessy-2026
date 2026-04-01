@@ -5,6 +5,7 @@ import Container from '../components/ui/Container.astro';
 import DishListItem from '../components/content/DishListItem.astro';
 import DishCard from '../components/content/DishCard.astro';
 import { getSiteSettings, getCategorias, getPlatos, getAlergenos, getPaginaBySlug } from '../lib/payload-local';
+import { getTranslations } from '../lib/i18n';
 import { getOptimizedImageUrl } from '../lib/cdn';
 import fs from 'node:fs';
 import path from 'node:path';

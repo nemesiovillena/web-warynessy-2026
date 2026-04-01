@@ -2,6 +2,7 @@
 import MainLayout from '../layouts/MainLayout.astro';
 import Container from '../components/ui/Container.astro';
 import { getSiteSettings, getPaginaBySlug, getEspacios } from '../lib/payload-local';
+import { getTranslations } from '../lib/i18n';
 import { getOptimizedImageUrl } from '../lib/cdn';
 
 const locale = 'es';
