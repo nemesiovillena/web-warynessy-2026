@@ -66,6 +66,9 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/payload.config.ts ./
 COPY --from=builder /app/src/payload ./src/payload
 
+# Copy plugins directory
+COPY --from=builder /app/plugins ./plugins
+
 # Copy Astro dist for SSR
 COPY --from=builder /app/dist ./dist
 
