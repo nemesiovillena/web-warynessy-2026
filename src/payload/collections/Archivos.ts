@@ -17,6 +17,9 @@ export const Archivos: CollectionConfig = {
   },
   access: {
     read: () => true, // Public read access
+    create: ({ req: { user } }) => !!user,
+    update: ({ req: { user } }) => !!user,
+    delete: ({ req: { user } }) => !!user,
   },
   hooks: {
     // After create or update, push file + variants to Bunny Storage
