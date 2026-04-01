@@ -88,7 +88,7 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
-    push: true, // Auto-sync schema on startup (creates tables)
+    // push: true desactivado por incompatibilidad con PostgreSQL 16
   }),
 
   // Optimizaciรณn de imรกgenes
