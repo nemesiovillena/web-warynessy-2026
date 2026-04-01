@@ -1,12 +1,12 @@
-// Navigation links per locale
-export function getNavLinks(locale: string): { name: string; href: string }[] {
-  const nav = navTranslations[locale as keyof typeof navTranslations] ?? navTranslations.es
+// Navigation links (Spanish only - no locale prefix)
+export function getNavLinks(_locale?: string): { name: string; href: string }[] {
+  const nav = navTranslations.es
   return [
-    { name: nav.carta,        href: `/${locale}/carta` },
-    { name: nav.menus,        href: `/${locale}/menus` },
-    { name: nav.reservas,     href: `/${locale}/reservas` },
-    { name: nav.contacto,     href: `/${locale}/contacto` },
-    { name: nav.experiencias, href: `/${locale}/experiencias` },
+    { name: nav.carta,        href: '/carta' },
+    { name: nav.menus,        href: '/menus' },
+    { name: nav.reservas,     href: '/reservas' },
+    { name: nav.contacto,     href: '/contacto' },
+    { name: nav.experiencias, href: '/experiencias' },
   ]
 }
 

@@ -169,7 +169,7 @@ const menusGrupoConMenus = menusGrupo.filter((grupo: any) =>
                       {grupo.menus?.map((menu: any) => (
                         menu && typeof menu === 'object' && menu.slug ? (
                           <a
-                            href={`/${locale}/menus/${menu.slug}`}
+                            href={`/menus/${menu.slug}`}
                             class="flex items-center justify-between p-5 bg-white/5 rounded-2xl border border-white/5 hover:bg-primary/10 hover:border-primary/20 transition-all group/item"
                           >
                             <div class="flex items-center gap-4">
